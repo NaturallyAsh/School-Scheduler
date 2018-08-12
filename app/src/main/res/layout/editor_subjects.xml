@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".editors.SubjectsEditor">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="@string/subject_title"
+            style="@style/CategoryStyle"/>
+
+        <LinearLayout
+            style="@style/LinearStyle">
+
+            <EditText
+                android:id="@+id/edit_subject"
+                style="@style/EditorFieldStyle"
+                android:hint="@string/title_hint"
+                android:inputType="textCapWords"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/subject_teacher"/>
+
+        <LinearLayout
+            style="@style/LinearStyle">
+
+            <EditText
+                android:id="@+id/edit_subject_teacher"
+                style="@style/EditorFieldStyle"
+                android:hint="@string/teacher_hint"
+                android:inputType="textCapWords"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
