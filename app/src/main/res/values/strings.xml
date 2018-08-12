@@ -19,4 +19,9 @@
     <string name="calender_title">CALENDER</string>
     <string name="nav_grades">Grades</string>
     <string name="nav_notes">Notes</string>
+    <string name="subject_title">Subject Title</string>
+    <string name="title_hint">title</string>
+    <string name="subject_teacher">Teacher</string>
+    <string name="teacher_hint">teacher</string>
+    <string name="no_subjects">No Subjects</string>
 </resources>
