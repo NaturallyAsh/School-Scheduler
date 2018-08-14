@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,17 @@ import java.util.ArrayList;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder>
 {
+    private static final String TAG = CardAdapter.class.getSimpleName();
+
     public ArrayList<SubjectsModel> subMod;
     private OnItemClicked onClick;
     static ClickListener clickListener;
     Context context;
 
-    public CardAdapter(Context context, ArrayList<SubjectsModel> items)
+    public CardAdapter(Context context, ArrayList<SubjectsModel> subMod)
     {
         this.context = context;
-        this.subMod = items;
+        this.subMod = subMod;
     }
 
     @NonNull
@@ -34,6 +37,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     {
         return new CardViewHolder(LayoutInflater.from(context).inflate(R.layout.subjects_item_list,
                 parent, false));
+
     }
 
     @Override
@@ -77,7 +81,23 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     @Override
     public int getItemCount()
     {
+        if (subMod == null)
+        {
+            Log.d(TAG, "sub is null");
+        }
         return subMod.size();
+    }
+
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return position;
     }
 
     public interface OnItemClicked
@@ -98,5 +118,18 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     public interface ClickListener
     {
         public void itemClicked(View view, int position);
+    }
+
+    public void setData(ArrayList<SubjectsModel> data)
+    {
+        if (data != null && !data.isEmpty())
+        {
+            this.subMod = data;
+            //this.subMod.clear();
+            this.subMod.addAll(data);
+            notifyDataSetChanged();
+        }
+        else
+            this.subMod.clear();
     }
 }

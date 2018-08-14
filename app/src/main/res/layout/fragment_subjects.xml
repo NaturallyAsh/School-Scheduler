@@ -5,13 +5,17 @@
     android:layout_height="match_parent"
     android:id="@+id/main_root">
 
-    <android.support.v7.widget.RecyclerView
+
+    <com.example.ashleighwilson.schoolscheduler.adapter.EmptyRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp">
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"/>
 
-    </android.support.v7.widget.RecyclerView>
+   <RelativeLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_centerInParent="true">
 
     <TextView
         android:id="@+id/empty_subject_view"
@@ -21,15 +25,10 @@
         android:visibility="gone"
         android:text="@string/no_subjects"/>
 
-    <FrameLayout
-        android:id="@+id/frag_within"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </FrameLayout>
+   </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_sub"
-        style="@style/FAB"/>
+        style="@style/FAB" />
 
 </RelativeLayout>

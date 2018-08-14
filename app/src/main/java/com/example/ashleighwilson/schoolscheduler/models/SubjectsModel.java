@@ -17,7 +17,7 @@ public class SubjectsModel implements Parcelable
         }
     };
 
-    private long id;
+    //private long id;
     private String mTitle;
     private String mTeacher;
 
@@ -27,9 +27,9 @@ public class SubjectsModel implements Parcelable
         this.mTeacher = teacher;
     }
 
-    public long getId() {return id;}
+    //public long getId() {return id;}
 
-    public void setId(long id) {this.id = id;}
+    //public void setId(long id) {this.id = id;}
 
     public String getmTitle()
     {
