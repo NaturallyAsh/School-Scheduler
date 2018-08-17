@@ -12,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.example.ashleighwilson.schoolscheduler.adapter.CardAdapter;
-import com.example.ashleighwilson.schoolscheduler.adapter.EmptyRecyclerView;
+import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditor;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
@@ -25,7 +23,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 
 
-public class SubjectsFrag extends DialogFragment implements CardAdapter.ClickListener,
+public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.ClickListener,
         SubjectsEditor.OnAddSubjectListener
 {
     private static final String TAG = SubjectsFrag.class.getSimpleName();
@@ -34,9 +32,9 @@ public class SubjectsFrag extends DialogFragment implements CardAdapter.ClickLis
     Context context;
     private EditText titleView, teacherView;
     private String sTitle, sTeacher;
-    public EmptyRecyclerView recyclerView;
+    public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
-    public CardAdapter cardAdapter;
+    public RecyclerSubAdapter recyclerSubAdapter;
     public SubjectsModel model = null;
     public ArrayList<SubjectsModel> subMod = new ArrayList<>();
     DbHelper dbHelper;
@@ -75,11 +73,11 @@ public class SubjectsFrag extends DialogFragment implements CardAdapter.ClickLis
         recyclerView.setHasFixedSize(true);
 
 
-        cardAdapter = new CardAdapter(getContext(), subMod);
+        recyclerSubAdapter = new RecyclerSubAdapter(getContext(), subMod);
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(cardAdapter);
+        recyclerView.setAdapter(recyclerSubAdapter);
 
         return view;
     }
@@ -92,15 +90,15 @@ public class SubjectsFrag extends DialogFragment implements CardAdapter.ClickLis
     @Override
     public void OnAddSubjectSubmit(String title, String teacher)
     {
-        SubjectsModel model = new SubjectsModel(sTitle, sTeacher);
+        SubjectsModel model = new SubjectsModel();
 
         model.setmTitle(title);
         model.setmTeacher(teacher);
-        subMod.clear();
+        //subMod.clear();
         subMod.add(model);
-        cardAdapter.setData(subMod);
+        //recyclerSubAdapter.setData(subMod);
 
-        cardAdapter.notifyDataSetChanged();
+        recyclerSubAdapter.notifyDataSetChanged();
 
     }
 
@@ -114,7 +112,7 @@ public class SubjectsFrag extends DialogFragment implements CardAdapter.ClickLis
 
     public void showData()
     {
-        cardAdapter = new CardAdapter(getActivity(), subMod);
+        recyclerSubAdapter = new RecyclerSubAdapter(getActivity(), subMod);
 
     }
 }

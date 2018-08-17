@@ -16,16 +16,16 @@ import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
 
-public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder>
+public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.ViewHolder>
 {
-    private static final String TAG = CardAdapter.class.getSimpleName();
+    private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
 
     public ArrayList<SubjectsModel> subMod;
     private OnItemClicked onClick;
     static ClickListener clickListener;
     Context context;
 
-    public CardAdapter(Context context, ArrayList<SubjectsModel> subMod)
+    public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subMod)
     {
         this.context = context;
         this.subMod = subMod;
@@ -33,15 +33,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
 
     @NonNull
     @Override
-    public CardAdapter.CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public RecyclerSubAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new CardViewHolder(LayoutInflater.from(context).inflate(R.layout.subjects_item_list,
+        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.subjects_item_list,
                 parent, false));
 
     }
 
     @Override
-    public void onBindViewHolder(final CardAdapter.CardViewHolder holder, final int position)
+    public void onBindViewHolder(final RecyclerSubAdapter.ViewHolder holder, final int position)
     {
        SubjectsModel currentSubject = subMod.get(position);
 
@@ -49,14 +49,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         holder.teacher.setText(currentSubject.getmTeacher());
     }
 
-    public class CardViewHolder extends RecyclerView.ViewHolder implements
+    public class ViewHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener
     {
         TextView titleView;
         TextView teacher;
         CardView cardView;
 
-        public CardViewHolder(View itemView)
+        public ViewHolder(View itemView)
         {
             super(itemView);
             titleView = itemView.findViewById(R.id.subject_subject);
@@ -112,24 +112,18 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
 
     public void setClickListener(ClickListener clicked)
     {
-        CardAdapter.clickListener = clicked;
+        RecyclerSubAdapter.clickListener = clicked;
     }
 
     public interface ClickListener
     {
-        public void itemClicked(View view, int position);
+        void itemClicked(View view, int position);
     }
 
-    public void setData(ArrayList<SubjectsModel> data)
-    {
-        if (data != null && !data.isEmpty())
-        {
-            this.subMod = data;
-            //this.subMod.clear();
-            this.subMod.addAll(data);
-            notifyDataSetChanged();
-        }
-        else
-            this.subMod.clear();
+    public void setData(ArrayList<SubjectsModel> data) {
+        this.subMod = data;
+        //this.subMod.clear();
+        this.subMod.addAll(data);
+        notifyDataSetChanged();
     }
 }
