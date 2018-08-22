@@ -40,6 +40,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity"/>
         </activity>
+        <activity
+            android:name=".editors.SubjectsEditorActivity"
+            android:label="Edit Subjects"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".OverviewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
     </application>
 
 </manifest>

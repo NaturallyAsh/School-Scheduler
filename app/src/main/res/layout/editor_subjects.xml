@@ -1,55 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".editors.SubjectsEditor">
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/toolbar_main"/>
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:text="@string/subject_title"
-            style="@style/CategoryStyle"/>
+        android:layout_marginTop="50dp"
+        android:padding="16dp"
+        tools:context=".editors.SubjectsEditor">
 
         <LinearLayout
-            style="@style/LinearStyle">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edit_subject"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/title_hint"
-                android:inputType="textCapWords"/>
+            <TextView
+                android:text="@string/subject_title"
+                style="@style/CategoryStyle"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <EditText
+                    android:id="@+id/edit_subject"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/title_hint"
+                    android:inputType="textCapWords"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/subject_teacher"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <EditText
+                    android:id="@+id/edit_subject_teacher"
+                    style="@style/EditorFieldStyle"
+                    android:hint="@string/teacher_hint"
+                    android:inputType="textCapWords"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/room_text"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <EditText
+                    style="@style/EditorFieldStyle"
+                    android:id="@+id/subject_room"
+                    android:ems="10"
+                    android:hint="@string/room_hint"
+                    android:inputType="textCapCharacters"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_color"/>
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/subject_teacher"/>
-
-        <LinearLayout
-            style="@style/LinearStyle">
-
-            <EditText
-                android:id="@+id/edit_subject_teacher"
-                style="@style/EditorFieldStyle"
-                android:hint="@string/teacher_hint"
-                android:inputType="textCapWords"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

@@ -15,17 +15,18 @@ import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.ViewHolder>
 {
     private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
 
-    public ArrayList<SubjectsModel> subMod;
+    public List<SubjectsModel> subMod = new ArrayList<>();
     private OnItemClicked onClick;
     static ClickListener clickListener;
     Context context;
 
-    public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subMod)
+    public RecyclerSubAdapter(Context context)
     {
         this.context = context;
         this.subMod = subMod;
@@ -120,10 +121,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         void itemClicked(View view, int position);
     }
 
-    public void setData(ArrayList<SubjectsModel> data) {
-        this.subMod = data;
-        //this.subMod.clear();
-        this.subMod.addAll(data);
+    public void setData(List<SubjectsModel> data) {
+        subMod = data;
         notifyDataSetChanged();
     }
 }

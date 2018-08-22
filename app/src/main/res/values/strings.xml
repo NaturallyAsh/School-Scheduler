@@ -24,4 +24,12 @@
     <string name="subject_teacher">Teacher</string>
     <string name="teacher_hint">teacher</string>
     <string name="no_subjects">No Subjects</string>
+    <string name="room_text">Room</string>
+    <string name="room_hint">room</string>
+    <string name="select_color">Select Color</string>
+    <string name="string_add">ADD</string>
+    <string name="delete_string">DELETE</string>
+    <string name="close_string">CLOSE</string>
+    <string name="save_string">Save</string>
+    <string name="action_delete">Delete</string>
 </resources>

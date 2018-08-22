@@ -12,13 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.content.Intent;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditor;
+import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -35,8 +39,8 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
     public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
     public RecyclerSubAdapter recyclerSubAdapter;
-    public SubjectsModel model = null;
-    public ArrayList<SubjectsModel> subMod = new ArrayList<>();
+    public List<SubjectsModel> subMod = new ArrayList<>();
+    public TextView emptyView;
     DbHelper dbHelper;
     @BindView(R.id.main_root)
     ViewGroup root;
@@ -60,26 +64,45 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                //showDialog();
+                Intent intent = new Intent(getContext(), SubjectsEditorActivity.class);
+                startActivity(intent);
             }
         });
 
         titleView = view.findViewById(R.id.edit_subject);
         teacherView = view.findViewById(R.id.edit_subject_teacher);
 
-        View emptyView = view.findViewById(R.id.empty_subject_view);
+        emptyView = view.findViewById(R.id.empty_subject_view);
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-
-        recyclerSubAdapter = new RecyclerSubAdapter(getContext(), subMod);
+        recyclerSubAdapter = new RecyclerSubAdapter(getContext());
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(recyclerSubAdapter);
+
+        isRecyclerViewEmpty();
+
+        //recyclerView.setAdapter(recyclerSubAdapter);
 
         return view;
+    }
+
+    public void isRecyclerViewEmpty()
+    {
+        if (recyclerView == null)
+        {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setAdapter(recyclerSubAdapter);
+        }
     }
 
     @Override
@@ -90,15 +113,16 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
     @Override
     public void OnAddSubjectSubmit(String title, String teacher)
     {
-        SubjectsModel model = new SubjectsModel();
+        /* SubjectsModel model = new SubjectsModel();
 
         model.setmTitle(title);
         model.setmTeacher(teacher);
-        //subMod.clear();
-        subMod.add(model);
-        //recyclerSubAdapter.setData(subMod);
 
-        recyclerSubAdapter.notifyDataSetChanged();
+        subMod.add(model);
+
+        recyclerSubAdapter.setData(subMod); */
+
+        //recyclerSubAdapter.notifyDataSetChanged();
 
     }
 
@@ -107,12 +131,6 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         SubjectsEditor addSubjectDialog = new SubjectsEditor();
         addSubjectDialog.setTargetFragment(this, 0);
         addSubjectDialog.show(getFragmentManager(), null);
-
-    }
-
-    public void showData()
-    {
-        recyclerSubAdapter = new RecyclerSubAdapter(getActivity(), subMod);
 
     }
 }

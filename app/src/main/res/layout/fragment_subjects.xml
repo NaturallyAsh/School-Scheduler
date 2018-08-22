@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:text="@string/no_subjects"/>
 
    </RelativeLayout>

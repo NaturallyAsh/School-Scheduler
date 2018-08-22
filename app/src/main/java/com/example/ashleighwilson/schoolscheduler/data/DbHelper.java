@@ -27,6 +27,8 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_TEACHER = "teacher";
+        public final static String COLUMN_ROOM = "room";
+        public final static String COLUMN_COLOR = "color";
     }
 
     public DbHelper(Context context)
@@ -41,7 +43,9 @@ public class DbHelper extends SQLiteOpenHelper
                 " ("
                 + SchoolEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + SchoolEntry.COLUMN_TITLE + " TEXT, "
-                + SchoolEntry.COLUMN_TEACHER + " TEXT);";
+                + SchoolEntry.COLUMN_TEACHER + " TEXT, "
+                + SchoolEntry.COLUMN_ROOM + " TEXT, "
+                + SchoolEntry.COLUMN_COLOR + " TEXT)";
 
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
     }

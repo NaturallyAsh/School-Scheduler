@@ -1,23 +1,36 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class SubjectsModel
 {
 
+    public static String DEFAULT_COLOR = "#e0e0e0";
     private String mTitle;
     private String mTeacher;
+    private int id;
+    private String mRoom;
+    private String mColor;
 
-    /*public SubjectsModel(String title, String teacher)
+    public SubjectsModel(int id, String title, String teacher, String room, String color)
+    {
+        this.id = id;
+        this.mTitle = title;
+        this.mTeacher = teacher;
+        this.mRoom = room;
+        this.mColor = color;
+    }
+    public SubjectsModel(String title, String teacher)
     {
         this.mTitle = title;
         this.mTeacher = teacher;
     }
 
-    public long getId() {return id;}
+    public SubjectsModel() {
 
-    public void setId(long id) {this.id = id;} */
+    }
+
+    public int getId() {return id;}
+
+    public void setId(int id) {this.id = id;}
 
     public String getmTitle()
     {
@@ -37,6 +50,34 @@ public class SubjectsModel
     public void setmTeacher(String teacher)
     {
         this.mTeacher = teacher;
+    }
+
+    public String getmRoom()
+    {
+        return mRoom;
+    }
+
+    public void setmRoom(String room)
+    {
+        this.mRoom = room;
+    }
+
+    public String getmColor()
+    {
+        return mColor;
+    }
+
+    public void setmColor(String color)
+    {
+        this.mColor = color;
+    }
+
+    public boolean match(SubjectsModel otherSubject)
+    {
+        return this.id == otherSubject.id && this.mTeacher.equals(otherSubject.mTeacher) &&
+                this.mTitle.equals(otherSubject.mTitle)
+                && this.mRoom.equals(otherSubject.mRoom)
+                && this.mColor.equals(otherSubject.mColor);
     }
 
 }
