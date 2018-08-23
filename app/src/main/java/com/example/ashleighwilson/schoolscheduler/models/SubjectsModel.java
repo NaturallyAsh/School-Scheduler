@@ -10,9 +10,8 @@ public class SubjectsModel
     private String mRoom;
     private String mColor;
 
-    public SubjectsModel(int id, String title, String teacher, String room, String color)
+    public SubjectsModel(String title, String teacher, String room, String color)
     {
-        this.id = id;
         this.mTitle = title;
         this.mTeacher = teacher;
         this.mRoom = room;

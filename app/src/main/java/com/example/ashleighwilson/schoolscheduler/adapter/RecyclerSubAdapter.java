@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
@@ -21,15 +22,17 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 {
     private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
 
-    public List<SubjectsModel> subMod = new ArrayList<>();
+    public List<SubjectsModel> subMod;
     private OnItemClicked onClick;
     static ClickListener clickListener;
     Context context;
+    public DbHelper dbHelper;
 
-    public RecyclerSubAdapter(Context context)
+    public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subList)
     {
         this.context = context;
-        this.subMod = subMod;
+        this.subMod = subList;
+        this.dbHelper = new DbHelper(context);
     }
 
     @NonNull
@@ -62,9 +65,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             super(itemView);
             titleView = itemView.findViewById(R.id.subject_subject);
             teacher = itemView.findViewById(R.id.subject_teacher_text);
-            cardView = itemView.findViewById(R.id.card_view);
 
-            cardView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
 
         }
 
@@ -74,7 +76,6 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             if (clickListener != null)
             {
                 clickListener.itemClicked(view, getAdapterPosition());
-                Toast.makeText(context, R.string.hello_blank_fragment, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -124,5 +125,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public void setData(List<SubjectsModel> data) {
         subMod = data;
         notifyDataSetChanged();
+        notifyItemInserted(getItemCount());
+        notifyItemRangeChanged(0, data.size());
     }
 }
