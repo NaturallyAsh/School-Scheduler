@@ -25,7 +25,7 @@ public class SubjectsEditor extends DialogFragment
 
     public interface OnAddSubjectListener
     {
-        void OnAddSubjectSubmit(String title, String teacher);
+        void OnAddSubjectSubmit(String title, String teacher, String room);
     }
 
     @Override
@@ -52,6 +52,7 @@ public class SubjectsEditor extends DialogFragment
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.editor_subjects, root);
         final EditText mTitle = view.findViewById(R.id.edit_subject);
         final EditText mTeacher = view.findViewById(R.id.edit_subject_teacher);
+        final EditText mRoom = view.findViewById(R.id.subject_room);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(view)
                 .setTitle("Add Subject")
@@ -60,8 +61,9 @@ public class SubjectsEditor extends DialogFragment
                     public void onClick(DialogInterface dialog, int which) {
                         final String sTitle = mTitle.getText().toString();
                         final String sTeacher = mTeacher.getText().toString();
+                        final String sRoom = mRoom.getText().toString();
 
-                        listener.OnAddSubjectSubmit(sTitle, sTeacher);
+                        listener.OnAddSubjectSubmit(sTitle, sTeacher, sRoom);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

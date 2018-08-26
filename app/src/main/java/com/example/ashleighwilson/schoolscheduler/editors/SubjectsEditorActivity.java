@@ -22,6 +22,9 @@ import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SubjectsEditorActivity extends AppCompatActivity
 {
     private static final String TAG = SubjectsEditorActivity.class.getSimpleName();
@@ -29,8 +32,7 @@ public class SubjectsEditorActivity extends AppCompatActivity
     private EditText mTitleEditText;
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
-    private static final int EXISTING_SUBJECT_LOADER = 0;
-    private Uri mCurrentSubjectUri;
+    DbHelper dbHelper;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -51,6 +53,8 @@ public class SubjectsEditorActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        dbHelper = new DbHelper(getApplicationContext());
+
         mTitleEditText = findViewById(R.id.edit_subject);
         mTeacherEditText = findViewById(R.id.edit_subject_teacher);
         mRoomEditText = findViewById(R.id.subject_room);
@@ -64,15 +68,17 @@ public class SubjectsEditorActivity extends AppCompatActivity
 
     private void saveSubject()
     {
-        //SubjectsModel model = new SubjectsModel();
+        SubjectsModel model = new SubjectsModel();
         String titleString = mTitleEditText.getText().toString().trim();
         String teacherString = mTeacherEditText.getText().toString().trim();
         String roomString = mRoomEditText.getText().toString().trim();
 
-        ContentValues values = new ContentValues();
-        values.put(DbHelper.SchoolEntry.COLUMN_TITLE, titleString);
-        values.put(DbHelper.SchoolEntry.COLUMN_TEACHER, teacherString);
-        values.put(DbHelper.SchoolEntry.COLUMN_ROOM, roomString);
+        model.setmTitle(titleString);
+        model.setmTeacher(teacherString);
+        model.setmRoom(roomString);
+
+        dbHelper.addClass(model);
+
     }
 
     @Override

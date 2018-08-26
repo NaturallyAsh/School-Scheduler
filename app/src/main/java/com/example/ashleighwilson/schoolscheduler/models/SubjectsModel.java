@@ -17,10 +17,11 @@ public class SubjectsModel
         this.mRoom = room;
         this.mColor = color;
     }
-    public SubjectsModel(String title, String teacher)
+    public SubjectsModel(String title, String teacher, String room)
     {
         this.mTitle = title;
         this.mTeacher = teacher;
+        this.mRoom = room;
     }
 
     public SubjectsModel() {

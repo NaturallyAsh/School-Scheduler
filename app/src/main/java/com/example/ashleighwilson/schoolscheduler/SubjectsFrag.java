@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,8 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 
 
-public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.ClickListener,
-        SubjectsEditor.OnAddSubjectListener
+public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.ClickListener
 {
     private static final String TAG = SubjectsFrag.class.getSimpleName();
 
@@ -46,14 +46,10 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
     private String sTitle, sTeacher;
     public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
-    public SubjectCursorAdapter mCursorAdapter;
     public RecyclerSubAdapter recyclerSubAdapter;
     public ArrayList<SubjectsModel> subMod = new ArrayList<>();
     public TextView emptyView;
     DbHelper dbHelper;
-    private static final int SUBJECT_LOADER = 0;
-    @BindView(R.id.main_root)
-    ViewGroup root;
 
     public SubjectsFrag() {
     }
@@ -81,7 +77,8 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         });
 
         dbHelper = new DbHelper(getActivity());
-        subMod = dbHelper.getAllSubjects();
+        //subMod = dbHelper.getAllSubjects();
+
 
         titleView = view.findViewById(R.id.edit_subject);
         teacherView = view.findViewById(R.id.edit_subject_teacher);
@@ -96,11 +93,35 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        subjectDatabaseList();
         //isRecyclerViewEmpty();
 
-        recyclerView.setAdapter(recyclerSubAdapter);
 
         return view;
+    }
+
+    private void subjectDatabaseList()
+    {
+        subMod.clear();
+        Cursor cursor = dbHelper.getAltSub();
+        while (cursor.moveToNext())
+        {
+            int id = cursor.getInt(0);
+            String title = cursor.getString(1);
+            String teacher = cursor.getString(2);
+            String room = cursor.getString(3);
+
+            SubjectsModel model = new SubjectsModel(title, teacher, room);
+
+            subMod.add(model);
+        }
+
+        if (!(subMod.size()<1))
+        {
+            recyclerView.setAdapter(recyclerSubAdapter);
+            recyclerSubAdapter.notifyDataSetChanged();
+        }
+
     }
 
     public void isRecyclerViewEmpty() {
@@ -119,17 +140,18 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
 
     }
 
-    @Override
-    public void OnAddSubjectSubmit(String title, String teacher) {
+
+    public void OnAddSubjectSubmit(String title, String teacher, String room) {
         SubjectsModel model = new SubjectsModel();
 
         model.setmTitle(title);
         model.setmTeacher(teacher);
+        model.setmRoom(room);
 
-        //dbHelper.addClass(model);
-        subMod.add(model);
+        dbHelper.addClass(model);
 
-        recyclerSubAdapter.setData(subMod);
+
+        //recyclerSubAdapter.setData(subMod);
 
         //recyclerSubAdapter.notifyDataSetChanged();
 
@@ -140,5 +162,12 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         addSubjectDialog.setTargetFragment(this, 0);
         addSubjectDialog.show(getFragmentManager(), null);
 
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        subjectDatabaseList();
     }
 }

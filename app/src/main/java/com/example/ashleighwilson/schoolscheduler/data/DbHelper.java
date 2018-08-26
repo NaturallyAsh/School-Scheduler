@@ -19,11 +19,12 @@ public class DbHelper extends SQLiteOpenHelper
     String[] allColumns = new String[] {
             SchoolEntry._ID,
             SchoolEntry.COLUMN_TITLE,
-            SchoolEntry.COLUMN_TEACHER
+            SchoolEntry.COLUMN_TEACHER,
+            SchoolEntry.COLUMN_ROOM
     };
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -41,7 +42,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_TEACHER = "teacher";
         public final static String COLUMN_ROOM = "room";
-        public final static String COLUMN_COLOR = "color";
+        //public final static String COLUMN_COLOR = "color";
     }
 
     public DbHelper(Context context)
@@ -57,8 +58,7 @@ public class DbHelper extends SQLiteOpenHelper
                 + SchoolEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + SchoolEntry.COLUMN_TITLE + " TEXT, "
                 + SchoolEntry.COLUMN_TEACHER + " TEXT, "
-                + SchoolEntry.COLUMN_ROOM + " TEXT, "
-                + SchoolEntry.COLUMN_COLOR + " TEXT)";
+                + SchoolEntry.COLUMN_ROOM + " TEXT);";
 
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
     }
@@ -77,19 +77,18 @@ public class DbHelper extends SQLiteOpenHelper
         ContentValues values = new ContentValues();
         values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
+        values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
 
         db.insert(SchoolEntry.TABLE_NAME, null, values);
         db.close();
     }
 
-    public Cursor getSubject()
+    public Cursor getAltSub()
     {
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
+        return db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
                 null, null, null);
-
-        return cursor;
     }
 
     public ArrayList<SubjectsModel> getAllSubjects()
@@ -104,7 +103,8 @@ public class DbHelper extends SQLiteOpenHelper
             do {
                 SubjectsModel model = new SubjectsModel(
                         cursor.getString(1),
-                        cursor.getString(2));
+                        cursor.getString(2),
+                        cursor.getString(3));
                 modelArrayList.add(model);
             }while (cursor.moveToNext());
         }

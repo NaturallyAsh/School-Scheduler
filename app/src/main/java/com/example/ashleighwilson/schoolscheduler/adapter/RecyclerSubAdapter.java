@@ -33,6 +33,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         this.context = context;
         this.subMod = subList;
         this.dbHelper = new DbHelper(context);
+        setData(subList);
     }
 
     @NonNull
@@ -51,6 +52,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
         holder.titleView.setText(currentSubject.getmTitle());
         holder.teacher.setText(currentSubject.getmTeacher());
+        holder.room.setText(currentSubject.getmRoom());
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements
@@ -58,13 +61,14 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     {
         TextView titleView;
         TextView teacher;
-        CardView cardView;
+        TextView room;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
             titleView = itemView.findViewById(R.id.subject_subject);
             teacher = itemView.findViewById(R.id.subject_teacher_text);
+            room = itemView.findViewById(R.id.room_item);
 
             itemView.setOnClickListener(this);
 
