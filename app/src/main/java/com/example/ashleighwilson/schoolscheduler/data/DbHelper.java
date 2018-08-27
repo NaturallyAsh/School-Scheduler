@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -112,12 +113,43 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
+    public long update(int id, String title, String teacher, String room)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(SchoolEntry.COLUMN_TITLE, title);
+            values.put(SchoolEntry.COLUMN_TEACHER, teacher);
+            values.put(SchoolEntry.COLUMN_ROOM, room);
+
+            return db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " =?",
+                    new String[]{String.valueOf(id)});
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public void removeSubject(SubjectsModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(SchoolEntry.TABLE_NAME, SchoolEntry._ID + "=?",
+        db.delete(SchoolEntry.TABLE_NAME, SchoolEntry._ID + " =?",
                 null);
         db.close();
+    }
+
+    public long delete(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            return db.delete(SchoolEntry.TABLE_NAME, SchoolEntry._ID + " =?",
+                    new String[]{String.valueOf(id)});
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }

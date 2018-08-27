@@ -7,11 +7,13 @@ public class SubjectsModel
     private String mTitle;
     private String mTeacher;
     private int id;
+    private String ID;
     private String mRoom;
     private String mColor;
 
     public SubjectsModel(String title, String teacher, String room, String color)
     {
+        this.id = id;
         this.mTitle = title;
         this.mTeacher = teacher;
         this.mRoom = room;
@@ -24,6 +26,14 @@ public class SubjectsModel
         this.mRoom = room;
     }
 
+    public SubjectsModel(int id, String title, String teacher, String room)
+    {
+        this.id = id;
+        this.mTitle = title;
+        this.mTeacher = teacher;
+        this.mRoom = room;
+    }
+
     public SubjectsModel() {
 
     }
@@ -31,6 +41,15 @@ public class SubjectsModel
     public int getId() {return id;}
 
     public void setId(int id) {this.id = id;}
+
+    public String getID()
+    {
+        return ID;
+    }
+    public void setID(String ID)
+    {
+        this.ID = ID;
+    }
 
     public String getmTitle()
     {

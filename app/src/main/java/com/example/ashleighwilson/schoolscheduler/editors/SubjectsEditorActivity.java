@@ -1,12 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.editors;
 
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
@@ -19,11 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SubjectsEditorActivity extends AppCompatActivity
 {
@@ -33,6 +28,13 @@ public class SubjectsEditorActivity extends AppCompatActivity
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
     DbHelper dbHelper;
+    SubjectsModel subjectsModel;
+    private static final int NO_ID = -99;
+    private static final String NO_TITLE = "";
+    private static final String NO_TEACHER = "";
+    private static final String NO_ROOM = "";
+    int ID;
+    public ArrayList<SubjectsModel> model;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -54,6 +56,7 @@ public class SubjectsEditorActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbHelper = new DbHelper(getApplicationContext());
+        model = dbHelper.getAllSubjects();
 
         mTitleEditText = findViewById(R.id.edit_subject);
         mTeacherEditText = findViewById(R.id.edit_subject_teacher);
@@ -62,6 +65,28 @@ public class SubjectsEditorActivity extends AppCompatActivity
         mTitleEditText.setOnTouchListener(mTouchListener);
         mTeacherEditText.setOnTouchListener(mTouchListener);
         mRoomEditText.setOnTouchListener(mTouchListener);
+
+        Intent intent = getIntent();
+        //Bundle extras = getIntent().getExtras();
+        ID = intent.getIntExtra(RecyclerSubAdapter.EXTRA_ID, NO_ID);
+        /*String bTitle = extras.getString(RecyclerSubAdapter.EXTRA_TITLE, NO_TITLE);
+        String bTeacher = extras.getString(RecyclerSubAdapter.EXTRA_TEACHER, NO_TEACHER);
+        String bRoom = extras.getString(RecyclerSubAdapter.EXTRA_ROOM, NO_ROOM); */
+
+        for (SubjectsModel subjectsModel : dbHelper.getAllSubjects())
+        {
+            /*if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
+                && (!bRoom.equals(NO_ROOM))))) */
+            if (ID != NO_ID)
+            {
+                setTitle("Add Subject");
+                invalidateOptionsMenu();
+            }
+            else
+            {
+                setTitle("Edit Subject");
+            }
+        }
 
 
     }
