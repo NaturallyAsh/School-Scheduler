@@ -3,15 +3,12 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
@@ -26,7 +23,6 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
 
     public List<SubjectsModel> subMod;
-    private OnItemClicked onClick;
     static ClickListener clickListener;
     Context context;
     public DbHelper dbHelper;
@@ -69,38 +65,37 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             public void onClick(View view) {
                 Intent intent = new Intent(context, SubjectsEditorActivity.class);
 
-                //passData(currentSubject.getId(), currentSubject.getmTitle(), currentSubject.getmTeacher(),
-                  //      currentSubject.getmRoom());
-                passData(currentSubject.getId());
-                context.startActivity(intent);
+                passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom());
             }
         });
 
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView titleView;
         TextView teacher;
         TextView room;
         Button edit;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             titleView = itemView.findViewById(R.id.subject_subject);
             teacher = itemView.findViewById(R.id.subject_teacher_text);
             room = itemView.findViewById(R.id.room_item);
             edit = itemView.findViewById(R.id.edit_button);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (clickListener != null)
+                clickListener.itemClicked(getAdapterPosition());
+        }
     }
 
     @Override
     public int getItemCount()
     {
-        if (subMod == null)
-        {
-            Log.d(TAG, "sub is null");
-        }
         return subMod.size();
     }
 
@@ -116,16 +111,6 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         return position;
     }
 
-    public interface OnItemClicked
-    {
-        void onItemClick(int position);
-    }
-
-    public void setOnClick(OnItemClicked onClick)
-    {
-        this.onClick = onClick;
-    }
-
     public void setClickListener(ClickListener clicked)
     {
         RecyclerSubAdapter.clickListener = clicked;
@@ -133,7 +118,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
     public interface ClickListener
     {
-        void itemClicked(View view, int position);
+        void itemClicked(int position);
     }
 
     public void setData(List<SubjectsModel> data) {
@@ -143,13 +128,13 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         notifyItemRangeChanged(0, data.size());
     }
 
-    private void passData(int id)
+    private void passData(String title, String teacher, String room)
     {
         Intent intent = new Intent(context, SubjectsEditorActivity.class);
-        intent.putExtra(EXTRA_ID, id);
-        //intent.putExtra(EXTRA_TITLE, title);
-        //intent.putExtra(EXTRA_TEACHER, teacher);
-        //intent.putExtra(EXTRA_ROOM, room);
+        //intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(EXTRA_TEACHER, teacher);
+        intent.putExtra(EXTRA_ROOM, room);
         context.startActivity(intent);
     }
 }

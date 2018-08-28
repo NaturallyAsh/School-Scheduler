@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".editors.SubjectsEditorActivity"
-            android:label="Edit Subjects"
+            android:label="Add Subject"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".OverviewActivity">
             <meta-data

@@ -28,12 +28,11 @@ public class SubjectsEditorActivity extends AppCompatActivity
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
     DbHelper dbHelper;
-    SubjectsModel subjectsModel;
     private static final int NO_ID = -99;
     private static final String NO_TITLE = "";
     private static final String NO_TEACHER = "";
     private static final String NO_ROOM = "";
-    int ID;
+    String editTitle = "";
     public ArrayList<SubjectsModel> model;
 
     private boolean mSubjectHasChanged = false;
@@ -66,18 +65,17 @@ public class SubjectsEditorActivity extends AppCompatActivity
         mTeacherEditText.setOnTouchListener(mTouchListener);
         mRoomEditText.setOnTouchListener(mTouchListener);
 
-        Intent intent = getIntent();
-        //Bundle extras = getIntent().getExtras();
-        ID = intent.getIntExtra(RecyclerSubAdapter.EXTRA_ID, NO_ID);
-        /*String bTitle = extras.getString(RecyclerSubAdapter.EXTRA_TITLE, NO_TITLE);
-        String bTeacher = extras.getString(RecyclerSubAdapter.EXTRA_TEACHER, NO_TEACHER);
-        String bRoom = extras.getString(RecyclerSubAdapter.EXTRA_ROOM, NO_ROOM); */
-
-        for (SubjectsModel subjectsModel : dbHelper.getAllSubjects())
+        Bundle intent = getIntent().getExtras();
+        if (intent != null)
         {
-            /*if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
-                && (!bRoom.equals(NO_ROOM))))) */
-            if (ID != NO_ID)
+            //int ID = intent.getIntExtra(RecyclerSubAdapter.EXTRA_ID, NO_ID);
+            String bTitle = intent.getString(RecyclerSubAdapter.EXTRA_TITLE);
+            String bTeacher = intent.getString(RecyclerSubAdapter.EXTRA_TEACHER);
+            String bRoom = intent.getString(RecyclerSubAdapter.EXTRA_ROOM);
+
+            //if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
+              //  && (!bRoom.equals(NO_ROOM)))))
+            if (bTitle.equals(editTitle))
             {
                 setTitle("Add Subject");
                 invalidateOptionsMenu();
@@ -85,10 +83,11 @@ public class SubjectsEditorActivity extends AppCompatActivity
             else
             {
                 setTitle("Edit Subject");
+                mTitleEditText.setText(bTitle);
+                mTeacherEditText.setText(bTeacher);
+                mRoomEditText.setText(bRoom);
             }
         }
-
-
     }
 
     private void saveSubject()

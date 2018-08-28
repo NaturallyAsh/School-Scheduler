@@ -3,7 +3,6 @@ package com.example.ashleighwilson.schoolscheduler;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,7 +25,7 @@ import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import java.util.ArrayList;
 
 
-public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.ClickListener
+public class SubjectsFrag extends DialogFragment
 {
     private static final String TAG = SubjectsFrag.class.getSimpleName();
 
@@ -38,8 +37,10 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
     public RecyclerView.LayoutManager layoutManager;
     public RecyclerSubAdapter recyclerSubAdapter;
     public ArrayList<SubjectsModel> subMod = new ArrayList<>();
+    public ArrayList<SubjectsModel> dataSub;
     public TextView emptyView;
     DbHelper dbHelper;
+    public static final int SUB_ADD = 1;
 
     public SubjectsFrag() {
     }
@@ -56,19 +57,18 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
 
         View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
+        dbHelper = new DbHelper(getActivity());
+
+        dataSub = dbHelper.getAllSubjects();
+
         FloatingActionButton fab = view.findViewById(R.id.fab_sub);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //showDialog();
                 Intent intent = new Intent(getContext(), SubjectsEditorActivity.class);
                 startActivity(intent);
             }
         });
-
-        dbHelper = new DbHelper(getActivity());
-        //subMod = dbHelper.getAllSubjects();
-
 
         titleView = view.findViewById(R.id.edit_subject);
         teacherView = view.findViewById(R.id.edit_subject_teacher);
@@ -91,10 +91,9 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
     private void subjectDatabaseList()
     {
         subMod.clear();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = dbHelper.getAltSub();
-        //while (cursor.moveToNext())
-        if (cursor.moveToFirst())
+
+        while (cursor.moveToNext())
         {
             int id = cursor.getInt(0);
             String title = cursor.getString(1);
@@ -104,6 +103,7 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
             SubjectsModel model = new SubjectsModel(id, title, teacher, room);
 
             subMod.add(model);
+
         }
 
         if (!(subMod.size()<1))
@@ -121,12 +121,6 @@ public class SubjectsFrag extends DialogFragment implements RecyclerSubAdapter.C
         }
 
     }
-
-    @Override
-    public void itemClicked(View view, int position) {
-
-    }
-
 
     public void OnAddSubjectSubmit(String title, String teacher, String room) {
         SubjectsModel model = new SubjectsModel();

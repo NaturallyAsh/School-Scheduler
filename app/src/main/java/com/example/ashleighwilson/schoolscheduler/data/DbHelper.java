@@ -71,7 +71,7 @@ public class DbHelper extends SQLiteOpenHelper
         onCreate(db);
     }
 
-    public void addClass(SubjectsModel model)
+    public long addClass(SubjectsModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -80,8 +80,10 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
         values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
 
-        db.insert(SchoolEntry.TABLE_NAME, null, values);
+        long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
         db.close();
+
+        return res;
     }
 
     public Cursor getAltSub()
@@ -102,10 +104,11 @@ public class DbHelper extends SQLiteOpenHelper
         if (cursor.moveToFirst())
         {
             do {
-                SubjectsModel model = new SubjectsModel(
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3));
+                SubjectsModel model = new SubjectsModel();
+                        model.setId(Integer.parseInt(cursor.getString(0)));
+                        model.setmTitle(cursor.getString(1));
+                        model.setmTeacher(cursor.getString(2));
+                        model.setmRoom(cursor.getString(3));
                 modelArrayList.add(model);
             }while (cursor.moveToNext());
         }
@@ -113,22 +116,23 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
-    public long update(int id, String title, String teacher, String room)
+    public int update(int id, String title, String teacher, String room)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        int numOfRowsUpdated = -1;
         try {
             ContentValues values = new ContentValues();
             values.put(SchoolEntry.COLUMN_TITLE, title);
             values.put(SchoolEntry.COLUMN_TEACHER, teacher);
             values.put(SchoolEntry.COLUMN_ROOM, room);
 
-            return db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " =?",
+            numOfRowsUpdated = db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " = ?",
                     new String[]{String.valueOf(id)});
         }catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return 0;
+        return numOfRowsUpdated;
     }
 
     public void removeSubject(SubjectsModel model)
