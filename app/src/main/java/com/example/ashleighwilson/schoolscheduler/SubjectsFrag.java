@@ -2,13 +2,16 @@ package com.example.ashleighwilson.schoolscheduler;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class SubjectsFrag extends DialogFragment
@@ -55,7 +59,7 @@ public class SubjectsFrag extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_subjects, container, false);
+        final View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
         dbHelper = new DbHelper(getActivity());
 
@@ -85,6 +89,50 @@ public class SubjectsFrag extends DialogFragment
 
         subjectDatabaseList();
 
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback
+                (ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN |
+                ItemTouchHelper.UP, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                int from = viewHolder.getAdapterPosition();
+                int to = target.getAdapterPosition();
+
+                Collections.swap(subMod, from, to);
+                recyclerSubAdapter.notifyItemMoved(from, to);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction)
+            {
+                final int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.LEFT)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Are you sure to delete?");
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            dbHelper.delete(position);
+                            subMod.remove(viewHolder.getAdapterPosition());
+                            recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            recyclerSubAdapter.notifyItemRemoved(position + 1);
+                            recyclerSubAdapter.notifyItemRangeChanged(position, recyclerSubAdapter.getItemCount());
+
+                        }
+                    }).show();
+                }
+            }
+
+        });
+
+        helper.attachToRecyclerView(recyclerView);
+
         return view;
     }
 
@@ -109,6 +157,7 @@ public class SubjectsFrag extends DialogFragment
         if (!(subMod.size()<1))
         {
             recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
             recyclerView.setAdapter(recyclerSubAdapter);
             recyclerSubAdapter.notifyDataSetChanged();
         }
@@ -120,6 +169,37 @@ public class SubjectsFrag extends DialogFragment
             recyclerSubAdapter.notifyDataSetChanged();
         }
 
+    }
+
+    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+        return false;
+    }
+
+    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction)
+    {
+        final int position = viewHolder.getAdapterPosition();
+        if (direction == ItemTouchHelper.LEFT)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Are you sure to delete?");
+            builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    recyclerSubAdapter.notifyItemRemoved(position);
+                    dbHelper.delete(position);
+
+                    return;
+                }
+            }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    recyclerSubAdapter.notifyItemRemoved(position + 1);
+                    recyclerSubAdapter.notifyItemRangeChanged(position, recyclerSubAdapter.getItemCount());
+
+                    return;
+                }
+            }).show();
+        }
     }
 
     public void OnAddSubjectSubmit(String title, String teacher, String room) {
