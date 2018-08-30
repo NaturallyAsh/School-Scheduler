@@ -73,5 +73,21 @@
         <item name="cardPreventCornerOverlap">false</item>
         <item name="cardBackgroundColor">@android:color/white</item>
     </style>
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="OverflowText">
+        <item name="android:textColor">@color/simpledialogfragment_error_color</item>
+    </style>
+
+    <style name="SimpleDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert"/>
+
+    <style name="ImageDialogTheme" parent="SimpleDialogTheme">
+        <!-- these are required so that the dialog wraps the images dimensions -->
+        <item name="android:windowMinWidthMinor">@null</item>
+        <item name="android:windowMinWidthMajor">@null</item>
+    </style>
 
 </resources>

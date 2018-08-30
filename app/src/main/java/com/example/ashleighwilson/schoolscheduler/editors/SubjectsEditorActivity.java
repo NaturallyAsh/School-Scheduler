@@ -1,32 +1,46 @@
 package com.example.ashleighwilson.schoolscheduler.editors;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
 
-public class SubjectsEditorActivity extends AppCompatActivity
+import eltos.simpledialogfragment.SimpleDialog;
+
+public class SubjectsEditorActivity extends AppCompatActivity implements SimpleDialog.OnDialogResultListener
 {
     private static final String TAG = SubjectsEditorActivity.class.getSimpleName();
 
     private EditText mTitleEditText;
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
+    private TextView viewColor;
+    final static private String COLOR_DIALOG = "colorDialog";
+    static private int subColor;
     DbHelper dbHelper;
     private static final int NO_ID = -99;
     private static final String NO_TITLE = "";
@@ -57,6 +71,12 @@ public class SubjectsEditorActivity extends AppCompatActivity
         dbHelper = new DbHelper(getApplicationContext());
         model = dbHelper.getAllSubjects();
 
+        Button colorSelector = findViewById(R.id.sub_create_button);
+        viewColor = findViewById(R.id.sub_view_color);
+
+        subColor = getMatColor("200");
+        viewColor.setBackgroundColor(subColor);
+
         mTitleEditText = findViewById(R.id.edit_subject);
         mTeacherEditText = findViewById(R.id.edit_subject_teacher);
         mRoomEditText = findViewById(R.id.subject_room);
@@ -65,6 +85,17 @@ public class SubjectsEditorActivity extends AppCompatActivity
         mTeacherEditText.setOnTouchListener(mTouchListener);
         mRoomEditText.setOnTouchListener(mTouchListener);
 
+        colorSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SimpleColorDialog.build()
+                        .title("Pick a subject color")
+                        .colorPreset(Color.WHITE)
+                        .allowCustom(true)
+                        .show(SubjectsEditorActivity.this, COLOR_DIALOG);
+            }
+        });
+
         Bundle intent = getIntent().getExtras();
         if (intent != null)
         {
@@ -72,6 +103,7 @@ public class SubjectsEditorActivity extends AppCompatActivity
             String bTitle = intent.getString(RecyclerSubAdapter.EXTRA_TITLE);
             String bTeacher = intent.getString(RecyclerSubAdapter.EXTRA_TEACHER);
             String bRoom = intent.getString(RecyclerSubAdapter.EXTRA_ROOM);
+            int bColor = intent.getInt(RecyclerSubAdapter.EXTRA_COLOR);
 
             //if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
               //  && (!bRoom.equals(NO_ROOM)))))
@@ -86,8 +118,35 @@ public class SubjectsEditorActivity extends AppCompatActivity
                 mTitleEditText.setText(bTitle);
                 mTeacherEditText.setText(bTeacher);
                 mRoomEditText.setText(bRoom);
+
+
             }
         }
+    }
+
+    private int getMatColor(String typeColor)
+    {
+        int returnColor = Color.BLACK;
+        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getApplicationContext().getPackageName());
+
+        if (arrayId != 0) {
+            TypedArray colors = getResources().obtainTypedArray(arrayId);
+            int index = (int) (Math.random() * colors.length());
+            returnColor = colors.getColor(index, Color.BLACK);
+            colors.recycle();
+        }
+        return returnColor;
+    }
+
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+        if (dialogTag.equals(COLOR_DIALOG))
+        {
+            subColor = extras.getInt(SimpleColorDialog.COLOR);
+            viewColor.setBackgroundColor(subColor);
+            return true;
+        }
+        return false;
     }
 
     private void saveSubject()
@@ -97,11 +156,49 @@ public class SubjectsEditorActivity extends AppCompatActivity
         String teacherString = mTeacherEditText.getText().toString().trim();
         String roomString = mRoomEditText.getText().toString().trim();
 
+
+        /*if (titleString.equals(""))
+        {
+            Toast.makeText(this, "Subject name needed", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            model.setmTitle(titleString);
+
+        }
+        if (teacherString.equals(""))
+        {
+            Toast.makeText(this, "Teacher name needed", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            model.setmTeacher(teacherString);
+
+        }
+        if (roomString.equals(""))
+        {
+            Toast.makeText(this, "Room number needed", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            model.setmRoom(roomString);
+
+        } */
+
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
+        model.setmColor(subColor);
 
         dbHelper.addClass(model);
+        if (dbHelper == null)
+        {
+            Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Subject saved", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

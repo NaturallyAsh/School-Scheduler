@@ -32,6 +32,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public static final String EXTRA_TITLE = "TITLE";
     public static final String EXTRA_TEACHER = "TEACHER";
     public static final String EXTRA_ROOM = "ROOM";
+    public static final String EXTRA_COLOR = "COLOR";
 
     public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subList)
     {
@@ -59,13 +60,15 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.titleView.setText(currentSubject.getmTitle());
         holder.teacher.setText(currentSubject.getmTeacher());
         holder.room.setText(currentSubject.getmRoom());
+        holder.color.setBackgroundColor(currentSubject.getmColor());
 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, SubjectsEditorActivity.class);
 
-                passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom());
+                passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom(),
+                        currentSubject.getmColor());
             }
         });
 
@@ -77,6 +80,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         TextView teacher;
         TextView room;
         Button edit;
+        TextView color;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -84,6 +88,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             teacher = itemView.findViewById(R.id.subject_teacher_text);
             room = itemView.findViewById(R.id.room_item);
             edit = itemView.findViewById(R.id.edit_button);
+            color = itemView.findViewById(R.id.color_item);
         }
 
         @Override
@@ -128,13 +133,21 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         notifyItemRangeChanged(0, data.size());
     }
 
-    private void passData(String title, String teacher, String room)
+    private void passData(String title, String teacher, String room, int color)
     {
         Intent intent = new Intent(context, SubjectsEditorActivity.class);
         //intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_TEACHER, teacher);
         intent.putExtra(EXTRA_ROOM, room);
+        intent.putExtra(EXTRA_COLOR, color);
         context.startActivity(intent);
+    }
+
+    public void dismissItem(int position)
+    {
+        dbHelper.delete(subMod.get(position).getId());
+        subMod.remove(position);
+        notifyItemRemoved(position);
     }
 }

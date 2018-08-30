@@ -4,11 +4,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
@@ -21,11 +23,14 @@ public class DbHelper extends SQLiteOpenHelper
             SchoolEntry._ID,
             SchoolEntry.COLUMN_TITLE,
             SchoolEntry.COLUMN_TEACHER,
-            SchoolEntry.COLUMN_ROOM
+            SchoolEntry.COLUMN_ROOM,
+            SchoolEntry.COLUMN_COLOR
     };
 
+    private static final String TAG = DbHelper.class.getSimpleName();
+
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -43,7 +48,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_TEACHER = "teacher";
         public final static String COLUMN_ROOM = "room";
-        //public final static String COLUMN_COLOR = "color";
+        public final static String COLUMN_COLOR = "color";
     }
 
     public DbHelper(Context context)
@@ -59,7 +64,8 @@ public class DbHelper extends SQLiteOpenHelper
                 + SchoolEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + SchoolEntry.COLUMN_TITLE + " TEXT, "
                 + SchoolEntry.COLUMN_TEACHER + " TEXT, "
-                + SchoolEntry.COLUMN_ROOM + " TEXT);";
+                + SchoolEntry.COLUMN_ROOM + " TEXT, "
+                + SchoolEntry.COLUMN_COLOR + " INTEGER);";
 
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
     }
@@ -76,9 +82,11 @@ public class DbHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        //values.put(SchoolEntry._ID, model.getId());
         values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
         values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
+        values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
 
         long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
         db.close();
@@ -92,6 +100,13 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
                 null, null, null);
+    }
+
+    public long count()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        return DatabaseUtils.queryNumEntries(db, SchoolEntry.TABLE_NAME);
     }
 
     public ArrayList<SubjectsModel> getAllSubjects()
@@ -109,6 +124,7 @@ public class DbHelper extends SQLiteOpenHelper
                         model.setmTitle(cursor.getString(1));
                         model.setmTeacher(cursor.getString(2));
                         model.setmRoom(cursor.getString(3));
+                        model.setmColor(Integer.parseInt(cursor.getString(4)));
                 modelArrayList.add(model);
             }while (cursor.moveToNext());
         }
@@ -116,7 +132,7 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
-    public int update(int id, String title, String teacher, String room)
+    public int update(int id, String title, String teacher, String room, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         int numOfRowsUpdated = -1;
@@ -125,6 +141,7 @@ public class DbHelper extends SQLiteOpenHelper
             values.put(SchoolEntry.COLUMN_TITLE, title);
             values.put(SchoolEntry.COLUMN_TEACHER, teacher);
             values.put(SchoolEntry.COLUMN_ROOM, room);
+            values.put(SchoolEntry.COLUMN_COLOR, color);
 
             numOfRowsUpdated = db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " = ?",
                     new String[]{String.valueOf(id)});
@@ -147,13 +164,9 @@ public class DbHelper extends SQLiteOpenHelper
     public long delete(int id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        try {
+
             return db.delete(SchoolEntry.TABLE_NAME, SchoolEntry._ID + " =?",
                     new String[]{String.valueOf(id)});
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        return 0;
     }
 }

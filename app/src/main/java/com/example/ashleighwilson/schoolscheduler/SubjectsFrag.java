@@ -15,6 +15,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
@@ -61,9 +62,15 @@ public class SubjectsFrag extends DialogFragment
 
         final View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
+
+        titleView = view.findViewById(R.id.edit_subject);
+        teacherView = view.findViewById(R.id.edit_subject_teacher);
+        emptyView = view.findViewById(R.id.empty_subject_view);
+
         dbHelper = new DbHelper(getActivity());
 
         dataSub = dbHelper.getAllSubjects();
+
 
         FloatingActionButton fab = view.findViewById(R.id.fab_sub);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -74,10 +81,8 @@ public class SubjectsFrag extends DialogFragment
             }
         });
 
-        titleView = view.findViewById(R.id.edit_subject);
-        teacherView = view.findViewById(R.id.edit_subject_teacher);
 
-        emptyView = view.findViewById(R.id.empty_subject_view);
+
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -113,9 +118,10 @@ public class SubjectsFrag extends DialogFragment
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
-                            dbHelper.delete(position);
-                            subMod.remove(viewHolder.getAdapterPosition());
-                            recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                            //subMod.remove(viewHolder.getAdapterPosition());
+                            //dbHelper.delete(recyclerSubAdapter.getItemCount());
+                            //recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                            recyclerSubAdapter.dismissItem(viewHolder.getAdapterPosition());
 
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -147,8 +153,9 @@ public class SubjectsFrag extends DialogFragment
             String title = cursor.getString(1);
             String teacher = cursor.getString(2);
             String room = cursor.getString(3);
+            int color = cursor.getInt(4);
 
-            SubjectsModel model = new SubjectsModel(id, title, teacher, room);
+            SubjectsModel model = new SubjectsModel(id, title, teacher, room, color);
 
             subMod.add(model);
 
@@ -169,37 +176,6 @@ public class SubjectsFrag extends DialogFragment
             recyclerSubAdapter.notifyDataSetChanged();
         }
 
-    }
-
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-        return false;
-    }
-
-    public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction)
-    {
-        final int position = viewHolder.getAdapterPosition();
-        if (direction == ItemTouchHelper.LEFT)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage("Are you sure to delete?");
-            builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int i) {
-                    recyclerSubAdapter.notifyItemRemoved(position);
-                    dbHelper.delete(position);
-
-                    return;
-                }
-            }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int i) {
-                    recyclerSubAdapter.notifyItemRemoved(position + 1);
-                    recyclerSubAdapter.notifyItemRangeChanged(position, recyclerSubAdapter.getItemCount());
-
-                    return;
-                }
-            }).show();
-        }
     }
 
     public void OnAddSubjectSubmit(String title, String teacher, String room) {

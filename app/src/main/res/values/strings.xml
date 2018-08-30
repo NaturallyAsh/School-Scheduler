@@ -34,4 +34,8 @@
     <string name="action_delete">Delete</string>
     <string name="course_name">Course Name</string>
     <string name="edit_sub_button">EDIT</string>
+    <string name="pick_a_color_string">pick a color</string>
+    <string name="rrggbb" translatable="false">RRGGBB</string>
+    <string name="hex" translatable="false">HEX:</string>
+    <string name="transparency">Transparency</string>
 </resources>

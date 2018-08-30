@@ -77,12 +77,28 @@
                     android:ems="10"
                     android:hint="@string/room_hint"
                     android:inputType="textCapCharacters"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/select_color"/>
             </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/sub_view_color"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/circle"/>
+
+            <Button
+                android:id="@+id/sub_create_button"
+                android:layout_height="60dp"
+                android:layout_width="100dp"
+                android:layout_marginStart="65dp"
+                android:text="@string/pick_a_color_string"/>
+
 
         </LinearLayout>
 
