@@ -12,8 +12,5 @@
 
     </CalendarView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_cal"
-        style="@style/FAB"/>
 
 </RelativeLayout>

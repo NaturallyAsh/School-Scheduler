@@ -13,8 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
+import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 public class OverviewActivity extends AppCompatActivity
 {
@@ -26,6 +31,7 @@ public class OverviewActivity extends AppCompatActivity
     int numOfTabs = 3;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +41,7 @@ public class OverviewActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         final ViewPager viewPager = findViewById(R.id.viewpager);
+
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
         viewPager.setAdapter(adapter);
@@ -134,5 +141,4 @@ public class OverviewActivity extends AppCompatActivity
         setTitle(menuItem.getTitle());
         drawer.closeDrawer(GravityCompat.START);
     }
-
 }

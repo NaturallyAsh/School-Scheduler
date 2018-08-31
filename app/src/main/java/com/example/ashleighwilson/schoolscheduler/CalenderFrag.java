@@ -45,14 +45,6 @@ public class CalenderFrag extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_calender, container, false);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab_cal);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
 
         return view;

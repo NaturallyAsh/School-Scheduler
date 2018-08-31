@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -13,12 +14,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
+
+import com.github.clans.fab.FloatingActionMenu;
+
 
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
@@ -45,7 +50,8 @@ public class SubjectsFrag extends DialogFragment
     public ArrayList<SubjectsModel> dataSub;
     public TextView emptyView;
     DbHelper dbHelper;
-    public static final int SUB_ADD = 1;
+    FloatingActionMenu fabAll;
+    com.github.clans.fab.FloatingActionButton subFab;
 
     public SubjectsFrag() {
     }
@@ -66,22 +72,18 @@ public class SubjectsFrag extends DialogFragment
         titleView = view.findViewById(R.id.edit_subject);
         teacherView = view.findViewById(R.id.edit_subject_teacher);
         emptyView = view.findViewById(R.id.empty_subject_view);
+        subFab = view.findViewById(R.id.fab_sub);
+        fabAll = view.findViewById(R.id.fab_all);
+        fabAll.showMenu(true);
+        subFab.setOnClickListener(listener);
+
+        FloatingClicked();
+
+
 
         dbHelper = new DbHelper(getActivity());
 
         dataSub = dbHelper.getAllSubjects();
-
-
-        FloatingActionButton fab = view.findViewById(R.id.fab_sub);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), SubjectsEditorActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
 
 
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -95,8 +97,8 @@ public class SubjectsFrag extends DialogFragment
         subjectDatabaseList();
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback
-                (ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN |
-                ItemTouchHelper.UP, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                (ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |
+                ItemTouchHelper.UP, ItemTouchHelper.LEFT ) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 int from = viewHolder.getAdapterPosition();
@@ -207,4 +209,43 @@ public class SubjectsFrag extends DialogFragment
         super.onResume();
         subjectDatabaseList();
     }
+
+    private void FloatingClicked()
+    {
+        fabAll.setOnMenuButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId())
+                {
+                    case R.id.fab_sub:
+
+                        break;
+                    case R.id.fab_record:
+                        break;
+                    default:
+                        fabAll.close(true);
+                        break;
+                }
+                fabAll.toggle(true);
+            }
+        });
+    }
+
+    private View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            boolean check = fabAll.isOpened();
+            switch (view.getId())
+            {
+                case R.id.fab_sub:
+                    startActivity(new Intent(getContext(), SubjectsEditorActivity.class));
+                    fabAll.close(true);
+                    break;
+                case R.id.fab_record:
+                    break;
+                default:
+                    fabAll.close(true);
+            }
+        }
+    };
 }
