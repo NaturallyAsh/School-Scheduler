@@ -1,9 +1,13 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,8 +21,16 @@ import com.example.ashleighwilson.schoolscheduler.dialog.RecordDialog;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditor;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 
+import java.util.ArrayList;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class RecordActivity extends AppCompatActivity
 {
+    static final int ALL_PERMISSIONS = 101;
+    //private int requestCode;
+    //private int grantResults[];
     FloatingActionButton recordFab;
     RecordDialog recordDialog;
     RecyclerView recyclerView;
@@ -33,6 +45,29 @@ public class RecordActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+
+        ArrayList<String> arrayPerm = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            arrayPerm.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            arrayPerm.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            arrayPerm.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (!arrayPerm.isEmpty())
+        {
+            String[] permissions = new String[arrayPerm.size()];
+            permissions = arrayPerm.toArray(permissions);
+            ActivityCompat.requestPermissions(this, permissions, ALL_PERMISSIONS);
+        }
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -80,6 +115,26 @@ public class RecordActivity extends AppCompatActivity
         });
     }
 
+    @AfterPermissionGranted(ALL_PERMISSIONS)
+    private void recordCall()
+    {
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.RECORD_AUDIO};
+        if (EasyPermissions.hasPermissions(this, perms))
+        {
+            showDialog();
+        }
+        else
+        {
+            EasyPermissions.requestPermissions(
+                    this,
+                    "This app needs to access your storage and microphone.",
+                    ALL_PERMISSIONS,
+                    perms
+            );
+        }
+    }
+
     public void setData(String name, String path, long length)
     {
         RecordingModel model = new RecordingModel();
@@ -88,6 +143,51 @@ public class RecordActivity extends AppCompatActivity
         model.setNewLength(length);
         dbHelper.addAltRecording(model);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[],
+                                           int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case ALL_PERMISSIONS:
+            {
+                if (grantResults.length > 0)
+                {
+                    for (int i = 0; i < grantResults.length; i++)
+                    {
+                        String permission = permissions[i];
+                        if (Manifest.permission.READ_EXTERNAL_STORAGE.equals(permission))
+                        {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                            {
+
+                            }
+                        }
+                        if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permission))
+                        {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                            {
+
+                            }
+                        }
+                        if (Manifest.permission.RECORD_AUDIO.equals(permission))
+                        {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                            {
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+
+                }
+                break;
+            }
+        }
     }
 
     @Override
