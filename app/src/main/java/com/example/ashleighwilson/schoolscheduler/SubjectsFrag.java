@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -40,7 +41,6 @@ public class SubjectsFrag extends DialogFragment
     private static final String TAG = SubjectsFrag.class.getSimpleName();
 
     @NonNull
-    Context context;
     private EditText titleView, teacherView;
     private String sTitle, sTeacher;
     public RecyclerView recyclerView;
@@ -52,6 +52,7 @@ public class SubjectsFrag extends DialogFragment
     DbHelper dbHelper;
     FloatingActionMenu fabAll;
     com.github.clans.fab.FloatingActionButton subFab;
+    com.github.clans.fab.FloatingActionButton recFab;
 
     public SubjectsFrag() {
     }
@@ -73,9 +74,11 @@ public class SubjectsFrag extends DialogFragment
         teacherView = view.findViewById(R.id.edit_subject_teacher);
         emptyView = view.findViewById(R.id.empty_subject_view);
         subFab = view.findViewById(R.id.fab_sub);
+        recFab = view.findViewById(R.id.fab_record);
         fabAll = view.findViewById(R.id.fab_all);
         fabAll.showMenu(true);
         subFab.setOnClickListener(listener);
+        recFab.setOnClickListener(listener);
 
         FloatingClicked();
 
@@ -242,6 +245,8 @@ public class SubjectsFrag extends DialogFragment
                     fabAll.close(true);
                     break;
                 case R.id.fab_record:
+                    startActivity(new Intent(getContext(), RecordActivity.class));
+                    fabAll.close(true);
                     break;
                 default:
                     fabAll.close(true);

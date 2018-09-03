@@ -38,4 +38,8 @@
     <string name="rrggbb" translatable="false">RRGGBB</string>
     <string name="hex" translatable="false">HEX:</string>
     <string name="transparency">Transparency</string>
+    <string name="press_to_record">Press To Record</string>
+    <string name="no_recordings">No Recordings</string>
+    <string name="length_string">00:00</string>
+    <string name="default_file_name">My Recording</string>
 </resources>

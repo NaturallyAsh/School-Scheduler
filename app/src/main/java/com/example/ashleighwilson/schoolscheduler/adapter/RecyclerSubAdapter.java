@@ -146,7 +146,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
     public void dismissItem(int position)
     {
-        dbHelper.delete(subMod.get(position).getId());
+        dbHelper.deleteSubject(subMod.get(position).getId());
         subMod.remove(position);
         notifyItemRemoved(position);
     }

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
@@ -27,6 +28,14 @@ public class DbHelper extends SQLiteOpenHelper
             SchoolEntry.COLUMN_COLOR
     };
 
+    String[] recordColumns = new String[] {
+            RecordEntry._ID,
+            RecordEntry.COLUMN_NAME,
+            RecordEntry.COLUMN_FILE_PATH,
+            RecordEntry.COLUMN_RECORD_LENGTH,
+            RecordEntry.COLUMN_RECORD_TIME
+    };
+
     private static final String TAG = DbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "school.db";
@@ -37,11 +46,6 @@ public class DbHelper extends SQLiteOpenHelper
 
     public static final class SchoolEntry implements BaseColumns
     {
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_SCHOOL);
-        public static final String CONTENT_LIST_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
-                CONTENT_AUTHORITY + "/" + PATH_SCHOOL;
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" +
-                CONTENT_AUTHORITY + "/" + PATH_SCHOOL;
 
         public final static String TABLE_NAME = "subjects";
         public final static String _ID = BaseColumns._ID;
@@ -51,6 +55,32 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_COLOR = "color";
     }
 
+    String SQL_CREATE_SUBJECTS_TABLE = "CREATE TABLE " + SchoolEntry.TABLE_NAME +
+            " ("
+            + SchoolEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SchoolEntry.COLUMN_TITLE + " TEXT, "
+            + SchoolEntry.COLUMN_TEACHER + " TEXT, "
+            + SchoolEntry.COLUMN_ROOM + " TEXT, "
+            + SchoolEntry.COLUMN_COLOR + " INTEGER);";
+
+    public static final class RecordEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "recordings";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_NAME = "name";
+        public final static String COLUMN_FILE_PATH = "file_path";
+        public final static String COLUMN_RECORD_LENGTH = "length";
+        public final static String COLUMN_RECORD_TIME = "time";
+    }
+
+    String SQL_CREATE_RECORDINGS_TABLE = "CREATE TABLE " + RecordEntry.TABLE_NAME +
+            " ("
+            + RecordEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + RecordEntry.COLUMN_NAME + " TEXT, "
+            + RecordEntry.COLUMN_FILE_PATH + " TEXT, "
+            + RecordEntry.COLUMN_RECORD_LENGTH + " INTEGER, "
+            + RecordEntry.COLUMN_RECORD_TIME + " INTEGER);";
+
     public DbHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,21 +89,15 @@ public class DbHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        String SQL_CREATE_SUBJECTS_TABLE = "CREATE TABLE " + SchoolEntry.TABLE_NAME +
-                " ("
-                + SchoolEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + SchoolEntry.COLUMN_TITLE + " TEXT, "
-                + SchoolEntry.COLUMN_TEACHER + " TEXT, "
-                + SchoolEntry.COLUMN_ROOM + " TEXT, "
-                + SchoolEntry.COLUMN_COLOR + " INTEGER);";
-
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
+        db.execSQL(SQL_CREATE_RECORDINGS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
         db.execSQL("DROP TABLE IF EXISTS " + SchoolEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + RecordEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -102,7 +126,7 @@ public class DbHelper extends SQLiteOpenHelper
                 null, null, null);
     }
 
-    public long count()
+    public long getSubjectCount()
     {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -132,7 +156,7 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
-    public int update(int id, String title, String teacher, String room, int color)
+    public int updateSubject(int id, String title, String teacher, String room, int color)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         int numOfRowsUpdated = -1;
@@ -161,12 +185,78 @@ public class DbHelper extends SQLiteOpenHelper
         db.close();
     }
 
-    public long delete(int id)
+    public long deleteSubject(int id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
             return db.delete(SchoolEntry.TABLE_NAME, SchoolEntry._ID + " =?",
                     new String[]{String.valueOf(id)});
 
+    }
+
+    public RecordingModel getRecordAt(int position)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(RecordEntry.TABLE_NAME, recordColumns, null, null,
+                null, null, null);
+        if (cursor.moveToPosition(position))
+        {
+            RecordingModel record = new RecordingModel();
+            record.setId(cursor.getInt(cursor.getColumnIndex(RecordEntry._ID)));
+            record.setName(cursor.getString(cursor.getColumnIndex(RecordEntry.COLUMN_NAME)));
+            record.setFilePath(cursor.getString(cursor.getColumnIndex(RecordEntry.COLUMN_FILE_PATH)));
+            record.setLength(cursor.getInt(cursor.getColumnIndex(RecordEntry.COLUMN_RECORD_LENGTH)));
+            record.setTime(cursor.getLong(cursor.getColumnIndex(RecordEntry.COLUMN_RECORD_TIME)));
+            cursor.close();
+            return record;
+        }
+        return null;
+    }
+
+    public long addRecording(String name, String filePath, long length)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(RecordEntry.COLUMN_NAME, name);
+        values.put(RecordEntry.COLUMN_FILE_PATH, filePath);
+        values.put(RecordEntry.COLUMN_RECORD_LENGTH, length);
+        values.put(RecordEntry.COLUMN_RECORD_TIME, System.currentTimeMillis());
+
+        return db.insert(RecordEntry.TABLE_NAME, null, values);
+    }
+
+    public long addAltRecording(RecordingModel model)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(RecordEntry.COLUMN_NAME, model.getName());
+        values.put(RecordEntry.COLUMN_FILE_PATH, model.getFilePath());
+        values.put(RecordEntry.COLUMN_RECORD_LENGTH, model.getNewLength());
+        values.put(RecordEntry.COLUMN_RECORD_TIME, System.currentTimeMillis());
+
+        return db.insert(RecordEntry.TABLE_NAME, null, values);
+    }
+
+    public int getRecordCount()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {RecordEntry._ID};
+
+        Cursor cursor = db.query(RecordEntry.TABLE_NAME, projection, null, null,
+                null, null, null);
+
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
+    public void removeRecordWithId(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+         db.delete(RecordEntry.TABLE_NAME, RecordEntry._ID + " =?",
+                new String[]{String.valueOf(id)});
     }
 }

@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.github.eltos:simpledialogfragment:3.0'
     implementation 'com.github.clans:fab:1.6.2'
+    implementation 'com.kailashdabhi:om-recorder:1.1.5'
+    implementation 'com.github.IvanSotelo:RecordDialog:1.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     annotationProcessor 'dk.ilios:realmfieldnameshelper:1.1.1'
     implementation 'io.realm:android-adapters:3.0.0'
