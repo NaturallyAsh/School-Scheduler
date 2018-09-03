@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -23,6 +24,9 @@ public class RecordActivity extends AppCompatActivity
     RecyclerView recyclerView;
     RecorderAdapter adapter;
     DbHelper dbHelper;
+    String name;
+    String file;
+    long length;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,15 +34,22 @@ public class RecordActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
 
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         dbHelper = new DbHelper(getApplicationContext());
 
         recordFab = findViewById(R.id.show_rec_dialog);
         recyclerView = findViewById(R.id.record_recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        adapter = new RecorderAdapter(this);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setReverseLayout(true);
+        manager.setStackFromEnd(true);
 
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(this);
+        adapter = new RecorderAdapter(this, manager);
+
         recyclerView.setLayoutManager(manager);
 
         //recyclerView.setAdapter(adapter);
@@ -63,14 +74,26 @@ public class RecordActivity extends AppCompatActivity
                 Toast.makeText(RecordActivity.this, "Save audio: " + name +
                         path + length, Toast.LENGTH_LONG).show();
 
-                RecordingModel model = new RecordingModel();
-                model.setName(name);
-                model.setFilePath(path);
-                model.setNewLength(length);
-                dbHelper.addAltRecording(model);
-                recyclerView.setAdapter(adapter);
+                setData(name, path, length);
 
             }
         });
+    }
+
+    public void setData(String name, String path, long length)
+    {
+        RecordingModel model = new RecordingModel();
+        model.setName(name);
+        model.setFilePath(path);
+        model.setNewLength(length);
+        dbHelper.addAltRecording(model);
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        setData(name, file, length);
     }
 }

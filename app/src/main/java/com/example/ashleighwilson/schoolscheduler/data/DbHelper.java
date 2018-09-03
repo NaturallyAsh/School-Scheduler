@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,8 @@ public class DbHelper extends SQLiteOpenHelper
     };
 
     private static final String TAG = DbHelper.class.getSimpleName();
+
+    private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
     private static final int DATABASE_VERSION = 3;
@@ -99,6 +102,11 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + SchoolEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + RecordEntry.TABLE_NAME);
         onCreate(db);
+    }
+
+    public static void setOnDatabasedChangedListener(OnDatabaseChangedListener listener)
+    {
+        mOnDatabaseChangedListener = listener;
     }
 
     public long addClass(SubjectsModel model)
@@ -236,7 +244,12 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(RecordEntry.COLUMN_RECORD_LENGTH, model.getNewLength());
         values.put(RecordEntry.COLUMN_RECORD_TIME, System.currentTimeMillis());
 
-        return db.insert(RecordEntry.TABLE_NAME, null, values);
+        long rowId = db.insert(RecordEntry.TABLE_NAME, null, values);
+
+        if (mOnDatabaseChangedListener != null)
+            mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
+
+        return rowId;
     }
 
     public int getRecordCount()

@@ -1,6 +1,9 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
-public class RecordingModel
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class RecordingModel implements Parcelable
 {
     private String mName;
     private String mFilePath;
@@ -105,5 +108,19 @@ public class RecordingModel
     public void setTime(long time)
     {
         mTime = time;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int i) {
+        dest.writeInt(mId);
+        dest.writeInt(mLength);
+        dest.writeLong(mTime);
+        dest.writeString(mFilePath);
+        dest.writeString(mName);
     }
 }
