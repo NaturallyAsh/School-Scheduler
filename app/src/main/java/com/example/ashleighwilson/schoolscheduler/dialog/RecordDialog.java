@@ -230,6 +230,8 @@ public class RecordDialog extends DialogFragment
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), timeStamp + ".wav");
         _AudioSavePathInDevice = file.getPath();
+        Log.i(TAG, "path: " + _AudioSavePathInDevice);
+        Log.i(TAG, "time stamp: " + timeStamp);
 
         return file;
     }
@@ -283,7 +285,7 @@ public class RecordDialog extends DialogFragment
             stopTimer();
 
             try {
-                dbHelper.addRecording(mFileName, _AudioSavePathInDevice, mElapsedMillis);
+                //dbHelper.addRecording(mFileName, _AudioSavePathInDevice, mElapsedMillis);
 
             } catch (Exception e) {
                 Log.e(TAG, "exception", e);

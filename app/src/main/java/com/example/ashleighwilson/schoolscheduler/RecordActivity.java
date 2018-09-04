@@ -1,6 +1,8 @@
 package com.example.ashleighwilson.schoolscheduler;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -8,10 +10,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,19 +27,20 @@ import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditor;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class RecordActivity extends AppCompatActivity
 {
+    private static final String TAG = RecordActivity.class.getSimpleName();
+
     static final int ALL_PERMISSIONS = 101;
-    //private int requestCode;
-    //private int grantResults[];
     FloatingActionButton recordFab;
     RecordDialog recordDialog;
     RecyclerView recyclerView;
-    RecorderAdapter adapter;
+    RecorderAdapter recorderAdapter;
     DbHelper dbHelper;
     String name;
     String file;
@@ -75,6 +81,7 @@ public class RecordActivity extends AppCompatActivity
 
         dbHelper = new DbHelper(getApplicationContext());
 
+
         recordFab = findViewById(R.id.show_rec_dialog);
         recyclerView = findViewById(R.id.record_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -83,11 +90,11 @@ public class RecordActivity extends AppCompatActivity
         manager.setReverseLayout(true);
         manager.setStackFromEnd(true);
 
-        adapter = new RecorderAdapter(this, manager);
+        recorderAdapter = new RecorderAdapter(this, manager);
 
         recyclerView.setLayoutManager(manager);
 
-        //recyclerView.setAdapter(adapter);
+        //recyclerView.setAdapter(recorderAdapter);
 
 
         recordFab.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +103,50 @@ public class RecordActivity extends AppCompatActivity
                 showDialog();
             }
         });
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback
+                (ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |
+                        ItemTouchHelper.UP, ItemTouchHelper.LEFT ) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                //int from = viewHolder.getAdapterPosition();
+                //int to = target.getAdapterPosition();
+
+                return true;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction)
+            {
+                final int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.LEFT)
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RecordActivity.this);
+                    builder.setMessage("Are you sure to delete?");
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            //subMod.remove(viewHolder.getAdapterPosition());
+                            //dbHelper.delete(recyclerSubAdapter.getItemCount());
+                            //recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                            recorderAdapter.removeRecord(viewHolder.getAdapterPosition());
+
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int i) {
+                            recorderAdapter.notifyItemRemoved(position + 1);
+                            recorderAdapter.notifyItemRangeChanged(position, recorderAdapter.getItemCount());
+
+                        }
+                    }).show();
+                }
+            }
+
+        });
+
+        helper.attachToRecyclerView(recyclerView);
+
     }
 
     public void showDialog()
@@ -109,7 +160,10 @@ public class RecordActivity extends AppCompatActivity
                 Toast.makeText(RecordActivity.this, "Save audio: " + name +
                         path + length, Toast.LENGTH_LONG).show();
 
-                setData(name, path, length);
+                Log.i(TAG, "name: " + name + " path: " + path + " length: " + length);
+
+                dbHelper.addRecording(name, path, length);
+                setData();
 
             }
         });
@@ -135,14 +189,9 @@ public class RecordActivity extends AppCompatActivity
         }
     }
 
-    public void setData(String name, String path, long length)
+    public void setData()
     {
-        RecordingModel model = new RecordingModel();
-        model.setName(name);
-        model.setFilePath(path);
-        model.setNewLength(length);
-        dbHelper.addAltRecording(model);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(recorderAdapter);
     }
 
     @Override
@@ -194,6 +243,6 @@ public class RecordActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
-        setData(name, file, length);
+        setData();
     }
 }

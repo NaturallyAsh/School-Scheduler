@@ -50,6 +50,15 @@ public class RecordingModel implements Parcelable
         mTime = time;
     }
 
+    public RecordingModel(Parcel in)
+    {
+        mName = in.readString();
+        mFilePath = in.readString();
+        mId = in.readInt();
+        mLength = in.readInt();
+        mTime = in.readLong();
+    }
+
     public long getNewLength()
     {
         return newLength;
@@ -109,6 +118,20 @@ public class RecordingModel implements Parcelable
     {
         mTime = time;
     }
+
+    public static final Parcelable.Creator<RecordingModel> CREATOR = new
+            Parcelable.Creator<RecordingModel>()
+            {
+                @Override
+                public RecordingModel createFromParcel(Parcel in) {
+                    return new RecordingModel(in);
+                }
+
+                @Override
+                public RecordingModel[] newArray(int size) {
+                    return new RecordingModel[size];
+                }
+            };
 
     @Override
     public int describeContents() {

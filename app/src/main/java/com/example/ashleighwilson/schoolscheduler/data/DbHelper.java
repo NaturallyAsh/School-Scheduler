@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class DbHelper extends SQLiteOpenHelper
 {
+    private Context mContext;
+
     private static DbHelper dbHelper = null;
     String[] allColumns = new String[] {
             SchoolEntry._ID,
@@ -42,7 +44,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -87,6 +89,7 @@ public class DbHelper extends SQLiteOpenHelper
     public DbHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
@@ -271,5 +274,18 @@ public class DbHelper extends SQLiteOpenHelper
 
          db.delete(RecordEntry.TABLE_NAME, RecordEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
+    }
+
+    public void renameRecord(RecordingModel item, String name, String filePath)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(RecordEntry.COLUMN_NAME, name);
+        values.put(RecordEntry.COLUMN_FILE_PATH, filePath);
+        db.update(RecordEntry.TABLE_NAME, values, RecordEntry._ID + "=" +
+        item.getId(), null);
+
+        if (mOnDatabaseChangedListener != null)
+            mOnDatabaseChangedListener.onDatabaseEntryRenamed();
     }
 }

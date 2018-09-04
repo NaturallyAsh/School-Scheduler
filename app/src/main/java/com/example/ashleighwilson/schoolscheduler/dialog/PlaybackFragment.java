@@ -27,6 +27,8 @@ public class PlaybackFragment extends DialogFragment{
 
     private static final String LOG_TAG = "PlaybackFragment";
 
+    private static final String TAG = PlaybackFragment.class.getSimpleName();
+
     private static final String ARG_ITEM = "recording_item";
     private RecordingModel item;
 
@@ -219,8 +221,10 @@ public class PlaybackFragment extends DialogFragment{
                 }
             });
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "prepare() failed ");
         }
+
+        Log.i(TAG, "data source " + item.getFilePath());
 
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
