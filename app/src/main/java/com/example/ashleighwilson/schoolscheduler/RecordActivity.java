@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.RecorderAdapter;
@@ -42,6 +43,7 @@ public class RecordActivity extends AppCompatActivity
     RecyclerView recyclerView;
     RecorderAdapter recorderAdapter;
     DbHelper dbHelper;
+    TextView emptyView;
     String name;
     String file;
     long length;
@@ -81,7 +83,7 @@ public class RecordActivity extends AppCompatActivity
 
         dbHelper = new DbHelper(getApplicationContext());
 
-
+        emptyView = findViewById(R.id.empty_record_view);
         recordFab = findViewById(R.id.show_rec_dialog);
         recyclerView = findViewById(R.id.record_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -191,7 +193,20 @@ public class RecordActivity extends AppCompatActivity
 
     public void setData()
     {
-        recyclerView.setAdapter(recorderAdapter);
+        if (recorderAdapter.getItemCount() < 1)
+        {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(recorderAdapter);
+            recorderAdapter.notifyDataSetChanged();
+        }
+        else
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setAdapter(recorderAdapter);
+            recorderAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

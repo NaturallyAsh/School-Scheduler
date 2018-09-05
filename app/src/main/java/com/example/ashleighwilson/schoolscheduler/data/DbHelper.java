@@ -14,9 +14,11 @@ import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DbHelper extends SQLiteOpenHelper
 {
@@ -37,6 +39,10 @@ public class DbHelper extends SQLiteOpenHelper
             RecordEntry.COLUMN_FILE_PATH,
             RecordEntry.COLUMN_RECORD_LENGTH,
             RecordEntry.COLUMN_RECORD_TIME
+    };
+
+    String[] timeTableColumns = new String[] {
+
     };
 
     private static final String TAG = DbHelper.class.getSimpleName();
@@ -86,6 +92,27 @@ public class DbHelper extends SQLiteOpenHelper
             + RecordEntry.COLUMN_RECORD_LENGTH + " INTEGER, "
             + RecordEntry.COLUMN_RECORD_TIME + " INTEGER);";
 
+    public static final class TimeTableEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "timetable";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_NAME = "name";
+        public final static String COLUMN_TYPE = "type";
+        public final static String COLUMN_DAY = "day";
+        public final static String COLUMN_STARTHOUR = "starthour";
+        public final static String COLUMN_ENDHOUR = "endhour";
+
+    }
+
+    String SQL_CREATE_TIMETABLE_TABLE = "CREATE TABLE " + TimeTableEntry.TABLE_NAME +
+            " ("
+            + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + TimeTableEntry.COLUMN_NAME + " TEXT, "
+            + TimeTableEntry.COLUMN_TYPE + " TEXT, "
+            + TimeTableEntry.COLUMN_DAY + " TEXT, "
+            + TimeTableEntry.COLUMN_STARTHOUR + " TEXT, "
+            + TimeTableEntry.COLUMN_ENDHOUR + " TEXT);";
+
     public DbHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -97,6 +124,7 @@ public class DbHelper extends SQLiteOpenHelper
     {
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
         db.execSQL(SQL_CREATE_RECORDINGS_TABLE);
+        db.execSQL(SQL_CREATE_TIMETABLE_TABLE);
     }
 
     @Override
@@ -104,6 +132,7 @@ public class DbHelper extends SQLiteOpenHelper
     {
         db.execSQL("DROP TABLE IF EXISTS " + SchoolEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + RecordEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TimeTableEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -288,4 +317,72 @@ public class DbHelper extends SQLiteOpenHelper
         if (mOnDatabaseChangedListener != null)
             mOnDatabaseChangedListener.onDatabaseEntryRenamed();
     }
+
+    public long addTimetable(TimeTableModel model)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TimeTableEntry.COLUMN_NAME, model.gettName());
+        values.put(TimeTableEntry.COLUMN_TYPE, model.gettType());
+        values.put(TimeTableEntry.COLUMN_DAY, model.gettDay());
+        values.put(TimeTableEntry.COLUMN_STARTHOUR, model.gettStartHour());
+        values.put(TimeTableEntry.COLUMN_ENDHOUR, model.gettEndHour());
+
+        return db.insert(TimeTableEntry.TABLE_NAME, null, values);
+    }
+
+    public void timeTableList (List<TimeTableModel> list)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(TimeTableEntry.TABLE_NAME, timeTableColumns, null);
+        while (cursor.moveToNext())
+        {
+            TimeTableModel current = new TimeTableModel(
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(4),
+                    cursor.getString(5));
+            current.settId(cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID)));
+            list.add(current);
+        }
+        cursor.close();
+    }
+
+    public int getTimeTableId(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(TimeTableEntry.TABLE_NAME, timeTableColumns);
+
+        while (cursor.moveToNext())
+        {
+            id = cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID));
+        }
+        cursor.close();
+        return id;
+    }
+
+    public int getSubjectId(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(SchoolEntry.TABLE_NAME, allColumns);
+
+        while (cursor.moveToNext())
+        {
+            id = cursor.getInt(cursor.getColumnIndex(SchoolEntry._ID));
+        }
+        cursor.close();
+        return id;
+    }
+
+    public void removeTimeTableWithId(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TimeTableEntry.TABLE_NAME, TimeTableEntry._ID + " =?",
+                new String[]{String.valueOf(id)});
+    }
 }
+

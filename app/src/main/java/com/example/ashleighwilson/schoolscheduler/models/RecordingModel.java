@@ -17,39 +17,6 @@ public class RecordingModel implements Parcelable
 
     }
 
-    public RecordingModel(int id, String name, String filePath, long length, long time)
-    {
-        mId = id;
-        mName = name;
-        mFilePath = filePath;
-        newLength = length;
-        mTime = time;
-    }
-
-    public RecordingModel(int id, String name, String filePath, long length)
-    {
-        mId = id;
-        mName = name;
-        mFilePath = filePath;
-        newLength = length;
-    }
-
-    public RecordingModel(String name, String filePath, long length)
-    {
-        mName = name;
-        mFilePath = filePath;
-        newLength = length;
-    }
-
-    public RecordingModel(int id, String name, String filePath, int length, long time)
-    {
-        mId = id;
-        mName = name;
-        mFilePath = filePath;
-        mLength = length;
-        mTime = time;
-    }
-
     public RecordingModel(Parcel in)
     {
         mName = in.readString();

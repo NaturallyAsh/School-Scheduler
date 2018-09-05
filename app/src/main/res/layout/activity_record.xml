@@ -35,7 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="12dp"/>
+        android:layout_margin="12dp"
+        android:src="@drawable/ic_mic"/>
 
 
 </RelativeLayout>

@@ -26,8 +26,10 @@ import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import eltos.simpledialogfragment.SimpleDialog;
 
@@ -48,6 +50,12 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
     private static final String NO_ROOM = "";
     String editTitle = "";
     public ArrayList<SubjectsModel> model;
+    ArrayList<String> subName;
+    ArrayList<String> daysName;
+    private static ArrayList<String> subType;
+    private static Calendar current = Calendar.getInstance();
+    TimePickerDialog startDialog;
+    TimePickerDialog endDialog;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {

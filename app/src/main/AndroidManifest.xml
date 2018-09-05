@@ -60,6 +60,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity"/>
         </activity>
+        <activity android:name=".WeekViewActivity" />
     </application>
 
 </manifest>
