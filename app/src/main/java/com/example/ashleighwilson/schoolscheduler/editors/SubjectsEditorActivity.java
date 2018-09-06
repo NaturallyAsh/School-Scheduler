@@ -12,6 +12,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -21,19 +22,25 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
+import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import eltos.simpledialogfragment.SimpleDialog;
+import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
 
-public class SubjectsEditorActivity extends AppCompatActivity implements SimpleDialog.OnDialogResultListener
+
+public class SubjectsEditorActivity extends AppCompatActivity implements
+        SimpleTimeDialog.OnDialogResultListener
 {
     private static final String TAG = SubjectsEditorActivity.class.getSimpleName();
 
@@ -41,7 +48,11 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
     private TextView viewColor;
+    TextView mStartTime;
+    TextView mEndTime;
     final static private String COLOR_DIALOG = "colorDialog";
+    private static final String START_TIME_DIALOG = "SimpleTimeStartDialog";
+    private static final String END_TIME_DIALOG = "SimpleTimeEndDialog";
     static private int subColor;
     DbHelper dbHelper;
     private static final int NO_ID = -99;
@@ -54,8 +65,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
     ArrayList<String> daysName;
     private static ArrayList<String> subType;
     private static Calendar current = Calendar.getInstance();
-    TimePickerDialog startDialog;
-    TimePickerDialog endDialog;
+    //private final SimpleDateFormat formatter = new SimpleDateFormat.
+
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -85,13 +96,17 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
         subColor = getMatColor("200");
         viewColor.setBackgroundColor(subColor);
 
+
         mTitleEditText = findViewById(R.id.edit_subject);
         mTeacherEditText = findViewById(R.id.edit_subject_teacher);
         mRoomEditText = findViewById(R.id.subject_room);
+        mStartTime = findViewById(R.id.sub_start_time);
+        mEndTime = findViewById(R.id.sub_end_time);
 
         mTitleEditText.setOnTouchListener(mTouchListener);
         mTeacherEditText.setOnTouchListener(mTouchListener);
         mRoomEditText.setOnTouchListener(mTouchListener);
+
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,10 +114,34 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
                 SimpleColorDialog.build()
                         .title("Pick a subject color")
                         .colorPreset(Color.WHITE)
-                        .allowCustom(true)
+                        .allowCustom(false)
                         .show(SubjectsEditorActivity.this, COLOR_DIALOG);
             }
         });
+
+        mStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleTimeDialog.build()
+                        .neut()
+                        .hour(12).minute(0)
+                        .set24HourView(false)
+                        .show(SubjectsEditorActivity.this, START_TIME_DIALOG);
+            }
+        });
+
+        mEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleTimeDialog.build()
+                        .neut()
+                        .hour(12).minute(0)
+                        .set24HourView(false)
+                        .show(SubjectsEditorActivity.this, END_TIME_DIALOG);
+            }
+        });
+
+
 
         Bundle intent = getIntent().getExtras();
         if (intent != null)
@@ -146,6 +185,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
         return returnColor;
     }
 
+    public void showEndTime(View view) {
+        SimpleTimeDialog.build()
+                .neut()
+                .hour(12).minute(0)
+            .show(this);
+    }
+
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (dialogTag.equals(COLOR_DIALOG))
@@ -153,6 +199,38 @@ public class SubjectsEditorActivity extends AppCompatActivity implements SimpleD
             subColor = extras.getInt(SimpleColorDialog.COLOR);
             viewColor.setBackgroundColor(subColor);
             return true;
+        }
+        if (dialogTag.equals(START_TIME_DIALOG))
+        {
+            if (which == BUTTON_POSITIVE)
+            {
+                Calendar calender = Calendar.getInstance();
+                calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
+                calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
+
+                //int mHour = calender.get(extras.getInt(SimpleTimeDialog.HOUR));
+                //int mMin = calender.get(extras.getInt(SimpleTimeDialog.MINUTE));
+
+                SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
+
+                mStartTime.setText(formatter.format(calender.getTime()));
+                return true;
+            }
+        }
+        if (dialogTag.equals(END_TIME_DIALOG))
+        {
+            if (which == BUTTON_POSITIVE)
+            {
+                Calendar calender = Calendar.getInstance();
+                calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
+                calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
+
+                String formatter = SimpleDateFormat.getDateTimeInstance().format(calender.getTime());
+                Log.i(TAG, "time" + calender);
+
+                mEndTime.setText(formatter);
+                return true;
+            }
         }
         return false;
     }
