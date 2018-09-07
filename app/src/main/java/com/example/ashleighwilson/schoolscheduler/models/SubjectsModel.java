@@ -2,35 +2,23 @@ package com.example.ashleighwilson.schoolscheduler.models;
 
 public class SubjectsModel
 {
-
-    public static String DEFAULT_COLOR = "#e0e0e0";
     private String mTitle;
     private String mTeacher;
     private int id;
     private String mRoom;
     private int mColor;
+    private String mStartTime;
+    private String mEndTime;
 
-    public SubjectsModel(int id, String title, String teacher, String room, int color)
+    public SubjectsModel(int id, String title, String teacher, String room, int color, String start, String end)
     {
         this.id = id;
         this.mTitle = title;
         this.mTeacher = teacher;
         this.mRoom = room;
         this.mColor = color;
-    }
-    public SubjectsModel(String title, String teacher, String room)
-    {
-        this.mTitle = title;
-        this.mTeacher = teacher;
-        this.mRoom = room;
-    }
-
-    public SubjectsModel(int id, String title, String teacher, String room)
-    {
-        this.id = id;
-        this.mTitle = title;
-        this.mTeacher = teacher;
-        this.mRoom = room;
+        this.mStartTime = start;
+        this.mEndTime = end;
     }
 
     public SubjectsModel() {
@@ -79,6 +67,26 @@ public class SubjectsModel
     public void setmColor(int color)
     {
         this.mColor = color;
+    }
+
+    public String getmStartTime()
+    {
+        return mStartTime;
+    }
+
+    public void setmStartTime(String startTime)
+    {
+        this.mStartTime = startTime;
+    }
+
+    public String getmEndTime()
+    {
+        return mEndTime;
+    }
+
+    public void setmEndTime(String endTime)
+    {
+        this.mEndTime = endTime;
     }
 
 }

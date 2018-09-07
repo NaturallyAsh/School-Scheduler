@@ -132,9 +132,6 @@ public class SubjectsFrag extends DialogFragment
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
-                            //subMod.remove(viewHolder.getAdapterPosition());
-                            //dbHelper.delete(recyclerSubAdapter.getItemCount());
-                            //recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
                             recyclerSubAdapter.dismissItem(viewHolder.getAdapterPosition());
 
                         }
@@ -168,8 +165,10 @@ public class SubjectsFrag extends DialogFragment
             String teacher = cursor.getString(2);
             String room = cursor.getString(3);
             int color = cursor.getInt(4);
+            String start = cursor.getString(5);
+            String end = cursor.getString(6);
 
-            SubjectsModel model = new SubjectsModel(id, title, teacher, room, color);
+            SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end);
 
             subMod.add(model);
 

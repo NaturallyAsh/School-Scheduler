@@ -58,6 +58,10 @@
     <string name="async_error">Could not download events from the internet</string>
     <string name="start_time_string">Start Time</string>
     <string name="end_time_string">End Time</string>
+    <string name="till_append_string">till</string>
+    <string name="pick_a_day_string">Pick a day</string>
+    <string name="day_of_the_week_string">day of the week</string>
+    <string name="pick_a_time_string">pick a time</string>
 
 
 </resources>

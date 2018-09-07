@@ -1,56 +1,26 @@
 package com.example.ashleighwilson.schoolscheduler;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.CalenderFragAdapter;
-import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
-import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
-import com.example.ashleighwilson.schoolscheduler.utils.DateTimeInterpreter;
-import com.example.ashleighwilson.schoolscheduler.utils.MonthLoader;
-import com.example.ashleighwilson.schoolscheduler.utils.WeekView;
-import com.example.ashleighwilson.schoolscheduler.utils.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
 import com.github.clans.fab.FloatingActionMenu;
-import com.github.eunsiljo.timetablelib.adapter.TableAdapter;
-import com.github.eunsiljo.timetablelib.adapter.TimeTableAdapter;
 import com.github.eunsiljo.timetablelib.data.TimeData;
-import com.github.eunsiljo.timetablelib.data.TimeGridData;
 import com.github.eunsiljo.timetablelib.data.TimeTableData;
 import com.github.eunsiljo.timetablelib.view.TimeTableView;
-import com.github.eunsiljo.timetablelib.viewholder.TimeTableItemViewHolder;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 
 public class CalenderFrag extends Fragment

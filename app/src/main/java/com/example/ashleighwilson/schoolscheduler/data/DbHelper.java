@@ -30,7 +30,9 @@ public class DbHelper extends SQLiteOpenHelper
             SchoolEntry.COLUMN_TITLE,
             SchoolEntry.COLUMN_TEACHER,
             SchoolEntry.COLUMN_ROOM,
-            SchoolEntry.COLUMN_COLOR
+            SchoolEntry.COLUMN_COLOR,
+            SchoolEntry.COLUMN_STARTTIME,
+            SchoolEntry.COLUMN_ENDTIME
     };
 
     String[] recordColumns = new String[] {
@@ -42,7 +44,12 @@ public class DbHelper extends SQLiteOpenHelper
     };
 
     String[] timeTableColumns = new String[] {
-
+            TimeTableEntry._ID,
+            TimeTableEntry.COLUMN_NAME,
+            TimeTableEntry.COLUMN_DAY,
+            TimeTableEntry.COLUMN_ROOM,
+            TimeTableEntry.COLUMN_STARTHOUR,
+            TimeTableEntry.COLUMN_ENDHOUR
     };
 
     private static final String TAG = DbHelper.class.getSimpleName();
@@ -50,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -64,6 +71,8 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TEACHER = "teacher";
         public final static String COLUMN_ROOM = "room";
         public final static String COLUMN_COLOR = "color";
+        public final static String COLUMN_STARTTIME = "startTime";
+        public final static String COLUMN_ENDTIME = "endTime";
     }
 
     String SQL_CREATE_SUBJECTS_TABLE = "CREATE TABLE " + SchoolEntry.TABLE_NAME +
@@ -72,7 +81,9 @@ public class DbHelper extends SQLiteOpenHelper
             + SchoolEntry.COLUMN_TITLE + " TEXT, "
             + SchoolEntry.COLUMN_TEACHER + " TEXT, "
             + SchoolEntry.COLUMN_ROOM + " TEXT, "
-            + SchoolEntry.COLUMN_COLOR + " INTEGER);";
+            + SchoolEntry.COLUMN_COLOR + " INTEGER, "
+            + SchoolEntry.COLUMN_STARTTIME + " TEXT, "
+            +SchoolEntry.COLUMN_ENDTIME + " TEXT);";
 
     public static final class RecordEntry implements BaseColumns
     {
@@ -97,8 +108,8 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String TABLE_NAME = "timetable";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
-        public final static String COLUMN_TYPE = "type";
-        public final static String COLUMN_DAY = "day";
+        public final static String COLUMN_DAY = "type";
+        public final static String COLUMN_ROOM = "day";
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
 
@@ -108,8 +119,8 @@ public class DbHelper extends SQLiteOpenHelper
             " ("
             + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TimeTableEntry.COLUMN_NAME + " TEXT, "
-            + TimeTableEntry.COLUMN_TYPE + " TEXT, "
             + TimeTableEntry.COLUMN_DAY + " TEXT, "
+            + TimeTableEntry.COLUMN_ROOM + " TEXT, "
             + TimeTableEntry.COLUMN_STARTHOUR + " TEXT, "
             + TimeTableEntry.COLUMN_ENDHOUR + " TEXT);";
 
@@ -151,6 +162,8 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
         values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
         values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
+        values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
+        values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
 
         long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
         db.close();
@@ -189,6 +202,8 @@ public class DbHelper extends SQLiteOpenHelper
                         model.setmTeacher(cursor.getString(2));
                         model.setmRoom(cursor.getString(3));
                         model.setmColor(Integer.parseInt(cursor.getString(4)));
+                        model.setmStartTime(cursor.getString(5));
+                        model.setmEndTime(cursor.getString(6));
                 modelArrayList.add(model);
             }while (cursor.moveToNext());
         }
@@ -196,7 +211,7 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
-    public int updateSubject(int id, String title, String teacher, String room, int color)
+    public int updateSubject(int id, String title, String teacher, String room, int color, String start, String end)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         int numOfRowsUpdated = -1;
@@ -206,6 +221,8 @@ public class DbHelper extends SQLiteOpenHelper
             values.put(SchoolEntry.COLUMN_TEACHER, teacher);
             values.put(SchoolEntry.COLUMN_ROOM, room);
             values.put(SchoolEntry.COLUMN_COLOR, color);
+            values.put(SchoolEntry.COLUMN_STARTTIME, start);
+            values.put(SchoolEntry.COLUMN_ENDTIME, end);
 
             numOfRowsUpdated = db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " = ?",
                     new String[]{String.valueOf(id)});
@@ -323,8 +340,8 @@ public class DbHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(TimeTableEntry.COLUMN_NAME, model.gettName());
-        values.put(TimeTableEntry.COLUMN_TYPE, model.gettType());
-        values.put(TimeTableEntry.COLUMN_DAY, model.gettDay());
+        values.put(TimeTableEntry.COLUMN_DAY, model.gettType());
+        values.put(TimeTableEntry.COLUMN_ROOM, model.gettDay());
         values.put(TimeTableEntry.COLUMN_STARTHOUR, model.gettStartHour());
         values.put(TimeTableEntry.COLUMN_ENDHOUR, model.gettEndHour());
 

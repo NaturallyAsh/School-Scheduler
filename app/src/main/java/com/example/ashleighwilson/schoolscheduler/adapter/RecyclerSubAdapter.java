@@ -33,6 +33,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public static final String EXTRA_TEACHER = "TEACHER";
     public static final String EXTRA_ROOM = "ROOM";
     public static final String EXTRA_COLOR = "COLOR";
+    public static final String EXTRA_START = "START";
+    public static final String EXTRA_END = "END";
 
     public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subList)
     {
@@ -61,6 +63,9 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.teacher.setText(currentSubject.getmTeacher());
         holder.room.setText(currentSubject.getmRoom());
         holder.color.setBackgroundColor(currentSubject.getmColor());
+        holder.startTime.setText(currentSubject.getmStartTime());
+        holder.endTime.setText(currentSubject.getmEndTime());
+
 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +73,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
                 Intent intent = new Intent(context, SubjectsEditorActivity.class);
 
                 passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom(),
-                        currentSubject.getmColor());
+                        currentSubject.getmColor(), currentSubject.getmStartTime(), currentSubject.getmEndTime());
             }
         });
 
@@ -81,6 +86,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         TextView room;
         Button edit;
         TextView color;
+        TextView startTime;
+        TextView endTime;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -89,6 +96,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             room = itemView.findViewById(R.id.room_item);
             edit = itemView.findViewById(R.id.edit_button);
             color = itemView.findViewById(R.id.color_item);
+            startTime = itemView.findViewById(R.id.start_time_item);
+            endTime = itemView.findViewById(R.id.end_time_item);
         }
 
         @Override
@@ -133,7 +142,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         notifyItemRangeChanged(0, data.size());
     }
 
-    private void passData(String title, String teacher, String room, int color)
+    private void passData(String title, String teacher, String room, int color, String start, String end)
     {
         Intent intent = new Intent(context, SubjectsEditorActivity.class);
         //intent.putExtra(EXTRA_ID, id);
@@ -141,6 +150,9 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         intent.putExtra(EXTRA_TEACHER, teacher);
         intent.putExtra(EXTRA_ROOM, room);
         intent.putExtra(EXTRA_COLOR, color);
+        intent.putExtra(EXTRA_START, start);
+        intent.putExtra(EXTRA_END, end);
+
         context.startActivity(intent);
     }
 

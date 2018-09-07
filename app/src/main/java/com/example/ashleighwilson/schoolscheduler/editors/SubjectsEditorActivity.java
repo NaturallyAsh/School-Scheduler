@@ -55,18 +55,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     private static final String END_TIME_DIALOG = "SimpleTimeEndDialog";
     static private int subColor;
     DbHelper dbHelper;
-    private static final int NO_ID = -99;
-    private static final String NO_TITLE = "";
-    private static final String NO_TEACHER = "";
-    private static final String NO_ROOM = "";
+
     String editTitle = "";
     public ArrayList<SubjectsModel> model;
-    ArrayList<String> subName;
-    ArrayList<String> daysName;
-    private static ArrayList<String> subType;
-    private static Calendar current = Calendar.getInstance();
-    //private final SimpleDateFormat formatter = new SimpleDateFormat.
-
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -151,6 +142,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             String bTeacher = intent.getString(RecyclerSubAdapter.EXTRA_TEACHER);
             String bRoom = intent.getString(RecyclerSubAdapter.EXTRA_ROOM);
             int bColor = intent.getInt(RecyclerSubAdapter.EXTRA_COLOR);
+            String bStart = intent.getString(RecyclerSubAdapter.EXTRA_START);
+            String bEnd = intent.getString(RecyclerSubAdapter.EXTRA_END);
 
             //if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
               //  && (!bRoom.equals(NO_ROOM)))))
@@ -165,8 +158,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 mTitleEditText.setText(bTitle);
                 mTeacherEditText.setText(bTeacher);
                 mRoomEditText.setText(bRoom);
-
-
+                viewColor.setBackgroundColor(bColor);
+                mStartTime.setText(bStart);
+                mEndTime.setText(bEnd);
             }
         }
     }
@@ -185,13 +179,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         return returnColor;
     }
 
-    public void showEndTime(View view) {
-        SimpleTimeDialog.build()
-                .neut()
-                .hour(12).minute(0)
-            .show(this);
-    }
-
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (dialogTag.equals(COLOR_DIALOG))
@@ -208,9 +195,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
                 calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
-                //int mHour = calender.get(extras.getInt(SimpleTimeDialog.HOUR));
-                //int mMin = calender.get(extras.getInt(SimpleTimeDialog.MINUTE));
-
                 SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
 
                 mStartTime.setText(formatter.format(calender.getTime()));
@@ -225,10 +209,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
                 calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
-                String formatter = SimpleDateFormat.getDateTimeInstance().format(calender.getTime());
-                Log.i(TAG, "time" + calender);
+                SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
 
-                mEndTime.setText(formatter);
+                mEndTime.setText(formatter.format(calender.getTime()));
                 return true;
             }
         }
@@ -241,40 +224,16 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String titleString = mTitleEditText.getText().toString().trim();
         String teacherString = mTeacherEditText.getText().toString().trim();
         String roomString = mRoomEditText.getText().toString().trim();
+        String startString = mStartTime.getText().toString().trim();
+        String endString = mEndTime.getText().toString().trim();
 
-
-        /*if (titleString.equals(""))
-        {
-            Toast.makeText(this, "Subject name needed", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            model.setmTitle(titleString);
-
-        }
-        if (teacherString.equals(""))
-        {
-            Toast.makeText(this, "Teacher name needed", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            model.setmTeacher(teacherString);
-
-        }
-        if (roomString.equals(""))
-        {
-            Toast.makeText(this, "Room number needed", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            model.setmRoom(roomString);
-
-        } */
 
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
         model.setmColor(subColor);
+        model.setmStartTime(startString);
+        model.setmEndTime(endString);
 
         dbHelper.addClass(model);
         if (dbHelper == null)
