@@ -60,17 +60,8 @@ public class WeekViewEvent {
         this.mName = name;
     }
 
-    public WeekViewEvent(int id, String name, int startHour, int endHour, int color)
-    {
-        this.dId = id;
-        this.mName = name;
-        this.mStartHour = startHour;
-        this.mEndHour = endHour;
-        this.mColor = color;
-    }
-
-    public WeekViewEvent(int id, String name, String day, String location, String startTime, String endTime) {
-        this.dId = id;
+    public WeekViewEvent(long id, String name, String day, String location, String startTime, String endTime) {
+        this.mId = id;
         this.mName = name;
         this.dDay = day;
         this.mLocation = location;

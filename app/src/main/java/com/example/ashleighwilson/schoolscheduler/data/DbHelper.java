@@ -15,6 +15,7 @@ import android.util.Log;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
+import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
 import java.util.ArrayList;
@@ -46,10 +47,9 @@ public class DbHelper extends SQLiteOpenHelper
     String[] timeTableColumns = new String[] {
             TimeTableEntry._ID,
             TimeTableEntry.COLUMN_NAME,
-            TimeTableEntry.COLUMN_DAY,
-            TimeTableEntry.COLUMN_ROOM,
             TimeTableEntry.COLUMN_STARTHOUR,
-            TimeTableEntry.COLUMN_ENDHOUR
+            TimeTableEntry.COLUMN_ENDHOUR,
+            TimeTableEntry.COLUMN_COLOR
     };
 
     private static final String TAG = DbHelper.class.getSimpleName();
@@ -57,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -108,10 +108,9 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String TABLE_NAME = "timetable";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
-        public final static String COLUMN_DAY = "type";
-        public final static String COLUMN_ROOM = "day";
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
+        public final static String COLUMN_COLOR = "color";
 
     }
 
@@ -119,10 +118,9 @@ public class DbHelper extends SQLiteOpenHelper
             " ("
             + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TimeTableEntry.COLUMN_NAME + " TEXT, "
-            + TimeTableEntry.COLUMN_DAY + " TEXT, "
-            + TimeTableEntry.COLUMN_ROOM + " TEXT, "
             + TimeTableEntry.COLUMN_STARTHOUR + " TEXT, "
-            + TimeTableEntry.COLUMN_ENDHOUR + " TEXT);";
+            + TimeTableEntry.COLUMN_ENDHOUR + " TEXT, "
+            + TimeTableEntry.COLUMN_COLOR + " INTEGER);";
 
     public DbHelper(Context context)
     {
@@ -335,32 +333,30 @@ public class DbHelper extends SQLiteOpenHelper
             mOnDatabaseChangedListener.onDatabaseEntryRenamed();
     }
 
-    public long addTimetable(TimeTableModel model)
+    public long addTimetable(Event model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(TimeTableEntry.COLUMN_NAME, model.gettName());
-        values.put(TimeTableEntry.COLUMN_DAY, model.gettType());
-        values.put(TimeTableEntry.COLUMN_ROOM, model.gettDay());
-        values.put(TimeTableEntry.COLUMN_STARTHOUR, model.gettStartHour());
-        values.put(TimeTableEntry.COLUMN_ENDHOUR, model.gettEndHour());
+        values.put(TimeTableEntry.COLUMN_NAME, model.getName());
+        values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime());
+        values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime());
+        values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());
 
         return db.insert(TimeTableEntry.TABLE_NAME, null, values);
     }
 
-    public void timeTableList (List<TimeTableModel> list)
+    public void timeTableList (List<Event> list)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(TimeTableEntry.TABLE_NAME, timeTableColumns, null);
         while (cursor.moveToNext())
         {
-            TimeTableModel current = new TimeTableModel(
+            Event current = new Event(
                     cursor.getString(1),
                     cursor.getString(2),
                     cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getString(5));
-            current.settId(cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID)));
+                    cursor.getInt(4));
+            current.setmId(cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID)));
             list.add(current);
         }
         cursor.close();

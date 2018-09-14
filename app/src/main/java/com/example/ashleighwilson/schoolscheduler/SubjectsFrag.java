@@ -86,6 +86,7 @@ public class SubjectsFrag extends DialogFragment
         recFab = view.findViewById(R.id.fab_record);
         fabAll = view.findViewById(R.id.fab_all);
         fabAll.showMenu(true);
+        fabAll.setClosedOnTouchOutside(true);
         subFab.setOnClickListener(listener);
         recFab.setOnClickListener(listener);
 

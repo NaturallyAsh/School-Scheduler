@@ -2,25 +2,44 @@ package com.example.ashleighwilson.schoolscheduler;
 
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.CalenderFragAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
+import com.example.ashleighwilson.schoolscheduler.timetable.ByteArrayViaString;
+import com.example.ashleighwilson.schoolscheduler.timetable.CalendarDB;
+import com.example.ashleighwilson.schoolscheduler.timetable.CalendarObject;
+import com.example.ashleighwilson.schoolscheduler.timetable.CalendarObjectList;
+import com.example.ashleighwilson.schoolscheduler.timetable.EventListHandler;
+import com.example.ashleighwilson.schoolscheduler.timetable.Serializer;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.eunsiljo.timetablelib.data.TimeData;
 import com.github.eunsiljo.timetablelib.data.TimeTableData;
 import com.github.eunsiljo.timetablelib.view.TimeTableView;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import android.os.AsyncTask;
 
 
 public class CalenderFrag extends Fragment
@@ -51,6 +70,9 @@ public class CalenderFrag extends Fragment
     public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
     public CalenderFragAdapter calFragAdapter;
+    private HttpURLConnection connection = null;
+    private static String urlServer = "https://calendarplusproject.herokuapp.com/CalendarS";
+
 
 
     public CalenderFrag() {
@@ -68,16 +90,23 @@ public class CalenderFrag extends Fragment
         fab_cal_rec = view.findViewById(R.id.fab_cal_rec);
 
         fab_all_cal.showMenu(true);
+        fab_all_cal.setClosedOnTouchOutside(true);
         fab_cal.setOnClickListener(mListener);
         fab_cal_rec.setOnClickListener(mListener);
 
-        recyclerView = view.findViewById(R.id.cal_frag_RV);
-        recyclerView.setHasFixedSize(true);
+        WeekViewBase fragment = new WeekViewBase();
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.addToBackStack("Cal");
+        ft.commit();
 
-        calFragAdapter = new CalenderFragAdapter(getContext());
+        //recyclerView = view.findViewById(R.id.cal_frag_RV);
+        //recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+        //calFragAdapter = new CalenderFragAdapter(getContext());
+
+        //layoutManager = new LinearLayoutManager(getActivity());
+        //recyclerView.setLayoutManager(layoutManager);
 
         FloatingClicked();
 
@@ -112,7 +141,12 @@ public class CalenderFrag extends Fragment
             switch (view.getId())
             {
                 case R.id.fab_cal:
-                    startActivity(new Intent(getContext(), WeekViewActivity.class));
+                    //startActivity(new Intent(getContext(), TimeTableEditor.class));
+                    TimeTableEditor fragment = new TimeTableEditor();
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment_container, fragment);
+                    ft.addToBackStack("TimeEdit");
+                    ft.commit();
                     fab_all_cal.close(true);
                     break;
                 case R.id.fab_cal_rec:
@@ -124,4 +158,32 @@ public class CalenderFrag extends Fragment
             }
         }
     };
+
+    public void refreshCalendar()
+    {
+        WeekViewBase fragment = new WeekViewBase();
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        refreshCalendar();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        refreshCalendar();
+
+        try {
+            CalendarDB.updateListLocal(0, EventListHandler.getEventList(), getActivity());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

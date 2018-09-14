@@ -8,27 +8,43 @@ import android.os.Parcelable;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent.*;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class Event implements Parcelable
+@org.parceler.Parcel
+public class Event
 {
-    private int mId;
-    private String mName;
-    private int mDayOfMonth;
-    private String mStartTime;
-    private String mEndTime;
-    private String mColor;
+    int mId;
+    String mName;
+    String mDayOfMonth;
+    String mStartTime;
+    String mEndTime;
+    int mColor;
 
     public Event(Parcel in)
     {
         mName = in.readString();
-        mDayOfMonth = in.readInt();
+        mDayOfMonth = in.readString();
         mStartTime = in.readString();
         mEndTime = in.readString();
-        mColor = in.readString();
+        mColor = in.readInt();
+    }
+
+    public Event(String name, String startTime, String endTime, int color)
+    {
+        //mId = id;
+        mName = name;
+        //mDayOfMonth = day;
+        mStartTime = startTime;
+        mEndTime = endTime;
+        mColor = color;
+    }
+
+    public Event() {
+
     }
 
     public int getmId()
@@ -49,11 +65,11 @@ public class Event implements Parcelable
         this.mName = name;
     }
 
-    public int getDayOfMonth() {
+    public String getDayOfMonth() {
         return mDayOfMonth;
     }
 
-    public void setDayOfMonth(int dayOfMonth) {
+    public void setDayOfMonth(String dayOfMonth) {
         this.mDayOfMonth = dayOfMonth;
     }
 
@@ -73,11 +89,11 @@ public class Event implements Parcelable
         this.mEndTime = endTime;
     }
 
-    public String getColor() {
+    public int getColor() {
         return mColor;
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         this.mColor = color;
     }
 
@@ -105,7 +121,7 @@ public class Event implements Parcelable
         startTime.setTimeInMillis(start.getTime());
         startTime.set(Calendar.YEAR, now.get(Calendar.YEAR));
         startTime.set(Calendar.MONTH, now.get(Calendar.MONTH));
-        startTime.set(Calendar.DAY_OF_MONTH, getDayOfMonth());
+        startTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         Calendar endTime = (Calendar) startTime.clone();
         endTime.setTimeInMillis(end.getTime());
         endTime.set(Calendar.YEAR, startTime.get(Calendar.YEAR));
@@ -117,12 +133,12 @@ public class Event implements Parcelable
         weekViewEvent.setName(getName());
         weekViewEvent.setStartTime(startTime);
         weekViewEvent.setEndTime(endTime);
-        weekViewEvent.setColor(Color.parseColor(getColor()));
+        weekViewEvent.setColor((getColor()));
 
         return weekViewEvent;
     }
 
-    @Override
+    /*@Override
     public int describeContents() {
         return 0;
     }
@@ -130,10 +146,10 @@ public class Event implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int i) {
         dest.writeString(mName);
-        dest.writeInt(mDayOfMonth);
+        //dest.writeInt(mDayOfMonth);
         dest.writeString(mStartTime);
         dest.writeString(mEndTime);
-        dest.writeString(mColor);
+        dest.writeInt(mColor);
     }
 
     public static final Parcelable.Creator<Event> CREATOR = new
@@ -148,5 +164,5 @@ public class Event implements Parcelable
                 public Event[] newArray(int size) {
                     return new Event[size];
                 }
-            };
+            }; */
 }
