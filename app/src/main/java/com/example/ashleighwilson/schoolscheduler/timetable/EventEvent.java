@@ -2,11 +2,9 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.util.Log;
 
-import com.example.ashleighwilson.schoolscheduler.timetable.CalendarEvent;
-
 import java.util.Calendar;
 
-public class EventEvent implements CalendarEvent
+public class EventEvent
 {
     private static final String TAG = EventEvent.class.getSimpleName();
 

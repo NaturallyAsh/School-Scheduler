@@ -1,9 +1,14 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.Time;
+import android.widget.BaseAdapter;
 
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent.*;
@@ -13,156 +18,175 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
-@org.parceler.Parcel
-public class Event
+public class Event implements Serializable
 {
-    int mId;
+    /*int mId;
     String mName;
     String mDayOfMonth;
     String mStartTime;
     String mEndTime;
-    int mColor;
+    int mColor; */
 
-    public Event(Parcel in)
-    {
-        mName = in.readString();
-        mDayOfMonth = in.readString();
-        mStartTime = in.readString();
-        mEndTime = in.readString();
-        mColor = in.readInt();
+    int startDay;
+    int monthEndDay;
+    int day;
+    int year;
+    int month;
+    transient Context context;
+    transient BaseAdapter adapter;
+    int currentDay;
+    public List<WeekViewEvent> events = null;
+
+    public Event(Context context,int day, int year, int month){
+        this.day = day;
+        this.year = year;
+        this.month = month;
+        this.context = context;
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month-1, day);
+        int end = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        cal.set(year, month, end);
+        TimeZone tz = TimeZone.getDefault();
+        monthEndDay = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
     }
 
-    public Event(String name, String startTime, String endTime, int color)
-    {
-        //mId = id;
-        mName = name;
-        //mDayOfMonth = day;
-        mStartTime = startTime;
-        mEndTime = endTime;
-        mColor = color;
+    public int getMonth(){
+        return month;
     }
 
-    public Event() {
-
+    public int getYear(){
+        return year;
     }
 
-    public int getmId()
-    {
-        return mId;
+    public void setDay(int day){
+        this.day = day;
     }
 
-    public void setmId(int id)
-    {
-        this.mId = id;
+    public int getDay(){
+        return day;
     }
 
-    public String getName() {
-        return mName;
+    /**
+     * Add an event to the day
+     *
+     * @param event
+     */
+    //public void addEvent(OTEventModel event){
+    //	events.add(event);
+    //}
+
+    /**
+     * Set the start day
+     *
+     * @param startDay
+     */
+    public void setStartDay(int startDay){
+        this.startDay = startDay;
+        new GetEvents().execute();
     }
 
-    public void setName(String name) {
-        this.mName = name;
+    public void setCurrentDay(int currentDay){
+        this.currentDay = currentDay;
     }
 
-    public String getDayOfMonth() {
-        return mDayOfMonth;
+    public int getStartDay(){
+        return startDay;
     }
 
-    public void setDayOfMonth(String dayOfMonth) {
-        this.mDayOfMonth = dayOfMonth;
-    }
-
-    public String getStartTime() {
-        return mStartTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.mStartTime = startTime;
-    }
-
-    public String getEndTime() {
-        return mEndTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.mEndTime = endTime;
-    }
-
-    public int getColor() {
-        return mColor;
-    }
-
-    public void setColor(int color) {
-        this.mColor = color;
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    public WeekViewEvent toWeekViewEvent(){
-
-        // Parse time.
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        Date start = new Date();
-        Date end = new Date();
-        try {
-            start = sdf.parse(getStartTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public int getNumOfEvenets(){
+        if (events == null) {
+            return 0;
         }
-        try {
-            end = sdf.parse(getEndTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        // Initialize start and end time.
-        Calendar now = Calendar.getInstance();
-        Calendar startTime = (Calendar) now.clone();
-        startTime.setTimeInMillis(start.getTime());
-        startTime.set(Calendar.YEAR, now.get(Calendar.YEAR));
-        startTime.set(Calendar.MONTH, now.get(Calendar.MONTH));
-        startTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        Calendar endTime = (Calendar) startTime.clone();
-        endTime.setTimeInMillis(end.getTime());
-        endTime.set(Calendar.YEAR, startTime.get(Calendar.YEAR));
-        endTime.set(Calendar.MONTH, startTime.get(Calendar.MONTH));
-        endTime.set(Calendar.DAY_OF_MONTH, startTime.get(Calendar.DAY_OF_MONTH));
-
-        // Create an week view event.
-        WeekViewEvent weekViewEvent = new WeekViewEvent();
-        weekViewEvent.setName(getName());
-        weekViewEvent.setStartTime(startTime);
-        weekViewEvent.setEndTime(endTime);
-        weekViewEvent.setColor((getColor()));
-
-        return weekViewEvent;
+        return events.size();
     }
 
-    /*@Override
-    public int describeContents() {
-        return 0;
+    /**
+     * Returns a list of all the colors on a day
+     *
+     * @return list of colors
+     */
+    public Set<Integer> getColors(){
+        Set<Integer> colors = new HashSet<Integer>();
+        //for(OTEventModel event : events){
+        //	colors.add(event.getColor());
+        //}
+
+        return colors;
+    }
+
+    /**
+     * Get all the events on the day
+     *
+     * @return list of events
+     */
+    //public OTModelVector<OTEventModel> getEvents(){
+    //	return events;
+    //}
+
+    public void setAdapter(BaseAdapter adapter){
+        this.adapter = adapter;
+    }
+
+    private class GetEvents extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            SQLiteDatabase db = null;
+            try {
+                //db = new OTMasterDBManager(context).getReadableDatabase();
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.YEAR, year);
+                cal.set(Calendar.MONTH, month);
+                cal.set(Calendar.DAY_OF_MONTH, day);
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                long currentDate = cal.getTime().getTime();
+                //OTEventDBTable.loadEventsToCacheByCurrentDate(db, currentDate);
+                //events.addAll(OTEventCache.getInstance().eventsList);
+            } catch(Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (db != null) {
+                    db.close();
+                }
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Void par){
+            if(adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
+
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int i) {
-        dest.writeString(mName);
-        //dest.writeInt(mDayOfMonth);
-        dest.writeString(mStartTime);
-        dest.writeString(mEndTime);
-        dest.writeInt(mColor);
+    public String toString() {
+
+        return "day: "+day+", month: "+month+", year: "+year;
     }
 
-    public static final Parcelable.Creator<Event> CREATOR = new
-            Parcelable.Creator<Event>()
-            {
-                @Override
-                public Event createFromParcel(Parcel in) {
-                    return new Event(in);
+    public void addDayEvent(WeekViewEvent event) {
+        if (events.size() > 1) {
+            for (WeekViewEvent e : events) {
+                if (e.getId() == event.getId()) {
+                    events.remove(e);
+                    break;
                 }
-
-                @Override
-                public Event[] newArray(int size) {
-                    return new Event[size];
-                }
-            }; */
+            }
+            events.add(event);
+        } else {
+            events.add(event);
+        }
+    }
 }

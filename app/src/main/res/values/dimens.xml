@@ -38,4 +38,11 @@
     <dimen name="text_super_large">17sp</dimen>
 
     <dimen name="time_table_item_height">4dp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="min_cell_height">40dp</dimen>
+    <dimen name="min_cell_width">40dp</dimen>
+    <dimen name="text_height_width">25dp</dimen>
+    <dimen name="photo_width">100dp</dimen>
+    <dimen name="photo_height">100dp</dimen>
 </resources>

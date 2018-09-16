@@ -1,12 +1,13 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.*;
 
-public class WeekViewEvent {
+public class WeekViewEvent implements Serializable{
     private long mId;
     private int dId;
     private Calendar mStartTime;

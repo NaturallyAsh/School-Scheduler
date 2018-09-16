@@ -1229,14 +1229,14 @@ public class WeekView extends View {
     }
 
     public @Nullable
-    MonthLoader.MonthChangeListener getMonthChangeListener() {
+    MonthLoader.MonthLoaderListener getMonthChangeListener() {
         if (mWeekViewLoader instanceof MonthLoader)
-            return ((MonthLoader) mWeekViewLoader).getOnMonthChangeListener();
+            return ((MonthLoader) mWeekViewLoader).getOnMonthLoaderListener();
         return null;
     }
 
-    public void setMonthChangeListener(MonthLoader.MonthChangeListener monthChangeListener) {
-        this.mWeekViewLoader = new MonthLoader(monthChangeListener);
+    public void setMonthLoaderListener(MonthLoader.MonthLoaderListener monthLoaderListener) {
+        this.mWeekViewLoader = new MonthLoader(monthLoaderListener);
     }
 
     /**
@@ -1953,6 +1953,11 @@ public class WeekView extends View {
     public void notifyDatasetChanged(){
         mRefreshEvents = true;
         invalidate();
+    }
+
+    public void setRefreshEvents(boolean value)
+    {
+        mRefreshEvents = value;
     }
 
     /**

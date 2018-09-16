@@ -333,7 +333,7 @@ public class DbHelper extends SQLiteOpenHelper
             mOnDatabaseChangedListener.onDatabaseEntryRenamed();
     }
 
-    public long addTimetable(Event model)
+    /*public long addTimetable(Event model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -374,7 +374,7 @@ public class DbHelper extends SQLiteOpenHelper
         }
         cursor.close();
         return id;
-    }
+    } */
 
     public int getSubjectId(int id)
     {
@@ -390,12 +390,12 @@ public class DbHelper extends SQLiteOpenHelper
         return id;
     }
 
-    public void removeTimeTableWithId(int id)
+    /*public void removeTimeTableWithId(int id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TimeTableEntry.TABLE_NAME, TimeTableEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
-    }
+    } */
 }
 

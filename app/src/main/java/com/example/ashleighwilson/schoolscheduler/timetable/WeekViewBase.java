@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.util.Log;
 
+import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
 
 import java.text.DateFormat;
@@ -15,48 +16,51 @@ public class WeekViewBase extends WeekViewFragment
     private static final String TAG = WeekViewBase.class.getSimpleName();
 
     @Override
-    public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-        List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
+    public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
 
-        ArrayList<? extends CalendarEvent> eventList = new ArrayList<>();
-
-        try
+        String monthKey = "" + (newMonth - 1) + "-" + newYear;
+        List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+        if (eventListByMonth == null)
         {
-            eventList = EventListHandler.getEventList().getList();
-            Log.d(TAG, "event length " + eventList.size());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            eventListByMonth = new ArrayList<>();
+        }
+        else
+        {
+            eventListByMonth.clear();
         }
 
-        for (int i = 0; i < eventList.size(); i++)
-        {
-            EventEvent event_temp = (EventEvent) eventList.get(i);
+        List<WeekViewEvent> events = new ArrayList<>();
 
-            DateFormat time = new SimpleDateFormat("MM");
-            int event_month = Integer.parseInt(time.format(event_temp.getmStartTime().getTime()));
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(Calendar.HOUR_OF_DAY, 3);
+        startTime.set(Calendar.MINUTE, 0);
+        startTime.set(Calendar.MONTH, newMonth - 1);
+        startTime.set(Calendar.YEAR, newYear);
+        Calendar endTime = (Calendar) startTime.clone();
+        endTime.add(Calendar.HOUR, 1);
+        endTime.set(Calendar.MONTH, newMonth - 1);
+        WeekViewEvent event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
+                startTime, endTime);
+        event.setColor(getResources().getColor(R.color.AliceBlue));
+        events.add(event);
 
-            if (event_month == newMonth)
-            {
-                String description = "";
-                description += event_temp.getmName();
-                if (!event_temp.getmLocation().equals(""))
-                {
-                    description += " - " + event_temp.getmLocation();
-                }
+        WeekViewUtil.masterEvents.put("" + event.getId(), event);
 
-                Calendar startTime = (Calendar)event_temp.getmStartTime().clone();
-                startTime.add(Calendar.MINUTE,1);
-                Calendar endTime = (Calendar)event_temp.getmEndTime().clone();
-                endTime.add(Calendar.MINUTE, -1);
+        startTime = Calendar.getInstance();
+        startTime.set(Calendar.HOUR_OF_DAY, 3);
+        startTime.set(Calendar.MINUTE, 30);
+        startTime.set(Calendar.MONTH, newMonth-1);
+        startTime.set(Calendar.YEAR, newYear);
+        endTime = (Calendar) startTime.clone();
+        endTime.set(Calendar.HOUR_OF_DAY, 4);
+        endTime.set(Calendar.MINUTE, 30);
+        endTime.set(Calendar.MONTH, newMonth-1);
+        event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
+                startTime, endTime);
+        event.setColor(getResources().getColor(R.color.Green));
+        events.add(event);
 
-                WeekViewEvent event = new WeekViewEvent(event_temp.getmId(), description,
-                        startTime, endTime);
-                event.setColor(event_temp.getmColor());
-                events.add(event);
-            }
-        }
-
+        WeekViewUtil.masterEvents.put("" + event.getId(), event);
 
         return events;
     }

@@ -63,5 +63,16 @@
     <string name="day_of_the_week_string">day of the week</string>
     <string name="pick_a_time_string">pick a time</string>
 
+    <string name="monday">MON</string>
+    <string name="tuesday">TUE</string>
+    <string name="wednesday">WED</string>
+    <string name="thursday">THU</string>
+    <string name="friday">FRI</string>
+    <string name="saturday">SAT</string>
+    <string name="sunday">SUN</string>
+
+    <string name="action_month_view">M</string>
+    <string name="str_calendar">Calendar</string>
+
 
 </resources>

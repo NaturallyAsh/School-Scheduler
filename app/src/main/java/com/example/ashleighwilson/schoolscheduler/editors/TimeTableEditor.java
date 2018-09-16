@@ -1,51 +1,41 @@
 package com.example.ashleighwilson.schoolscheduler.editors;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.ashleighwilson.schoolscheduler.OverviewActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
-import com.example.ashleighwilson.schoolscheduler.timetable.EventEvent;
-import com.example.ashleighwilson.schoolscheduler.timetable.Event;
-import com.example.ashleighwilson.schoolscheduler.timetable.EventList;
-import com.example.ashleighwilson.schoolscheduler.timetable.EventListHandler;
+import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-public class TimeTableEditor extends Fragment implements
-        SimpleTimeDialog.OnDialogResultListener
+public class TimeTableEditor extends AppCompatActivity implements
+        SimpleTimeDialog.OnDialogResultListener, MonthLoader.MonthLoaderListener
 {
     private static final String TAG = TimeTableEditor.class.getSimpleName();
 
@@ -69,36 +59,42 @@ public class TimeTableEditor extends Fragment implements
     private boolean mSubjectHasChanged = false;
     boolean isEvent = true;
     DbHelper dbHelper;
-    EventList eventList;
-    Event event;
+    private WeekViewLoader mWeekViewLoader;
+    WeekViewEvent event;
     boolean checkEventCreatedSuccessfully = true;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                         Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
-        View rootView = inflater.inflate(R.layout.add_timetable_event, container, false);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.add_timetable_event);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //setHasOptionsMenu(true);
 
-        Toolbar toolbar = rootView.findViewById(R.id.main_toolbar);
-        ((OverviewActivity)getActivity()).setSupportActionBar(toolbar);
-        ((OverviewActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setHasOptionsMenu(true);
+        Intent intent = getIntent();
+        if (intent.getExtras() != null)
+        {
+            Bundle bundle = intent.getExtras();
+            if (bundle.containsKey("event"))
+                event = (WeekViewEvent) bundle.get("event");
+        }
 
+        mWeekViewLoader = new MonthLoader(this);
 
-        dbHelper = new DbHelper(getActivity());
-
-        Button colorSelector = rootView.findViewById(R.id.timetable_create_color);
-        viewColor = rootView.findViewById(R.id.timetable_view_color);
+        Button colorSelector = findViewById(R.id.timetable_create_color);
+        viewColor = findViewById(R.id.timetable_view_color);
 
         subColor = getMatColor("200");
         viewColor.setBackgroundColor(subColor);
 
 
-        mTitleEditText = rootView.findViewById(R.id.edit_timetable_name);
-        mDayEditText = rootView.findViewById(R.id.edit_timetable_day);
-        mRoomEditText = rootView.findViewById(R.id.room_timetable);
-        mStartTime = rootView.findViewById(R.id.timetable_start_time);
-        mEndTime = rootView.findViewById(R.id.timetable_end_time);
+        mTitleEditText = findViewById(R.id.edit_timetable_name);
+        mDayEditText = findViewById(R.id.edit_timetable_day);
+        mRoomEditText = findViewById(R.id.room_timetable);
+        mStartTime = findViewById(R.id.timetable_start_time);
+        mEndTime = findViewById(R.id.timetable_end_time);
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,13 +137,12 @@ public class TimeTableEditor extends Fragment implements
                         .show(TimeTableEditor.this, DATE_DIALOG);
             }
         });
-        return rootView;
     }
 
     private int getMatColor(String typeColor)
     {
         int returnColor = Color.BLACK;
-        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getActivity().getPackageName());
+        int arrayId = getResources().getIdentifier("mdcolor_" + typeColor, "array", getPackageName());
 
         if (arrayId != 0) {
             TypedArray colors = getResources().obtainTypedArray(arrayId);
@@ -229,55 +224,65 @@ public class TimeTableEditor extends Fragment implements
         String roomString = mRoomEditText.getText().toString().trim();
         //String dayString = mDayEditText.getText().toString().trim();
 
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
+
         Log.i(TAG,"AddEventToList" + nameString + roomString + subColor);
 
+        WeekViewEvent createdEvent;
+        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
+        createdEvent.setColor(subColor);
+        createdEvent.setLocation(roomString);
 
-        //dbHelper.addTimetable(event);
-        if (!nameString.equals("") && ((START_YEAR != 0 && START_MONTH != 0 && START_DAY !=0
-            && isEvent) && (END_YEAR != 0 && END_MONTH !=0 && END_DAY !=0)))
+        if (event != null && !event.getStartTime().equals(startTime))
         {
-            Calendar startTime = Calendar.getInstance();
-            startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
-            Calendar endTime = Calendar.getInstance();
-            endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
+            int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(event.getStartTime());
+            int year = periodToFetch / 12;
+            int month = periodToFetch % 12 + 1;
+            String monthKey = "" + (month - 1) + "-" + year;
 
+            List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
 
-            try{
-
-                if (isEvent)
-                {
-                    //checkEventCreatedSuccessfully = EventListHandler.createEventEvent(nameString, roomString,
-                    //      startTime, endTime, subColor, true);
-                    //eventEvent = new EventEvent(nameString, roomString, startTime, endTime, subColor, true);
-                    //eventEvent.setmId((int) System.currentTimeMillis());
-                    //eventListArrayList.add(eventEvent);
-                    //eventList.addEvent(eventEvent);
-                    EventListHandler.createEventEvent(nameString, roomString, startTime, endTime, subColor,
-                            true);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.i(TAG, "null event");
-
+            if (eventListByMonth != null && eventListByMonth.contains(event))
+            {
+                eventListByMonth.remove(event);
             }
+            WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
         }
+
+        WeekViewUtil.masterEvents.put("" + createdEvent.getId(), createdEvent);
+        int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(startTime);
+        int year = periodToFetch / 12;
+        int month = periodToFetch % 12 + 1;
+        String monthKey = "" + (month - 1) + "-" + year;
+
+        List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+        if (eventListByMonth == null)
+        {
+            eventListByMonth = new ArrayList<>();
+        }
+        eventListByMonth.add(createdEvent);
+        WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+        setResult(RESULT_OK);
+        finish();
+
     }
-
-
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth)
     {
-        inflater.inflate(R.menu.menu_subject_editor, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        return null;
     }
 
-    /*@Override
-    public boolean onPrepareOptionsMenu(Menu menu)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
+        getMenuInflater().inflate(R.menu.menu_subject_editor, menu);
+        super.onCreateOptionsMenu(menu);
         return true;
-    } */
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -326,7 +331,7 @@ public class TimeTableEditor extends Fragment implements
 
     private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Discard your changes and quit editing?");
         builder.setPositiveButton("Discard", discardButtonClickListener);
         builder.setNegativeButton("Keep Editing", new DialogInterface.OnClickListener() {
@@ -343,7 +348,7 @@ public class TimeTableEditor extends Fragment implements
 
     private void showDeleteConfirmationDialog()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Delete this subject?");
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
