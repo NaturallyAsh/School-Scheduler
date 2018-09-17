@@ -8,5 +8,5 @@
         android:title="@string/action_today"
         android:orderInCategory="100"
         app:actionLayout="@layout/header_layout"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="collapseActionView"/>
 </menu>

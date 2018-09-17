@@ -1,5 +1,6 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +18,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,13 +66,15 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
     TextView monthView, weekView, dayView;
-
+    MenuInflater inflater;
+    Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         //setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -78,6 +83,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     {
         rootView = inflater.inflate(R.layout.week_view_fragment, container, false);
+
+        toolbar = (Toolbar)getActivity().findViewById(R.id.week_toolbar);
 
         mAppBarLayout = (AppBarLayout) rootView.findViewById(R.id.app_bar_cal);
 
@@ -160,7 +167,29 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.calendar, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem actionViewItem = menu.findItem(R.id.calendar_action);
+
+        // Retrieve the action-view from menu
+
+        //View v = MenuItemCompat.getActionView(actionViewItem);
+        View v = (View) actionViewItem.getActionView();
+
+        // Find the button within action-view
+
+        monthView = (TextView) v.findViewById(R.id.month_view);
+        monthView.setOnClickListener(this);
+
+        weekView = (TextView) v.findViewById(R.id.week_view);
+        weekView.setOnClickListener(this);
+
+        dayView = (TextView) v.findViewById(R.id.day_view);
+        dayView.setOnClickListener(this);
+
+        monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
+        weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
+        dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
+        //super.onCreateOptionsMenu(menu, inflater);
         //return true;
 
     }
@@ -211,29 +240,16 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem actionViewItem = menu.findItem(R.id.calendar_action);
 
-        // Retrieve the action-view from menu
 
-        //View v = MenuItemCompat.getActionView(actionViewItem);
-        View v = (View) actionViewItem.getActionView();
+        //super.onPrepareOptionsMenu(menu);
+    }
 
-        // Find the button within action-view
-
-        monthView = (TextView) v.findViewById(R.id.month_view);
-        monthView.setOnClickListener(this);
-
-        weekView = (TextView) v.findViewById(R.id.week_view);
-        weekView.setOnClickListener(this);
-
-        dayView = (TextView) v.findViewById(R.id.day_view);
-        dayView.setOnClickListener(this);
-
-        monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
-        weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-        dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-
-        super.onPrepareOptionsMenu(menu);
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        //mAppBarLayout.setVisibility(View.GONE);
     }
 
     @Override

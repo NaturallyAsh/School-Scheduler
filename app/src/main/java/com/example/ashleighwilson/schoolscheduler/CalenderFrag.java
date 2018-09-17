@@ -138,20 +138,20 @@ public class CalenderFrag extends Fragment
     public void onResume()
     {
         super.onResume();
-        refreshCalendar();
+        //refreshCalendar();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        refreshCalendar();
+        //refreshCalendar();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        inflater.inflate(R.menu.calendar, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        //inflater.inflate(R.menu.calendar, menu);
+        //super.onCreateOptionsMenu(menu, inflater);
     }
 }

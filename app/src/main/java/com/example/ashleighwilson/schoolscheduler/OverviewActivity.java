@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.support.design.widget.AppBarLayout;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,8 +32,7 @@ public class OverviewActivity extends AppCompatActivity
     CharSequence tabTitles[] = {"SUBJECTS", "TASKS", "CALENDER"};
     int numOfTabs = 3;
     ViewPagerAdapter adapter;
-    ActionBar actionBar;
-
+    AppBarLayout appBarLayout;
 
 
     @Override
@@ -42,6 +42,8 @@ public class OverviewActivity extends AppCompatActivity
 
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
+        appBarLayout = findViewById(R.id.main_appBar);
 
         final ViewPager viewPager = findViewById(R.id.viewpager);
 
@@ -61,14 +63,14 @@ public class OverviewActivity extends AppCompatActivity
         setupDrawerContent(mNavigationView);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(2);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
                 viewPager.setCurrentItem(tab.getPosition());
                 toolbar.setTitle(adapter.getPageTitle(tab.getPosition()));
-                //invalidateFragmentMenus(tab.getPosition());
+                invalidateFragmentMenus(tab.getPosition());
             }
 
             @Override
@@ -107,11 +109,12 @@ public class OverviewActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        //appBarLayout.setVisibility(View.INVISIBLE);
         //getMenuInflater().inflate(R.menu.main_nav, menu);
-        return true;
+        return false;
     }
 
-    /*@Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -119,12 +122,12 @@ public class OverviewActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+          //  return true;
+        //}
 
         return super.onOptionsItemSelected(item);
-    } */
+    }
 
     private void setupDrawerContent(NavigationView navigationView)
     {
