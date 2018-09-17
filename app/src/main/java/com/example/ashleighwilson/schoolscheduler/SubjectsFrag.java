@@ -19,6 +19,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +79,8 @@ public class SubjectsFrag extends DialogFragment
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_subjects, container, false);
+
+        setHasOptionsMenu(true);
 
 
         titleView = view.findViewById(R.id.edit_subject);
@@ -262,4 +266,12 @@ public class SubjectsFrag extends DialogFragment
             }
         }
     };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        menu.clear();
+        inflater.inflate(R.menu.menu_overview, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }

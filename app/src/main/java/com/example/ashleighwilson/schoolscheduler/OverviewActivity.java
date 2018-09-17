@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,8 @@ public class OverviewActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     CharSequence tabTitles[] = {"SUBJECTS", "TASKS", "CALENDER"};
     int numOfTabs = 3;
+    ViewPagerAdapter adapter;
+    ActionBar actionBar;
 
 
 
@@ -37,13 +40,13 @@ public class OverviewActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nav);
 
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         final ViewPager viewPager = findViewById(R.id.viewpager);
 
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
+        adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
         viewPager.setAdapter(adapter);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
@@ -58,11 +61,14 @@ public class OverviewActivity extends AppCompatActivity
         setupDrawerContent(mNavigationView);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.setOffscreenPageLimit(3);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab)
             {
                 viewPager.setCurrentItem(tab.getPosition());
+                toolbar.setTitle(adapter.getPageTitle(tab.getPosition()));
+                //invalidateFragmentMenus(tab.getPosition());
             }
 
             @Override
@@ -75,6 +81,15 @@ public class OverviewActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    private void invalidateFragmentMenus(int position)
+    {
+        for (int i = 0; i < adapter.getCount(); i++)
+        {
+            adapter.getItem(i).setHasOptionsMenu(i == position);
+        }
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -92,11 +107,11 @@ public class OverviewActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_nav, menu);
+        //getMenuInflater().inflate(R.menu.main_nav, menu);
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -109,7 +124,7 @@ public class OverviewActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    } */
 
     private void setupDrawerContent(NavigationView navigationView)
     {

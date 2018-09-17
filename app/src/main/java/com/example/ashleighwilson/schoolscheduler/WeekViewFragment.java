@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -61,7 +62,15 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private RecyclerView eventList;
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
+    TextView monthView, weekView, dayView;
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        //setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,6 +88,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.setMonthLoaderListener(this);
 
         calendar.setOnMonthChangeListener(this);
+
+        //ViewCompat.setNestedScrollingEnabled(eventList, true);
 
         add_event = rootView.findViewById(R.id.add_event);
         add_event.setOnClickListener(mListener);
@@ -157,48 +168,10 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        /*setupDateTimeInterpreter(id == R.id.action_week_view);
-        switch (id){
-            case R.id.action_today:
-                mWeekView.goToToday();
-                return true;
-            case R.id.action_day_view:
-                if (mWeekViewType != TYPE_DAY_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(1);
+        switch (id)
+        {
 
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                }
-                return true;
-            case R.id.action_three_day_view:
-                if (mWeekViewType != TYPE_THREE_DAY_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_THREE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(3);
-
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                }
-                return true;
-            case R.id.action_week_view:
-                if (mWeekViewType != TYPE_WEEK_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_WEEK_VIEW;
-                    mWeekView.setNumberOfVisibleDays(7);
-
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                }
-                return true;
-        } */
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -236,14 +209,14 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         }
     }
 
-    TextView monthView, weekView, dayView;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         MenuItem actionViewItem = menu.findItem(R.id.calendar_action);
 
         // Retrieve the action-view from menu
 
-        View v = MenuItemCompat.getActionView(actionViewItem);
+        //View v = MenuItemCompat.getActionView(actionViewItem);
+        View v = (View) actionViewItem.getActionView();
 
         // Find the button within action-view
 
@@ -269,7 +242,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             if (mWeekViewType != TYPE_MONTH_VIEW) {
                 mWeekViewType = TYPE_MONTH_VIEW;
                 mWeekView.setVisibility(View.GONE);
-                //mAppBarLayout.setVisibility(View.VISIBLE);
+                mAppBarLayout.setVisibility(View.VISIBLE);
                 updateView();
                 monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
                 weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
@@ -279,8 +252,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             if (mWeekViewType != TYPE_WEEK_VIEW) {
                 setupDateTimeInterpreter(true);
                 mWeekView.setVisibility(View.VISIBLE);
-                //eventList.setVisibility(View.GONE);
-                //mAppBarLayout.setVisibility(View.GONE);
+                eventList.setVisibility(View.GONE);
+                mAppBarLayout.setVisibility(View.GONE);
                 mWeekViewType = TYPE_WEEK_VIEW;
                 mWeekView.setNumberOfVisibleDays(7);
 
@@ -298,8 +271,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             if (mWeekViewType != TYPE_DAY_VIEW) {
                 setupDateTimeInterpreter(false);
                 mWeekView.setVisibility(View.VISIBLE);
-                //eventList.setVisibility(View.GONE);
-                //mAppBarLayout.setVisibility(View.GONE);
+                eventList.setVisibility(View.GONE);
+                mAppBarLayout.setVisibility(View.GONE);
                 mWeekViewType = TYPE_DAY_VIEW;
                 mWeekView.setNumberOfVisibleDays(1);
                 //getSupportActionBar().setTitle(getTitle());

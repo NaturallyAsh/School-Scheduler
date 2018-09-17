@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -33,10 +35,21 @@ public class CalenderFrag extends Fragment
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_calender, container, false);
+
+        //setHasOptionsMenu(true);
 
         fab_all_cal = view.findViewById(R.id.fab_all_cal);
         fab_cal = view.findViewById(R.id.fab_cal);
@@ -51,7 +64,7 @@ public class CalenderFrag extends Fragment
         WeekViewBase fragment = new WeekViewBase();
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
-        ft.addToBackStack("Cal");
+        //ft.addToBackStack("Cal");
         ft.commit();
 
         //recyclerView = view.findViewById(R.id.cal_frag_RV);
@@ -133,5 +146,12 @@ public class CalenderFrag extends Fragment
     {
         super.onPause();
         refreshCalendar();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.calendar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

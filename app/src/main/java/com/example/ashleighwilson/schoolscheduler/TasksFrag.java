@@ -7,6 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -36,6 +38,8 @@ public class TasksFrag extends Fragment
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_tasks, container, false);
+
+        setHasOptionsMenu(true);
 
         taskFab = view.findViewById(R.id.fab_task);
         fabAll = view.findViewById(R.id.fab_all_task);
@@ -86,5 +90,11 @@ public class TasksFrag extends Fragment
         }
     };
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_overview, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
 }
