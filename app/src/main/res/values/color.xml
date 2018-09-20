@@ -173,4 +173,9 @@
     <color name="toolbar">#efefef</color>
     <color name="toolbar_text">#FFFFFF</color>
     <color name="accent">#2789e4</color>
+
+    <color name="text">#ffffff</color>
+    <color name="text_two">#94ffffff</color>
+    <color name="secondPage">#00838F</color>
+    <color name="background">#131A56</color>
 </resources>

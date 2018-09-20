@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
+import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
@@ -33,6 +34,7 @@ public class OverviewActivity extends AppCompatActivity
     int numOfTabs = 3;
     ViewPagerAdapter adapter;
     AppBarLayout appBarLayout;
+    SessionManager session;
 
 
     @Override
@@ -42,6 +44,21 @@ public class OverviewActivity extends AppCompatActivity
 
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
+        session = new SessionManager(getApplicationContext());
+        //call this whenever you want to check user login
+        //this will redirect user to LoginActivity if not logged in
+        session.checkLogin();
+        /*
+        HashMap<String, String> user = session.getUserDetails();
+
+        String email = user.get(SessionManager.KEY_EMAIL);
+        String password = user.get(SessionManager.KEY_PASS);
+
+        set text from these somewhere..
+
+        Add logout button somewhere...
+         */
 
         appBarLayout = findViewById(R.id.main_appBar);
 
@@ -153,6 +170,8 @@ public class OverviewActivity extends AppCompatActivity
                 Intent notesIntent = new Intent(this, NotesActivity.class);
                 startActivity(notesIntent);
                 break;
+            case R.id.logout:
+                session.logoutUser();
         }
 
         menuItem.setChecked(true);

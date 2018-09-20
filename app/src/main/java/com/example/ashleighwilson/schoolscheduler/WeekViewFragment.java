@@ -98,9 +98,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         //ViewCompat.setNestedScrollingEnabled(eventList, true);
 
-        add_event = rootView.findViewById(R.id.add_event);
-        add_event.setOnClickListener(mListener);
-
         eventList = (RecyclerView) rootView.findViewById(R.id.event_RV);
         eventList.setLayoutManager(new LinearLayoutManager(getContext()));
 

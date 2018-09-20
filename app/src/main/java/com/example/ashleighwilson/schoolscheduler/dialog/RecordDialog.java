@@ -368,6 +368,12 @@ public class RecordDialog extends DialogFragment
         dismiss();
     }
 
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+    }
+
     public interface ClickListener
     {
         void OnClickListener(String name, String path, long length);

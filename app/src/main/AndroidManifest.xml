@@ -62,6 +62,7 @@
                 android:value=".OverviewActivity"/>
         </activity>
         <activity android:name=".editors.TimeTableEditor" />
+        <activity android:name=".LoginActivity" />
     </application>
 
 </manifest>
