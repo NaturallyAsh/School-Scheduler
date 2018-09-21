@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.CalenderFragAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
 import com.github.clans.fab.FloatingActionMenu;
 
@@ -108,7 +109,7 @@ public class CalenderFrag extends Fragment
             switch (view.getId())
             {
                 case R.id.fab_cal:
-                    //startActivity(new Intent(getContext(), TimeTableEditor.class));
+                    startActivity(new Intent(getContext(), TimeTableEditor.class));
                     /*TimeTableEditor fragment = new TimeTableEditor();
                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
                     ft.replace(R.id.fragment_container, fragment);

@@ -80,10 +80,10 @@ public class WeekView extends View {
     private Paint mTodayHeaderTextPaint;
     private Paint mEventBackgroundPaint;
     private float mHeaderColumnWidth;
-    private List<WeekView.EventRect> mEventRects;
-    private List<? extends WeekViewEvent> mPreviousPeriodEvents;
-    private List<? extends WeekViewEvent> mCurrentPeriodEvents;
-    private List<? extends WeekViewEvent> mNextPeriodEvents;
+    private List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> mEventRects;
+    private List<WeekViewEvent> mPreviousPeriodEvents;
+    private List<WeekViewEvent> mCurrentPeriodEvents;
+    private List<WeekViewEvent> mNextPeriodEvents;
     private TextPaint mEventTextPaint;
     private Paint mHeaderColumnBackgroundPaint;
     private int mFetchedPeriod = -1; // the middle period the calendar has fetched.
@@ -144,13 +144,13 @@ public class WeekView extends View {
     private int mScrollDuration = 250;
 
     // Listeners.
-    private WeekView.EventClickListener mEventClickListener;
-    private WeekView.EventLongPressListener mEventLongPressListener;
+    private EventClickListener mEventClickListener;
+    private EventLongPressListener mEventLongPressListener;
     private WeekViewLoader mWeekViewLoader;
-    private WeekView.EmptyViewClickListener mEmptyViewClickListener;
-    private WeekView.EmptyViewLongPressListener mEmptyViewLongPressListener;
+    private EmptyViewClickListener mEmptyViewClickListener;
+    private EmptyViewLongPressListener mEmptyViewLongPressListener;
     private DateTimeInterpreter mDateTimeInterpreter;
-    private WeekView.ScrollListener mScrollListener;
+    private ScrollListener mScrollListener;
 
     private final GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
 
@@ -244,9 +244,9 @@ public class WeekView extends View {
         public boolean onSingleTapConfirmed(MotionEvent e) {
             // If the tap was on an event then trigger the callback.
             if (mEventRects != null && mEventClickListener != null) {
-                List<WeekView.EventRect> reversedEventRects = mEventRects;
+                List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> reversedEventRects = mEventRects;
                 Collections.reverse(reversedEventRects);
-                for (WeekView.EventRect event : reversedEventRects) {
+                for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
                         mEventClickListener.onEventClick(event.originalEvent, event.rectF);
                         playSoundEffect(SoundEffectConstants.CLICK);
@@ -272,9 +272,9 @@ public class WeekView extends View {
             super.onLongPress(e);
 
             if (mEventLongPressListener != null && mEventRects != null) {
-                List<WeekView.EventRect> reversedEventRects = mEventRects;
+                List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> reversedEventRects = mEventRects;
                 Collections.reverse(reversedEventRects);
-                for (WeekView.EventRect event : reversedEventRects) {
+                for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
                         mEventLongPressListener.onEventLongPress(event.originalEvent, event.rectF);
                         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -617,7 +617,7 @@ public class WeekView extends View {
 
         // Clear the cache for event rectangles.
         if (mEventRects != null) {
-            for (EventRect eventRect: mEventRects) {
+            for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect: mEventRects) {
                 eventRect.rectF = null;
             }
         }
@@ -960,7 +960,7 @@ public class WeekView extends View {
 
         // Get more events if the month is changed.
         if (mEventRects == null)
-            mEventRects = new ArrayList<WeekView.EventRect>();
+            mEventRects = new ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>();
         if (mWeekViewLoader == null && !isInEditMode())
             throw new IllegalStateException("You must provide a MonthChangeListener");
 
@@ -976,11 +976,74 @@ public class WeekView extends View {
         if (mWeekViewLoader != null){
             int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(day);
             if (!isInEditMode() && (mFetchedPeriod < 0 || mFetchedPeriod != periodToFetch || mRefreshEvents)) {
-                List<? extends WeekViewEvent> previousPeriodEvents = null;
-                List<? extends WeekViewEvent> currentPeriodEvents = null;
-                List<? extends WeekViewEvent> nextPeriodEvents = null;
+                List<WeekViewEvent> previousPeriodEvents = null;
+                List<WeekViewEvent> currentPeriodEvents = null;
+                List<WeekViewEvent> nextPeriodEvents = null;
 
+                Event prevDay;
+                Event currentDay;
+                Event nextDay;
+
+                currentDay = new Event(mContext, day.get(Calendar.DAY_OF_MONTH), day.get(Calendar.YEAR), day.get(Calendar.MONTH));
+                Calendar prevCal = (Calendar) day.clone();
+                prevCal.add(Calendar.DATE, -1);
+                prevDay = new Event(mContext, prevCal.get(Calendar.DAY_OF_MONTH), prevCal.get(Calendar.YEAR), prevCal.get(Calendar.MONTH));
+                Calendar nextCal = (Calendar) day.clone();
+                nextCal.add(Calendar.DATE, 1);
+                nextDay = new Event(mContext, nextCal.get(Calendar.DAY_OF_MONTH), nextCal.get(Calendar.YEAR), nextCal.get(Calendar.MONTH));
                 if (mPreviousPeriodEvents != null && mCurrentPeriodEvents != null && mNextPeriodEvents != null){
+                    if (periodToFetch == mFetchedPeriod-1){
+                        currentPeriodEvents = mPreviousPeriodEvents;
+                        nextPeriodEvents = mCurrentPeriodEvents;
+                    }
+                    else if (periodToFetch == mFetchedPeriod){
+                        previousPeriodEvents = mPreviousPeriodEvents;
+                        currentPeriodEvents = mCurrentPeriodEvents;
+                        nextPeriodEvents = mNextPeriodEvents;
+                    }
+                    else if (periodToFetch == mFetchedPeriod+1){
+                        previousPeriodEvents = mCurrentPeriodEvents;
+                        currentPeriodEvents = mNextPeriodEvents;
+                    }
+                }
+                if (currentPeriodEvents == null) {
+                    int year = periodToFetch / 12 ;
+                    int month = periodToFetch % 12 + 1;
+                    String monthKey = "" + (month -1) + "-" + year;
+
+                    List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+                    if (eventListByMonth == null || eventListByMonth.isEmpty()) {
+                        currentPeriodEvents = mWeekViewLoader.onLoad(periodToFetch);
+                    } else {
+                        currentPeriodEvents = eventListByMonth;
+                    }
+                }
+                if (previousPeriodEvents == null) {
+                    int year = (periodToFetch - 1) / 12 ;
+                    int month = (periodToFetch - 1) % 12 + 1;
+                    String monthKey = "" + (month -1) + "-" + year;
+
+                    List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+                    if (eventListByMonth == null || eventListByMonth.isEmpty()) {
+                        previousPeriodEvents = mWeekViewLoader.onLoad(periodToFetch - 1);
+                    } else {
+                        previousPeriodEvents = eventListByMonth;
+                    }
+                }
+                if (nextPeriodEvents == null) {
+                    int year = (periodToFetch + 1) / 12 ;
+                    int month = (periodToFetch + 1) % 12 + 1;
+                    String monthKey = "" + (month -1) + "-" + year;
+
+                    List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+                    if (eventListByMonth == null || eventListByMonth.isEmpty()) {
+                        nextPeriodEvents = mWeekViewLoader.onLoad(periodToFetch + 1);
+                    } else {
+                        nextPeriodEvents = eventListByMonth;
+                    }
+                }
+
+                /*if (mPreviousPeriodEvents != null && mCurrentPeriodEvents != null && mNextPeriodEvents != null){
                     if (periodToFetch == mFetchedPeriod-1){
                         currentPeriodEvents = mPreviousPeriodEvents;
                         nextPeriodEvents = mCurrentPeriodEvents;
@@ -1001,11 +1064,11 @@ public class WeekView extends View {
                     previousPeriodEvents = mWeekViewLoader.onLoad(periodToFetch-1);
                 if (nextPeriodEvents == null)
                     nextPeriodEvents = mWeekViewLoader.onLoad(periodToFetch+1);
-
+                */
 
                 // Clear events.
                 mEventRects.clear();
-                sortAndCacheEvents(previousPeriodEvents);
+                WeekViewUtil.sortAndCacheEvents(previousPeriodEvents, mEventRects);
                 sortAndCacheEvents(currentPeriodEvents);
                 sortAndCacheEvents(nextPeriodEvents);
                 calculateHeaderHeight();
@@ -1018,21 +1081,21 @@ public class WeekView extends View {
         }
 
         // Prepare to calculate positions of each events.
-        List<WeekView.EventRect> tempEvents = mEventRects;
-        mEventRects = new ArrayList<WeekView.EventRect>();
+        List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> tempEvents = mEventRects;
+        mEventRects = new ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>();
 
         // Iterate through each day with events to calculate the position of the events.
         while (tempEvents.size() > 0) {
-            ArrayList<WeekView.EventRect> eventRects = new ArrayList<>(tempEvents.size());
+            ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> eventRects = new ArrayList<>(tempEvents.size());
 
             // Get first event for a day.
-            WeekView.EventRect eventRect1 = tempEvents.remove(0);
+            com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect1 = tempEvents.remove(0);
             eventRects.add(eventRect1);
 
             int i = 0;
             while (i < tempEvents.size()) {
                 // Collect all other events for same day.
-                WeekView.EventRect eventRect2 = tempEvents.get(i);
+                com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect2 = tempEvents.get(i);
                 if (isSameDay(eventRect1.event.getStartTime(), eventRect2.event.getStartTime())) {
                     tempEvents.remove(i);
                     eventRects.add(eventRect2);
@@ -1053,7 +1116,7 @@ public class WeekView extends View {
             return;
         List<WeekViewEvent> splitedEvents = event.splitWeekViewEvents();
         for(WeekViewEvent splitedEvent: splitedEvents){
-            mEventRects.add(new WeekView.EventRect(splitedEvent, event, null));
+            mEventRects.add(new com.example.ashleighwilson.schoolscheduler.timetable.EventRect(splitedEvent, event, null));
         }
     }
 
@@ -1094,15 +1157,15 @@ public class WeekView extends View {
      * are overlapping.
      * @param eventRects The events along with their wrapper class.
      */
-    private void computePositionOfEvents(List<WeekView.EventRect> eventRects) {
+    private void computePositionOfEvents(List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> eventRects) {
         // Make "collision groups" for all events that collide with others.
-        List<List<WeekView.EventRect>> collisionGroups = new ArrayList<List<WeekView.EventRect>>();
-        for (WeekView.EventRect eventRect : eventRects) {
+        List<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>> collisionGroups = new ArrayList<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>>();
+        for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect : eventRects) {
             boolean isPlaced = false;
 
             outerLoop:
-            for (List<WeekView.EventRect> collisionGroup : collisionGroups) {
-                for (WeekView.EventRect groupEvent : collisionGroup) {
+            for (List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> collisionGroup : collisionGroups) {
+                for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect groupEvent : collisionGroup) {
                     if (isEventsCollide(groupEvent.event, eventRect.event) && groupEvent.event.isAllDay() == eventRect.event.isAllDay()) {
                         collisionGroup.add(eventRect);
                         isPlaced = true;
@@ -1112,13 +1175,13 @@ public class WeekView extends View {
             }
 
             if (!isPlaced) {
-                List<WeekView.EventRect> newGroup = new ArrayList<WeekView.EventRect>();
+                List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> newGroup = new ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>();
                 newGroup.add(eventRect);
                 collisionGroups.add(newGroup);
             }
         }
 
-        for (List<WeekView.EventRect> collisionGroup : collisionGroups) {
+        for (List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> collisionGroup : collisionGroups) {
             expandEventsToMaxWidth(collisionGroup);
         }
     }
@@ -1128,13 +1191,13 @@ public class WeekView extends View {
      * space available horizontally.
      * @param collisionGroup The group of events which overlap with each other.
      */
-    private void expandEventsToMaxWidth(List<WeekView.EventRect> collisionGroup) {
+    private void expandEventsToMaxWidth(List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> collisionGroup) {
         // Expand the events to maximum possible width.
-        List<List<WeekView.EventRect>> columns = new ArrayList<List<WeekView.EventRect>>();
-        columns.add(new ArrayList<WeekView.EventRect>());
-        for (WeekView.EventRect eventRect : collisionGroup) {
+        List<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>> columns = new ArrayList<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>>();
+        columns.add(new ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>());
+        for (com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect : collisionGroup) {
             boolean isPlaced = false;
-            for (List<WeekView.EventRect> column : columns) {
+            for (List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> column : columns) {
                 if (column.size() == 0) {
                     column.add(eventRect);
                     isPlaced = true;
@@ -1146,7 +1209,7 @@ public class WeekView extends View {
                 }
             }
             if (!isPlaced) {
-                List<WeekView.EventRect> newColumn = new ArrayList<WeekView.EventRect>();
+                List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> newColumn = new ArrayList<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>();
                 newColumn.add(eventRect);
                 columns.add(newColumn);
             }
@@ -1156,15 +1219,15 @@ public class WeekView extends View {
         // Calculate left and right position for all the events.
         // Get the maxRowCount by looking in all columns.
         int maxRowCount = 0;
-        for (List<WeekView.EventRect> column : columns){
+        for (List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> column : columns){
             maxRowCount = Math.max(maxRowCount, column.size());
         }
         for (int i = 0; i < maxRowCount; i++) {
             // Set the left and right values of the event.
             float j = 0;
-            for (List<WeekView.EventRect> column : columns) {
+            for (List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> column : columns) {
                 if (column.size() >= i+1) {
-                    WeekView.EventRect eventRect = column.get(i);
+                    com.example.ashleighwilson.schoolscheduler.timetable.EventRect eventRect = column.get(i);
                     eventRect.width = 1f / columns.size();
                     eventRect.left = j / columns.size();
                     if(!eventRect.event.isAllDay()) {
@@ -1220,16 +1283,16 @@ public class WeekView extends View {
     //
     /////////////////////////////////////////////////////////////////
 
-    public void setOnEventClickListener (WeekView.EventClickListener listener) {
+    public void setOnEventClickListener (EventClickListener listener) {
         this.mEventClickListener = listener;
     }
 
-    public WeekView.EventClickListener getEventClickListener() {
+    public EventClickListener getEventClickListener() {
         return mEventClickListener;
     }
 
     public @Nullable
-    MonthLoader.MonthLoaderListener getMonthChangeListener() {
+    MonthLoader.MonthLoaderListener getMonthLoaderListener() {
         if (mWeekViewLoader instanceof MonthLoader)
             return ((MonthLoader) mWeekViewLoader).getOnMonthLoaderListener();
         return null;
@@ -1259,35 +1322,35 @@ public class WeekView extends View {
         this.mWeekViewLoader = loader;
     }
 
-    public WeekView.EventLongPressListener getEventLongPressListener() {
+    public EventLongPressListener getEventLongPressListener() {
         return mEventLongPressListener;
     }
 
-    public void setEventLongPressListener(WeekView.EventLongPressListener eventLongPressListener) {
+    public void setEventLongPressListener(EventLongPressListener eventLongPressListener) {
         this.mEventLongPressListener = eventLongPressListener;
     }
 
-    public void setEmptyViewClickListener(WeekView.EmptyViewClickListener emptyViewClickListener){
+    public void setEmptyViewClickListener(EmptyViewClickListener emptyViewClickListener){
         this.mEmptyViewClickListener = emptyViewClickListener;
     }
 
-    public WeekView.EmptyViewClickListener getEmptyViewClickListener(){
+    public EmptyViewClickListener getEmptyViewClickListener(){
         return mEmptyViewClickListener;
     }
 
-    public void setEmptyViewLongPressListener(WeekView.EmptyViewLongPressListener emptyViewLongPressListener){
+    public void setEmptyViewLongPressListener(EmptyViewLongPressListener emptyViewLongPressListener){
         this.mEmptyViewLongPressListener = emptyViewLongPressListener;
     }
 
-    public WeekView.EmptyViewLongPressListener getEmptyViewLongPressListener(){
+    public EmptyViewLongPressListener getEmptyViewLongPressListener(){
         return mEmptyViewLongPressListener;
     }
 
-    public void setScrollListener(WeekView.ScrollListener scrolledListener){
+    public void setScrollListener(ScrollListener scrolledListener){
         this.mScrollListener = scrolledListener;
     }
 
-    public WeekView.ScrollListener getScrollListener(){
+    public ScrollListener getScrollListener(){
         return mScrollListener;
     }
 

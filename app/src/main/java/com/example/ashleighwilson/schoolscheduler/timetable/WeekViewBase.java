@@ -62,6 +62,9 @@ public class WeekViewBase extends WeekViewFragment
 
         WeekViewUtil.masterEvents.put("" + event.getId(), event);
 
+        eventListByMonth.addAll(events);
+        WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+
         return events;
     }
 }

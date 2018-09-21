@@ -46,7 +46,6 @@ public class LoginFragment extends Fragment implements OnLoginListener
 
     @Override
     public void login() {
-        //Toast.makeText(getContext(), "Login", Toast.LENGTH_SHORT).show();
         stringEmail = email.getText().toString().trim();
         stringPassword = password.getText().toString().trim();
 

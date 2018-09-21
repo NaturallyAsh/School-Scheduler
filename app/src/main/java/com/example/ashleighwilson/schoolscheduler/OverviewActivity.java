@@ -15,14 +15,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
-import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 
 public class OverviewActivity extends AppCompatActivity
 {
@@ -114,7 +109,6 @@ public class OverviewActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        //DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);

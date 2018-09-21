@@ -44,7 +44,7 @@ public class TimeTableEditor extends AppCompatActivity implements
     EditText mRoomEditText;
     TextView viewColor;
 
-    Calendar time = Calendar.getInstance();
+    private Calendar originalStartTime;
     DateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyy");
     TextView mStartTime;
     TextView mEndTime;
@@ -78,7 +78,13 @@ public class TimeTableEditor extends AppCompatActivity implements
         {
             Bundle bundle = intent.getExtras();
             if (bundle.containsKey("event"))
+            {
                 event = (WeekViewEvent) bundle.get("event");
+            }
+            if (bundle.containsKey("start"))
+            {
+                originalStartTime = (Calendar) bundle.get("start");
+            }
         }
 
         mWeekViewLoader = new MonthLoader(this);
@@ -224,13 +230,18 @@ public class TimeTableEditor extends AppCompatActivity implements
         String roomString = mRoomEditText.getText().toString().trim();
         //String dayString = mDayEditText.getText().toString().trim();
 
-        Calendar startTime = Calendar.getInstance();
-        startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
-        Calendar endTime = Calendar.getInstance();
-        endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
-
-        Log.i(TAG,"AddEventToList" + nameString + roomString + subColor);
-
+        //Calendar startTime = Calendar.getInstance();
+        //startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
+        Calendar startTime = originalStartTime;
+        if (startTime == null)
+        {
+            startTime.setTimeInMillis(System.currentTimeMillis());
+        }
+        //Calendar endTime = Calendar.getInstance();
+        //endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
+        Calendar endTime = (Calendar) startTime.clone();
+        endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
+        
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
         createdEvent.setColor(subColor);

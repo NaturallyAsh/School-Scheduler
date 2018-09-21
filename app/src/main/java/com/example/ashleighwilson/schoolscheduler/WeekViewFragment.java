@@ -49,7 +49,8 @@ import java.util.Locale;
 public abstract class WeekViewFragment extends Fragment implements WeekView.EventClickListener,
         MonthLoader.MonthLoaderListener, WeekView.EventLongPressListener,
         WeekView.EmptyViewLongPressListener, ExtendedCalendarView.OnDayClickListener,
-        ExtendedCalendarView.OnMonthChaneListener, View.OnClickListener
+        ExtendedCalendarView.OnMonthChaneListener, View.OnClickListener,
+        WeekView.EmptyViewClickListener
 {
     private static final String TAG = WeekViewFragment.class.getSimpleName();
 
@@ -116,6 +117,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         // Set long press listener for empty view
         mWeekView.setEmptyViewLongPressListener(this);
+
+        mWeekView.setEmptyViewClickListener(this);
 
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
@@ -219,6 +222,9 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         if (events == null || events.size() == 0)
         {
             eventList.setVisibility(View.GONE);
+            Calendar cal = Calendar.getInstance();
+            cal.set(eventObj.getYear(), eventObj.getMonth(), eventObj.getDay());
+            showEventDetailsScreen(null, cal);
         }
         else
         {
@@ -327,11 +333,34 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     @Override
     public void onEmptyViewLongPress(Calendar time) {
         //addNewEvent();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Add new event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showEventDetailsScreen(null, time);
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
 
+    }
+
+    @Override
+    public void onEmptyViewClicked(Calendar time)
+    {
+        showEventDetailsScreen(null, time);
     }
 
     @Override
@@ -390,22 +419,17 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == 1 && requestCode == Activity.RESULT_OK)
-        {
-            if (mWeekViewType == TYPE_MONTH_VIEW)
-            {
-                updateView();
-                mWeekView.setRefreshEvents(true);
+        if (requestCode == Activity.RESULT_OK)
+            if (requestCode == 1) {
+                if (mWeekViewType == TYPE_MONTH_VIEW) {
+                    updateView();
+                    mWeekView.setRefreshEvents(true);
+                } else if (mWeekViewType == TYPE_WEEK_VIEW) {
+                    mWeekView.notifyDatasetChanged();
+                } else if (mWeekViewType == TYPE_DAY_VIEW) {
+                    mWeekView.notifyDatasetChanged();
+                }
             }
-            else if (mWeekViewType == TYPE_WEEK_VIEW)
-            {
-                mWeekView.notifyDatasetChanged();
-            }
-            else if (mWeekViewType == TYPE_DAY_VIEW)
-            {
-                mWeekView.notifyDatasetChanged();
-            }
-        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
