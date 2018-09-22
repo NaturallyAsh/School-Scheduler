@@ -114,24 +114,10 @@ public class CalendarAdapter extends BaseAdapter
 
             RelativeLayout rl = (RelativeLayout)v.findViewById(R.id.rl);
             ImageView iv = (ImageView)v.findViewById(R.id.imageView1);
-			/*ImageView blue = (ImageView)v.findViewById(R.id.imageView2);
-			ImageView purple = (ImageView)v.findViewById(R.id.imageView3);
-			ImageView green = (ImageView)v.findViewById(R.id.imageView4);
-			ImageView orange = (ImageView)v.findViewById(R.id.imageView5);
-			ImageView red = (ImageView)v.findViewById(R.id.imageView6);*/
-
-			/*blue.setVisibility(View.VISIBLE);
-			purple.setVisibility(View.VISIBLE);
-			green.setVisibility(View.VISIBLE);
-			purple.setVisibility(View.VISIBLE);
-			orange.setVisibility(View.VISIBLE);
-			red.setVisibility(View.VISIBLE);*/
 
             iv.setVisibility(View.INVISIBLE);
             dayTV.setVisibility(View.VISIBLE);
             rl.setVisibility(View.VISIBLE);
-
-//			Day day = dayList.get(position);
 
             if (day.events == null) {
                 day.events = new ArrayList<>();
@@ -139,7 +125,6 @@ public class CalendarAdapter extends BaseAdapter
             day.events.clear();
             for (EventRect rect : mEventRects) {
                 if (isSameDay(rect.event.getStartTime(), currentCal)) {
-//					iv.setBackgroundColor(rect.event.getColor());
                     iv.setVisibility(View.VISIBLE);
                     day.addDayEvent(rect.event);
                 }

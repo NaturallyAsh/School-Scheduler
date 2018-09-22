@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler;
 
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -50,7 +51,7 @@ public class CalenderFrag extends Fragment
     {
         View view = inflater.inflate(R.layout.fragment_calender, container, false);
 
-        //setHasOptionsMenu(true);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         fab_all_cal = view.findViewById(R.id.fab_all_cal);
         fab_cal = view.findViewById(R.id.fab_cal);
@@ -65,7 +66,7 @@ public class CalenderFrag extends Fragment
         WeekViewBase fragment = new WeekViewBase();
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
-        //ft.addToBackStack("Cal");
+        ft.addToBackStack("Cal");
         ft.commit();
 
         //recyclerView = view.findViewById(R.id.cal_frag_RV);

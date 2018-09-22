@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -19,6 +20,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -83,6 +85,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                              Bundle savedInstanceState)
 
     {
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         rootView = inflater.inflate(R.layout.week_view_fragment, container, false);
 
         toolbar = (Toolbar)getActivity().findViewById(R.id.week_toolbar);
@@ -249,6 +253,20 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     }
 
     @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (mWeekViewType == TYPE_MONTH_VIEW) {
+            updateView();
+            mWeekView.setRefreshEvents(true);
+        } else if (mWeekViewType == TYPE_WEEK_VIEW) {
+            mWeekView.notifyDatasetChanged();
+        } else if (mWeekViewType == TYPE_DAY_VIEW) {
+            mWeekView.notifyDatasetChanged();
+        }
+    }
+
+    @Override
     public void onPause()
     {
         super.onPause();
@@ -354,13 +372,29 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
-
+        showEventDetailsScreen(event, null);
     }
 
     @Override
     public void onEmptyViewClicked(Calendar time)
     {
-        showEventDetailsScreen(null, time);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Add new event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showEventDetailsScreen(null, time);
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -413,13 +447,16 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             bundle.putSerializable("start", startTime);
         }
         intent.putExtras(bundle);
-        startActivityForResult(intent, 1);
+        getActivity().startActivityForResult(intent, 1);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == Activity.RESULT_OK)
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "request" + requestCode + "result: " + resultCode + "data: " + data);
+
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK)
             if (requestCode == 1) {
                 if (mWeekViewType == TYPE_MONTH_VIEW) {
                     updateView();
@@ -430,7 +467,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     mWeekView.notifyDatasetChanged();
                 }
             }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private View.OnClickListener mListener = new View.OnClickListener() {

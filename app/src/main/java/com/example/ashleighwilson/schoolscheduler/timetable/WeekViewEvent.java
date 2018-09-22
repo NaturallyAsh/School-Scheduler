@@ -9,18 +9,19 @@ import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.
 
 public class WeekViewEvent implements Serializable{
     private long mId;
-    private int dId;
     private Calendar mStartTime;
     private Calendar mEndTime;
-    private String dStartTime;
-    private String dEndTime;
-    private int mStartHour;
-    private int mEndHour;
-    private String dDay;
     private String mName;
     private String mLocation;
     private int mColor;
     private boolean mAllDay;
+    private String mAgenda;
+    private String mVisibility;
+    private ArrayList<String> mAttendees = new ArrayList<>();
+    private String mInviteMessage;
+    private String mCategory;
+    private String mType;
+
 
     public WeekViewEvent(){
 
@@ -61,15 +62,15 @@ public class WeekViewEvent implements Serializable{
         this.mName = name;
     }
 
-    public WeekViewEvent(long id, String name, String day, String location, String startTime, String endTime) {
-        this.mId = id;
-        this.mName = name;
-        this.dDay = day;
-        this.mLocation = location;
-        this.dStartTime = startTime;
-        this.dEndTime = endTime;
-    }
-
+    /**
+     * Initializes the event for week view.
+     * @param id The id of the event.
+     * @param name Name of the event.
+     * @param location The location of the event.
+     * @param startTime The time when the event starts.
+     * @param endTime The time when the event ends.
+     * @param allDay Is the event an all day event.
+     */
     public WeekViewEvent(long id, String name, String location, Calendar startTime, Calendar endTime, boolean allDay) {
         this.mId = id;
         this.mName = name;
@@ -159,66 +160,6 @@ public class WeekViewEvent implements Serializable{
         this.mId = id;
     }
 
-    public int getdId()
-    {
-        return dId;
-    }
-
-    public String getdStartTime()
-    {
-        return dStartTime;
-    }
-
-    public void setdStartTime(String startTime)
-    {
-        this.dStartTime = startTime;
-    }
-
-    public String getdEndTime()
-    {
-        return dEndTime;
-    }
-
-    public void setdEndTime(String endTime)
-    {
-        this.dEndTime = endTime;
-    }
-
-    public String getdDay()
-    {
-        return dDay;
-    }
-
-    public void setdDay(String day)
-    {
-        this.dDay = day;
-    }
-
-    public void setdId(int id)
-    {
-        this.dId = id;
-    }
-
-    public int getmStartHour()
-    {
-        return mStartHour;
-    }
-
-    public void setmStartHour(int startHour)
-    {
-        this.mStartHour = startHour;
-    }
-
-    public int getmEndHour()
-    {
-        return mEndHour;
-    }
-
-    public void setmEndHour(int endHour)
-    {
-        this.mEndHour = endHour;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -280,5 +221,13 @@ public class WeekViewEvent implements Serializable{
         }
 
         return events;
+    }
+
+    public String getAgenda() {
+        return mAgenda;
+    }
+
+    public void setAgenda(String agenda) {
+        this.mAgenda = agenda;
     }
 }

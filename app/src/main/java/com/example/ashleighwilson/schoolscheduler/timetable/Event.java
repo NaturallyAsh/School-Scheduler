@@ -1,9 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -26,12 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Event implements Serializable
 {
-    /*int mId;
-    String mName;
-    String mDayOfMonth;
-    String mStartTime;
-    String mEndTime;
-    int mColor; */
 
     int startDay;
     int monthEndDay;

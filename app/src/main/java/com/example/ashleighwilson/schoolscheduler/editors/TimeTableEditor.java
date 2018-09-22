@@ -45,7 +45,6 @@ public class TimeTableEditor extends AppCompatActivity implements
     TextView viewColor;
 
     private Calendar originalStartTime;
-    DateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyy");
     TextView mStartTime;
     TextView mEndTime;
     final static private String COLOR_DIALOG = "colorDialog";
@@ -57,11 +56,9 @@ public class TimeTableEditor extends AppCompatActivity implements
     public static int END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE = 0;
     static private int subColor;
     private boolean mSubjectHasChanged = false;
-    boolean isEvent = true;
-    DbHelper dbHelper;
+    private boolean isEditMode;
     private WeekViewLoader mWeekViewLoader;
     WeekViewEvent event;
-    boolean checkEventCreatedSuccessfully = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -101,6 +98,18 @@ public class TimeTableEditor extends AppCompatActivity implements
         mRoomEditText = findViewById(R.id.room_timetable);
         mStartTime = findViewById(R.id.timetable_start_time);
         mEndTime = findViewById(R.id.timetable_end_time);
+
+        if (event != null)
+        {
+            mTitleEditText.setText(event.getName());
+            mRoomEditText.setText(event.getLocation());
+            viewColor.setBackgroundColor(event.getColor());
+            setStartEndTime(event.getStartTime(), event.getEndTime());
+        }
+        else
+        {
+
+        }
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,7 +184,7 @@ public class TimeTableEditor extends AppCompatActivity implements
                 calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
                 calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
-                SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
+                SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
 
                 START_HOUR = extras.getInt(SimpleTimeDialog.HOUR);
                 START_MINUTE = extras.getInt(SimpleTimeDialog.MINUTE);
@@ -191,7 +200,7 @@ public class TimeTableEditor extends AppCompatActivity implements
                 calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
                 calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
-                SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
+                SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
 
                 END_HOUR = extras.getInt(SimpleTimeDialog.HOUR);
                 END_MINUTE = extras.getInt(SimpleTimeDialog.MINUTE);
@@ -212,7 +221,7 @@ public class TimeTableEditor extends AppCompatActivity implements
                 c.set(Calendar.DAY_OF_MONTH, END_DAY);
                 Date date = new Date(extras.getLong(SimpleDateDialog.DATE));
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE", java.util.Locale.getDefault());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
                 mDayEditText.setText(dateFormat.format(date));
                 return true;
             }
@@ -220,25 +229,51 @@ public class TimeTableEditor extends AppCompatActivity implements
         return false;
     }
 
+    private void setStartEndTime(Calendar start, Calendar end)
+    {
+        String startTime = dateFormatter(start);
+        int commaIndex = startTime.lastIndexOf(",");
+        if (commaIndex != -1)
+        {
+            String date = startTime.substring(0, commaIndex);
+            String time = startTime.substring(commaIndex +1, startTime.length());
+            mDayEditText.setText(date);
+            mStartTime.setText(time);
+        }
+        else
+        {
+            mDayEditText.setText(startTime);
+        }
+        String endTime = dateFormatter(end);
+        commaIndex = endTime.lastIndexOf(",");
+        if (commaIndex != -1)
+        {
+            String date = endTime.substring(0, commaIndex);
+            String time = endTime.substring(commaIndex +1, endTime.length());
+            mEndTime.setText(time);
+        }
+    }
+
+    private String dateFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
+    }
+
     public void saveSubject()
     {
-        //Event event = new Event();
-        //EventEvent eventEvent = new EventEvent();
-        String nameString = mTitleEditText.getText().toString().trim();
-        String startString = mStartTime.getText().toString().trim();
-        String endString = mEndTime.getText().toString().trim();
-        String roomString = mRoomEditText.getText().toString().trim();
-        //String dayString = mDayEditText.getText().toString().trim();
 
-        //Calendar startTime = Calendar.getInstance();
-        //startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
+        String nameString = mTitleEditText.getText().toString().trim();
+        String roomString = mRoomEditText.getText().toString().trim();
+
         Calendar startTime = originalStartTime;
         if (startTime == null)
         {
             startTime.setTimeInMillis(System.currentTimeMillis());
         }
-        //Calendar endTime = Calendar.getInstance();
-        //endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
+
         Calendar endTime = (Calendar) startTime.clone();
         endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
         
