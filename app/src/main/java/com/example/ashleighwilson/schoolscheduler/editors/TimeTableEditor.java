@@ -27,6 +27,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class TimeTableEditor extends AppCompatActivity implements
     private boolean isEditMode;
     private WeekViewLoader mWeekViewLoader;
     WeekViewEvent event;
+    DbHelper dbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -69,6 +71,7 @@ public class TimeTableEditor extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //setHasOptionsMenu(true);
+        dbHelper = new DbHelper(getApplicationContext());
 
         Intent intent = getIntent();
         if (intent.getExtras() != null)
@@ -309,6 +312,18 @@ public class TimeTableEditor extends AppCompatActivity implements
         {
             eventListByMonth = new ArrayList<>();
         }
+
+        WeekViewEvent model = new WeekViewEvent();
+        //model.setId(WeekViewUtil.eventId);
+        model.setName(nameString);
+        model.setLocation(roomString);
+        model.setStartTime(startTime);
+        model.setEndTime(endTime);
+        model.setColor(subColor);
+
+        dbHelper.addTimetable(model);
+        Log.i(TAG, "model: " + model);
+
         eventListByMonth.add(createdEvent);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
         setResult(RESULT_OK);

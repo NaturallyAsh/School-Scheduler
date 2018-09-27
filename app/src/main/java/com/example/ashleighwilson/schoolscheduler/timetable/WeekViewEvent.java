@@ -103,6 +103,17 @@ public class WeekViewEvent implements Serializable{
         this(id, name, null, startTime, endTime);
     }
 
+    //db constructor
+    public WeekViewEvent(long id, String name, String location, Calendar startTime, Calendar endTime, int color)
+    {
+        this.mId = id;
+        this.mName = name;
+        this.mLocation = location;
+        this.mStartTime = startTime;
+        this.mEndTime = endTime;
+        this.mColor = color;
+    }
+
 
     public Calendar getStartTime() {
         return mStartTime;

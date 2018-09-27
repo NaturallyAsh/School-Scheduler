@@ -1,17 +1,64 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WeekViewUtil {
 
     public static long eventId = 0;
 
+    private static final String TAG = WeekViewUtil.class.getSimpleName();
+
     public static HashMap<String, WeekViewEvent> masterEvents = new HashMap();
     public static HashMap<String, List<WeekViewEvent>> monthMasterEvents = new HashMap();
+
+    public static HashMap<String, List<WeekViewEvent>> getHashMap()
+    {
+        return monthMasterEvents;
+    }
+
+    public static void saveHasToApp()
+    {
+        Context mContext = MySchedulerApp.getInstance();
+        try{
+            FileOutputStream fileOut = mContext.openFileOutput("hashEvents", Context.MODE_PRIVATE);
+            ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
+
+            objOut.writeObject(masterEvents);
+            objOut.writeObject(monthMasterEvents);
+            objOut.flush();
+
+            ObjectInputStream input = new ObjectInputStream(new FileInputStream("hashEvents"));
+            Map myReadInMap = (HashMap) input.readObject();
+            input.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "empty hashmap!");
+        }
+    }
+
+
+    public static Bundle getHashEvents(Bundle args)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("hashMap", monthMasterEvents);
+
+        return bundle;
+    }
 
     /////////////////////////////////////////////////////////////////
     //

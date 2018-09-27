@@ -16,6 +16,7 @@ import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class DbHelper extends SQLiteOpenHelper
     String[] timeTableColumns = new String[] {
             TimeTableEntry._ID,
             TimeTableEntry.COLUMN_NAME,
+            TimeTableEntry.COLUMN_LOCATION,
             TimeTableEntry.COLUMN_STARTHOUR,
             TimeTableEntry.COLUMN_ENDHOUR,
             TimeTableEntry.COLUMN_COLOR
@@ -57,7 +59,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 10;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -108,6 +110,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String TABLE_NAME = "timetable";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
+        public final static String COLUMN_LOCATION = "location";
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
         public final static String COLUMN_COLOR = "color";
@@ -118,8 +121,9 @@ public class DbHelper extends SQLiteOpenHelper
             " ("
             + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TimeTableEntry.COLUMN_NAME + " TEXT, "
-            + TimeTableEntry.COLUMN_STARTHOUR + " TEXT, "
-            + TimeTableEntry.COLUMN_ENDHOUR + " TEXT, "
+            + TimeTableEntry.COLUMN_LOCATION + " TEXT, "
+            + TimeTableEntry.COLUMN_STARTHOUR + " INTEGER, "
+            + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_COLOR + " INTEGER);";
 
     public DbHelper(Context context)
@@ -333,36 +337,50 @@ public class DbHelper extends SQLiteOpenHelper
             mOnDatabaseChangedListener.onDatabaseEntryRenamed();
     }
 
-    /*public long addTimetable(Event model)
+    public long addTimetable(WeekViewEvent model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        //values.put(TimeTableEntry._ID, model.getId());
         values.put(TimeTableEntry.COLUMN_NAME, model.getName());
-        values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime());
-        values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime());
+        values.put(TimeTableEntry.COLUMN_LOCATION, model.getLocation());
+        values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime().getTimeInMillis());
+        values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());
 
         return db.insert(TimeTableEntry.TABLE_NAME, null, values);
     }
 
-    public void timeTableList (List<Event> list)
+    /*public void timeTableList (List<WeekViewEvent> list)
     {
+        WeekViewEvent event;
+        long start = event.getStartTime().getTimeInMillis();
+        long end = event.getEndTime().getTimeInMillis();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(TimeTableEntry.TABLE_NAME, timeTableColumns, null);
         while (cursor.moveToNext())
         {
-            Event current = new Event(
-                    cursor.getString(1),
+            WeekViewEvent current = new WeekViewEvent(
+                    cursor.getLong(1),
                     cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getInt(4));
+                    cursor.getLong(3),
+                    cursor.getLong(4)),
+                    cursor.getInt(5);
             current.setmId(cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID)));
             list.add(current);
         }
         cursor.close();
+    } */
+
+    public Cursor fetchEvents()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        return db.query(TimeTableEntry.TABLE_NAME, timeTableColumns, null, null,
+                null, null, null);
     }
 
-    public int getTimeTableId(int id)
+    public long getTimeTableId(long id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -370,11 +388,11 @@ public class DbHelper extends SQLiteOpenHelper
 
         while (cursor.moveToNext())
         {
-            id = cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID));
+            id = cursor.getLong(cursor.getColumnIndex(TimeTableEntry._ID));
         }
         cursor.close();
         return id;
-    } */
+    }
 
     public int getSubjectId(int id)
     {

@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -37,10 +39,12 @@ import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventRect;
 import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView;
-import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView.OnDayClickListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
+import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekView;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.masterEvents;
+import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.monthMasterEvents;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,23 +66,44 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private static final int TYPE_MONTH_VIEW = 4;
     private int mWeekViewType = TYPE_MONTH_VIEW;
     private WeekView mWeekView;
-    private View rootView = null;
+    View rootView;
     private ExtendedCalendarView calendar;
     private FloatingActionButton add_event;
     private RecyclerView eventList;
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
     TextView monthView, weekView, dayView;
-    MenuInflater inflater;
     Toolbar toolbar;
+    WeekViewEvent weekViewEvent;
+    Calendar weekViewTime;
+    OnFragmentInteractionListener listener;
+
+    public void onAttachToParent(Fragment fragment)
+    {
+        try {
+            listener = (OnFragmentInteractionListener) fragment;
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException("Must implement OnFragmentInteractionListener");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //setHasOptionsMenu(true);
+        setRetainInstance(true);
 
+        onAttachToParent(getParentFragment());
+
+        Bundle bundle = getArguments();
+        //weekViewEvent = (WeekViewEvent) bundle.getSerializable("event");
     }
+
+    /*public static WeekViewFragment newInstance(WeekViewEvent event)
+    {
+
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -264,13 +289,24 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         } else if (mWeekViewType == TYPE_DAY_VIEW) {
             mWeekView.notifyDatasetChanged();
         }
+        //listener.refreshData();
+    }
+
+    public void notifyWeekView()
+    {
+        mWeekView.notifyDatasetChanged();
     }
 
     @Override
-    public void onPause()
+    public void onDetach()
     {
-        super.onPause();
-        //mAppBarLayout.setVisibility(View.GONE);
+        super.onDetach();
+        /*android.support.v4.app.FragmentManager manager = getFragmentManager();
+        if (manager.getBackStackEntryCount() > 0)
+        {
+            manager.popBackStack();
+        } */
+        listener = null;
     }
 
     @Override
@@ -414,26 +450,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         return mWeekView;
     }
 
-    public void addNewEvent()
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Add new event?");
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
     private void showEventDetailsScreen(WeekViewEvent event, Calendar startTime)
     {
         Intent intent = new Intent(getActivity(), TimeTableEditor.class);
@@ -468,19 +484,4 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                 }
             }
     }
-
-    private View.OnClickListener mListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            WeekViewEvent event = new WeekViewEvent();
-            Intent intent = new Intent(getActivity(), TimeTableEditor.class);
-            Bundle bundle = new Bundle();
-                bundle.putSerializable("event", event);
-
-                //bundle.putSerializable("start", startTime);
-
-            intent.putExtras(bundle);
-            startActivityForResult(intent, 1);
-        }
-    };
 }

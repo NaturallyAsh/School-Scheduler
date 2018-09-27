@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.CalenderFrag;
 import com.example.ashleighwilson.schoolscheduler.SubjectsFrag;
 import com.example.ashleighwilson.schoolscheduler.TasksFrag;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter
 {
