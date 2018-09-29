@@ -24,14 +24,9 @@ import android.widget.Toast;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecorderAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.dialog.RecordDialog;
-import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditor;
-import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
 public class RecordActivity extends AppCompatActivity
 {
@@ -169,26 +164,6 @@ public class RecordActivity extends AppCompatActivity
 
             }
         });
-    }
-
-    @AfterPermissionGranted(ALL_PERMISSIONS)
-    private void recordCall()
-    {
-        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.RECORD_AUDIO};
-        if (EasyPermissions.hasPermissions(this, perms))
-        {
-            showDialog();
-        }
-        else
-        {
-            EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs to access your storage and microphone.",
-                    ALL_PERMISSIONS,
-                    perms
-            );
-        }
     }
 
     public void setData()

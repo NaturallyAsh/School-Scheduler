@@ -324,8 +324,12 @@ public class TimeTableEditor extends AppCompatActivity implements
         dbHelper.addTimetable(model);
         Log.i(TAG, "model: " + model);
 
+
         eventListByMonth.add(createdEvent);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+
+        WeekViewUtil.saveHasToApp(WeekViewUtil.masterEvents, WeekViewUtil.monthMasterEvents);
+
         setResult(RESULT_OK);
         finish();
 

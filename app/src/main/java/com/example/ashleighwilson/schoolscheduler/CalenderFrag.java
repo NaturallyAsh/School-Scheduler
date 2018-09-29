@@ -1,13 +1,20 @@
 package com.example.ashleighwilson.schoolscheduler;
 
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +41,6 @@ import java.util.List;
 public class CalenderFrag extends Fragment implements OnFragmentInteractionListener
 {
     DbHelper dbHelper;
-
     private static long ARG_EVENT_ID;
     private static final String TAG = CalenderFrag.class.getSimpleName();
 
@@ -45,7 +51,10 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
     WeekViewBase mWeekViewBase;
-    private HashMap<String, List<WeekViewEvent>> eventHash = new HashMap();
+    private HashMap<String, List<WeekViewEvent>> eventMonthHash = new HashMap();
+    private HashMap<String, WeekViewEvent> eventMasterHash = new HashMap<>();
+    private HashMap<String, List<WeekViewEvent>> readMonthHash = new HashMap<>();
+    private HashMap<String, WeekViewEvent> readMasterHash = new HashMap<>();
     private List<WeekViewEvent> calendarEvent = new ArrayList<>();
 
 
@@ -57,8 +66,9 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate!");
         setHasOptionsMenu(true);
-        ARG_EVENT_ID = WeekViewUtil.eventId;
+        //ARG_EVENT_ID = WeekViewUtil.eventId;
         setRetainInstance(true);
     }
 
@@ -66,6 +76,8 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        Log.i(TAG, "onCreateView!");
+
         if (view == null)
         {
             view = inflater.inflate(R.layout.fragment_calender, container, false);
@@ -98,9 +110,14 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             ft.commit();
         }
 
-        if (eventHash != null)
-            eventHash = WeekViewUtil.getHashMap();
-        Log.i(TAG, "hashMap: " + eventHash);
+        if (eventMonthHash != null && eventMasterHash != null)
+        {
+            eventMonthHash = WeekViewUtil.getMonthMasterHashMap();
+            eventMasterHash = WeekViewUtil.getMasterHashMap();
+
+            //Log.i(TAG, "monthHashMap: " + eventMonthHash + "masterHashMap: " + eventMasterHash);
+
+        }
 
         FloatingClicked();
 
@@ -165,7 +182,15 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public void onResume()
     {
         super.onResume();
-        //refreshData(calendarEvent);
+        Log.i(TAG, "Resumed!");
+        /*if (readMonthHash != null && readMasterHash != null)
+        {
+            readMonthHash = WeekViewUtil.readMonthMasterHash();
+            readMasterHash = WeekViewUtil.readMasterHashToApp();
+
+            Log.i(TAG, "readMonthHashMap: " + readMonthHash + "readMasterHashMap: " + readMasterHash);
+
+        }*/
         eventDatabaseList();
     }
 
@@ -173,7 +198,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public void onPause()
     {
         super.onPause();
-        //refreshCalendar();
+        Log.i(TAG, "Paused!");
     }
 
     @Override

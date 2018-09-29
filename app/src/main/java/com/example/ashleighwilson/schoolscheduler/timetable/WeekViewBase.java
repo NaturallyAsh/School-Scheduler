@@ -17,7 +17,7 @@ import java.util.List;
 
 public class WeekViewBase extends WeekViewFragment
 {
-    //private static final String TAG = WeekViewBase.class.getSimpleName();
+    private static final String TAG = WeekViewBase.class.getSimpleName();
     List<WeekViewEvent> eventListByMonth;
     String monthKey;
     private static long eventViewId;
@@ -53,6 +53,7 @@ public class WeekViewBase extends WeekViewFragment
         super.onCreate(savedInstanceState);
         onAttachToPF(getParentFragment());
         setRetainInstance(true);
+        Log.i(TAG, "onCreate!");
         //eventListByMonth = (List<WeekViewEvent>) getArguments().getSerializable("events");
     }
 
@@ -60,6 +61,7 @@ public class WeekViewBase extends WeekViewFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
+        Log.i(TAG, "onActivityCreated");
         Bundle bundle = getArguments();
         if (bundle != null)
         {

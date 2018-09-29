@@ -92,6 +92,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate!");
         setRetainInstance(true);
 
         onAttachToParent(getParentFragment());
@@ -281,6 +282,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     public void onResume()
     {
         super.onResume();
+        Log.i(TAG, "onResume!");
         if (mWeekViewType == TYPE_MONTH_VIEW) {
             updateView();
             mWeekView.setRefreshEvents(true);
@@ -301,6 +303,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     public void onDetach()
     {
         super.onDetach();
+        Log.i(TAG, "onDetach!");
         /*android.support.v4.app.FragmentManager manager = getFragmentManager();
         if (manager.getBackStackEntryCount() > 0)
         {
@@ -382,6 +385,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.setGesture(ExtendedCalendarView.LEFT_RIGHT_GESTURE);
         calendar.getEvents();
         calendar.refreshCalendar();
+        Log.i(TAG, "updateView()!");
     }
 
     @Override

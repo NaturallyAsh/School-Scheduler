@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,10 +41,6 @@ import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
-
 
 public class SubjectsFrag extends DialogFragment
 {
@@ -71,7 +68,7 @@ public class SubjectsFrag extends DialogFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i(TAG, "onCreate!");
     }
 
     @Override
@@ -81,7 +78,7 @@ public class SubjectsFrag extends DialogFragment
         final View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
         setHasOptionsMenu(true);
-
+        Log.i(TAG, "onCreateView!");
 
         titleView = view.findViewById(R.id.edit_subject);
         teacherView = view.findViewById(R.id.edit_subject_teacher);
@@ -223,6 +220,7 @@ public class SubjectsFrag extends DialogFragment
     public void onResume()
     {
         super.onResume();
+        Log.i(TAG, "onResume!");
         subjectDatabaseList();
     }
 

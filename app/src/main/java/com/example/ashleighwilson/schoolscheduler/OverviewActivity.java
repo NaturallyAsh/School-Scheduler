@@ -1,11 +1,16 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
@@ -20,9 +26,13 @@ import android.support.design.widget.AppBarLayout;
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 
+import java.util.ArrayList;
+
 public class OverviewActivity extends AppCompatActivity
 {
+    private static final String TAG = OverviewActivity.class.getSimpleName();
 
+    static final int STORAGE_PERMS = 175;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -36,6 +46,8 @@ public class OverviewActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate!");
+
         setContentView(R.layout.activity_main_nav);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -47,6 +59,9 @@ public class OverviewActivity extends AppCompatActivity
         //call this whenever you want to check user login
         //this will redirect user to LoginActivity if not logged in
         session.checkLogin();
+
+        if (Build.VERSION.SDK_INT > 22)
+            checkPermission();
         /*
         HashMap<String, String> user = session.getUserDetails();
 
@@ -57,6 +72,10 @@ public class OverviewActivity extends AppCompatActivity
 
         Add logout button somewhere...
          */
+        /*if (Build.VERSION.SDK_INT > 22)
+        {
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMS);
+        } */
 
         appBarLayout = findViewById(R.id.main_appBar);
 
@@ -169,5 +188,60 @@ public class OverviewActivity extends AppCompatActivity
         menuItem.setChecked(true);
         setTitle(menuItem.getTitle());
         drawer.closeDrawer(GravityCompat.START);
+    }
+
+    private void checkPermission()
+    {
+        ArrayList<String> arrayPerm = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager
+                .PERMISSION_GRANTED)
+        {
+            arrayPerm.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager
+                .PERMISSION_GRANTED)
+        {
+            arrayPerm.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (!arrayPerm.isEmpty())
+        {
+            String[] permissions = new String[arrayPerm.size()];
+            permissions = arrayPerm.toArray(permissions);
+            ActivityCompat.requestPermissions(this, permissions, STORAGE_PERMS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
+            grantResults)
+    {
+        switch (requestCode)
+        {
+            case STORAGE_PERMS:
+            {
+                if (grantResults.length > 0)
+                {
+                    for (int i = 0; i < grantResults.length; i++)
+                    {
+                        String permission = permissions[i];
+                        if (Manifest.permission.READ_EXTERNAL_STORAGE.equals(permission))
+                        {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                            {
+
+                            }
+                        }
+                        if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permission))
+                        {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
