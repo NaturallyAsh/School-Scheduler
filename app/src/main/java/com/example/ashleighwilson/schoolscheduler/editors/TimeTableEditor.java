@@ -22,6 +22,7 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
+import com.example.ashleighwilson.schoolscheduler.timetable.EventsPreference;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
@@ -61,6 +62,7 @@ public class TimeTableEditor extends AppCompatActivity implements
     private WeekViewLoader mWeekViewLoader;
     WeekViewEvent event;
     DbHelper dbHelper;
+    EventsPreference pref;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -72,6 +74,8 @@ public class TimeTableEditor extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //setHasOptionsMenu(true);
         dbHelper = new DbHelper(getApplicationContext());
+
+        pref = new EventsPreference(getApplicationContext());
 
         Intent intent = getIntent();
         if (intent.getExtras() != null)
@@ -328,7 +332,8 @@ public class TimeTableEditor extends AppCompatActivity implements
         eventListByMonth.add(createdEvent);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
-        WeekViewUtil.saveHasToApp(WeekViewUtil.masterEvents, WeekViewUtil.monthMasterEvents);
+        //WeekViewUtil.saveHasToApp(WeekViewUtil.masterEvents, WeekViewUtil.monthMasterEvents);
+        pref.setList("key", eventListByMonth);
 
         setResult(RESULT_OK);
         finish();

@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import com.example.ashleighwilson.schoolscheduler.adapter.CalenderFragAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
+import com.example.ashleighwilson.schoolscheduler.timetable.EventsPreference;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
@@ -41,7 +42,7 @@ import java.util.List;
 public class CalenderFrag extends Fragment implements OnFragmentInteractionListener
 {
     DbHelper dbHelper;
-    private static long ARG_EVENT_ID;
+    private static String MONTH_KEY;
     private static final String TAG = CalenderFrag.class.getSimpleName();
 
     View view;
@@ -53,10 +54,10 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     WeekViewBase mWeekViewBase;
     private HashMap<String, List<WeekViewEvent>> eventMonthHash = new HashMap();
     private HashMap<String, WeekViewEvent> eventMasterHash = new HashMap<>();
-    private HashMap<String, List<WeekViewEvent>> readMonthHash = new HashMap<>();
-    private HashMap<String, WeekViewEvent> readMasterHash = new HashMap<>();
+    public static List<WeekViewEvent> readMonthHash;
+    public static List<WeekViewEvent> readPrefHash;
     private List<WeekViewEvent> calendarEvent = new ArrayList<>();
-
+    public EventsPreference pref;
 
     public CalenderFrag() {
         // Required empty public constructor
@@ -68,6 +69,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate!");
         setHasOptionsMenu(true);
+        pref = new EventsPreference(getActivity());
         //ARG_EVENT_ID = WeekViewUtil.eventId;
         setRetainInstance(true);
     }
@@ -103,7 +105,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         }
         else
         {
-            mWeekViewBase = WeekViewBase.newInstance(ARG_EVENT_ID);
+            mWeekViewBase = new WeekViewBase();
             FragmentTransaction ft = getChildFragmentManager().beginTransaction();
             ft.add(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
             ft.addToBackStack(null);
@@ -116,7 +118,6 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             eventMasterHash = WeekViewUtil.getMasterHashMap();
 
             //Log.i(TAG, "monthHashMap: " + eventMonthHash + "masterHashMap: " + eventMasterHash);
-
         }
 
         FloatingClicked();
@@ -191,6 +192,14 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             Log.i(TAG, "readMonthHashMap: " + readMonthHash + "readMasterHashMap: " + readMasterHash);
 
         }*/
+        readPrefHash = EventsPreference.getHashEvent();
+
+        if (readPrefHash != null)
+        {
+            readMonthHash = new ArrayList<>(readPrefHash);
+            Log.i(TAG, "pref event: " + readMonthHash);
+
+        }
         eventDatabaseList();
     }
 
