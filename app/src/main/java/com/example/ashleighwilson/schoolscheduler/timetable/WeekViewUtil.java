@@ -1,36 +1,16 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-
-import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
-import com.example.ashleighwilson.schoolscheduler.data.Storage;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WeekViewUtil {
 
     public static long eventId = 0;
 
     private static final String TAG = WeekViewUtil.class.getSimpleName();
-
-    public static Storage mStorage;
-    public static String file = "/hashEvents.ser";
-    public static String path = null;
-    public static File directory = null;
 
     public static HashMap<String, WeekViewEvent> masterEvents = new HashMap();
     public static HashMap<String, List<WeekViewEvent>> monthMasterEvents = new HashMap();
@@ -44,114 +24,6 @@ public class WeekViewUtil {
     {
         return masterEvents;
     }
-
-    public static void saveHasToApp(HashMap<String, WeekViewEvent> master, HashMap<String, List<WeekViewEvent>> monthMaster)
-    {
-        Context mContext = MySchedulerApp.getInstance();
-        //File pathFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), file);
-        /*if (android.os.Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
-        {
-            path = pathFile.getPath();
-        }
-        else*/
-        path = Environment.getExternalStorageState();
-
-        directory = new File(path);
-        if (directory.exists()) {
-            Log.w(TAG, "Directory '" + path + "' already exists");
-            return;
-        }
-        directory.mkdirs();
-
-        //mStorage.createDirectory(path);
-        Log.i(TAG, "path: " + path);
-
-        //File fileName = new File(path);
-
-
-        try{
-            //FileOutputStream fileOut = mContext.openFileOutput(String.valueOf(fileName), Context.MODE_PRIVATE);
-            FileOutputStream fileOut = new FileOutputStream(path);
-            ObjectOutputStream objOut = new ObjectOutputStream(fileOut);
-
-            objOut.writeObject(master);
-            objOut.writeObject(monthMaster);
-            objOut.flush();
-            objOut.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i(TAG, "empty hashmap!");
-        }
-    }
-
-    public static HashMap<String, WeekViewEvent> readMasterHashToApp()
-    {
-
-        HashMap<String, WeekViewEvent> masterRestored = new HashMap<>();
-        //File pathFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), file);
-
-        //path = Environment.getExternalStorageState();
-
-        /*directory = new File(path);
-        if (directory.exists()) {
-            Log.w(TAG, "Directory '" + path + "' already exists");
-            return;
-        }
-        directory.mkdirs();
-
-
-        //File fileName = new File(path); */
-        try{
-            ObjectInputStream input = new ObjectInputStream(new FileInputStream(path));
-            HashMap<String, WeekViewEvent> myReadInMap = (HashMap<String, WeekViewEvent>) input.readObject();
-            //HashMap<String, List<WeekViewEvent>> myReadInMap2 = (HashMap<String, List<WeekViewEvent>>) input.readObject();
-            //master = myReadInMap;
-            masterRestored = myReadInMap;
-            //monthMasterEvents = myReadInMap2;
-            Log.i(TAG, "master:" + masterEvents.size() + "monthMaster: " + monthMasterEvents.size());
-            input.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return masterRestored;
-    }
-
-    public static HashMap<String, List<WeekViewEvent>> readMonthMasterHash()
-    {
-        HashMap<String, List<WeekViewEvent>> monthRestored = new HashMap<>();
-        /*File pathFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), file);
-
-            path = pathFile.getPath();
-
-        /*directory = new File(path);
-        if (directory != null && !directory.exists()) {
-            Log.w(TAG, "Directory '" + path + "' already exists");
-            directory.mkdir();
-        } */
-
-        //File fileName = new File(path);
-        //Log.i(TAG, "doesExist: " + pathFile);
-
-        try{
-            //ObjectInputStream input = new ObjectInputStream(new FileInputStream(path + file));
-            //FileInputStream fis = new FileInputStream(fileName);
-            //ObjectInputStream ois = new ObjectInputStream(fis);
-            ObjectInputStream input = new ObjectInputStream(new FileInputStream(path));
-            Log.i(TAG, "input stream: " + input);
-
-            //HashMap<String, WeekViewEvent> myReadInMap = (HashMap<String, WeekViewEvent>) input.readObject();
-            HashMap<String, List<WeekViewEvent>> myReadInMap2 = (HashMap<String, List<WeekViewEvent>>) input.readObject();
-            //masterEvents = myReadInMap;
-            monthRestored = myReadInMap2;
-            Log.i(TAG, "master:" + masterEvents.size() + "monthMaster: " + monthMasterEvents.size());
-            input.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return monthRestored;
-    }
-
 
     public static Bundle getHashEvents(Bundle args)
     {

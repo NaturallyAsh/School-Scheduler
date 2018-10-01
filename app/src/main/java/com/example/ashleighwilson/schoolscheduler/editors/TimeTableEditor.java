@@ -332,8 +332,8 @@ public class TimeTableEditor extends AppCompatActivity implements
         eventListByMonth.add(createdEvent);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
-        //WeekViewUtil.saveHasToApp(WeekViewUtil.masterEvents, WeekViewUtil.monthMasterEvents);
-        pref.setList("key", eventListByMonth);
+        //below code works correctly to save List to SP
+        //pref.setList("key", eventListByMonth);
 
         setResult(RESULT_OK);
         finish();

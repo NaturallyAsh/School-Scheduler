@@ -1,20 +1,12 @@
 package com.example.ashleighwilson.schoolscheduler;
 
-
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +15,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.ashleighwilson.schoolscheduler.adapter.CalenderFragAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventsPreference;
@@ -33,9 +24,16 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -44,7 +42,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     DbHelper dbHelper;
     private static String MONTH_KEY;
     private static final String TAG = CalenderFrag.class.getSimpleName();
-
+    Context mContext;
     View view;
     private FloatingActionMenu fab_all_cal;
     private com.github.clans.fab.FloatingActionButton fab_cal;
@@ -52,15 +50,15 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     public RecyclerView recyclerView;
     public RecyclerView.LayoutManager layoutManager;
     WeekViewBase mWeekViewBase;
-    private HashMap<String, List<WeekViewEvent>> eventMonthHash = new HashMap();
-    private HashMap<String, WeekViewEvent> eventMasterHash = new HashMap<>();
-    public static List<WeekViewEvent> readMonthHash;
+    public static List<WeekViewEvent> readMonthEvent;
+    public static List<WeekViewEvent> writeMonthEvent;
     public static List<WeekViewEvent> readPrefHash;
     private List<WeekViewEvent> calendarEvent = new ArrayList<>();
     public EventsPreference pref;
+    WeekViewEvent event;
+    WeekViewEvent readEvent;
 
     public CalenderFrag() {
-        // Required empty public constructor
     }
 
     @Override
@@ -72,6 +70,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         pref = new EventsPreference(getActivity());
         //ARG_EVENT_ID = WeekViewUtil.eventId;
         setRetainInstance(true);
+        mContext = MySchedulerApp.getInstance();
     }
 
     @Override
@@ -110,14 +109,6 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             ft.add(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
             ft.addToBackStack(null);
             ft.commit();
-        }
-
-        if (eventMonthHash != null && eventMasterHash != null)
-        {
-            eventMonthHash = WeekViewUtil.getMonthMasterHashMap();
-            eventMasterHash = WeekViewUtil.getMasterHashMap();
-
-            //Log.i(TAG, "monthHashMap: " + eventMonthHash + "masterHashMap: " + eventMasterHash);
         }
 
         FloatingClicked();
@@ -184,22 +175,17 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     {
         super.onResume();
         Log.i(TAG, "Resumed!");
-        /*if (readMonthHash != null && readMasterHash != null)
-        {
-            readMonthHash = WeekViewUtil.readMonthMasterHash();
-            readMasterHash = WeekViewUtil.readMasterHashToApp();
 
-            Log.i(TAG, "readMonthHashMap: " + readMonthHash + "readMasterHashMap: " + readMasterHash);
-
-        }*/
+        /*
+        //getting List from SP. works correctly.
         readPrefHash = EventsPreference.getHashEvent();
 
         if (readPrefHash != null)
         {
-            readMonthHash = new ArrayList<>(readPrefHash);
-            Log.i(TAG, "pref event: " + readMonthHash);
-
-        }
+            writeMonthEvent = new ArrayList<>(readPrefHash);
+            writeList(writeMonthEvent);
+            Log.i(TAG, "pref event: " + writeMonthEvent);
+        } */
         eventDatabaseList();
     }
 
@@ -208,6 +194,19 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     {
         super.onPause();
         Log.i(TAG, "Paused!");
+        /*
+        //works correctly
+        if (writeMonthEvent != null)
+        {
+            readMonthEvent = readList();
+            Log.i(TAG, "file event: " + readMonthEvent);
+        } */
+
+        if (event != null)
+        {
+            readEvent = readObj(mContext);
+            Log.i(TAG, "read object: " + readEvent);
+        }
     }
 
     @Override
@@ -241,9 +240,12 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             end.setTimeInMillis(cursor.getLong(4));
             int color = cursor.getInt(5);
 
-            WeekViewEvent event = new WeekViewEvent(id, name, location, start, end, color);
+            event = new WeekViewEvent(id, name, location, start, end, color);
+
+            writeObj(mContext, event);
 
             calendarEvent.add(event);
+
         }
 
         if (!(calendarEvent.size() < 1))
@@ -254,5 +256,88 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         {
 
         }
+    }
+    //next 2 methods work correctly to write/read List to file
+
+    /*public void writeList(List<WeekViewEvent> list)
+    {
+        File directory = new File(getContext().getFilesDir().getAbsolutePath() + File.separator +
+            "serialization");
+        if (!directory.exists())
+            directory.mkdirs();
+
+        String fileName = "eventlist.srl";
+        ObjectOutput out = null;
+
+        try {
+            out = new ObjectOutputStream(new FileOutputStream(directory + File.separator + fileName));
+            out.writeObject(writeMonthEvent);
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<WeekViewEvent> readList()
+    {
+        ObjectInputStream input = null;
+        List<WeekViewEvent> returnList = null;
+        String fileName = "eventlist.srl";
+        File directory = new File(getContext().getFilesDir().getAbsolutePath() + File.separator +
+            "serialization");
+
+        try {
+            input = new ObjectInputStream(new FileInputStream(directory + File.separator + fileName));
+            returnList = (List<WeekViewEvent>)((ObjectInputStream) input).readObject();
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return returnList;
+    } */
+
+    public void writeObj(Context context, WeekViewEvent obj)
+    {
+        File directory = new File(context.getFilesDir().getAbsolutePath() + File.separator +
+                "serialization");
+        if (!directory.exists())
+            directory.mkdirs();
+
+        String fileName = "eventlistObj.srl";
+        ObjectOutput out = null;
+
+        try {
+            out = new ObjectOutputStream(new FileOutputStream(directory + File.separator + fileName));
+            out.writeObject(event);
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static WeekViewEvent readObj(Context context)
+    {
+        ObjectInputStream input = null;
+        WeekViewEvent returnList = null;
+        String fileName = "eventlistObj.srl";
+        File directory = new File(context.getFilesDir().getAbsolutePath() + File.separator +
+                "serialization");
+
+        try {
+            input = new ObjectInputStream(new FileInputStream(directory + File.separator + fileName));
+            returnList = (WeekViewEvent) input.readObject();
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return returnList;
     }
 }
