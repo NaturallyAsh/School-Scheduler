@@ -1,6 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Parcel;
@@ -8,12 +9,15 @@ import android.os.Parcelable;
 import android.text.format.Time;
 import android.widget.BaseAdapter;
 
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent.*;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -34,6 +38,10 @@ public class Event implements Serializable
     transient BaseAdapter adapter;
     int currentDay;
     public List<WeekViewEvent> events = null;
+    public List<WeekViewEvent> dbEvents = new ArrayList<>();
+    Context mContext = MySchedulerApp.getInstance();
+    DbHelper dbHelper = new DbHelper(mContext);
+
 
     public Event(Context context,int day, int year, int month){
         this.day = day;
@@ -180,5 +188,49 @@ public class Event implements Serializable
         } else {
             events.add(event);
         }
+    }
+
+    public void addEventDay2(WeekViewEvent events)
+    {
+        if (dbEvents != null)
+            dbEvents.clear();
+        Cursor cursor = dbHelper.fetchEvents();
+
+        while (cursor.moveToNext())
+        {
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            String location = cursor.getString(2);
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(cursor.getLong(3));
+            Calendar end = Calendar.getInstance();
+            end.setTimeInMillis(cursor.getLong(4));
+            int color = cursor.getInt(5);
+
+            events = new WeekViewEvent(id, name, location, start, end, color);
+            dbEvents.add(events);
+        }
+
+        if (dbEvents != null)
+        {
+            if ((dbEvents.size() < 1))
+            {
+                for (WeekViewEvent e : dbEvents)
+                {
+                    if (e.getId() == events.getId())
+                    {
+                        dbEvents.remove(e);
+                        break;
+                    }
+                }
+                dbEvents.add(events);
+            }
+        }
+        else
+        {
+            if (dbEvents != null)
+                dbEvents.add(events);
+        }
+        dbHelper.close();
     }
 }

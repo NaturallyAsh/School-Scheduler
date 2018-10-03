@@ -119,7 +119,11 @@ public class WeekViewEvent implements Serializable{
         return mStartTime;
     }
 
-    public void setStartTime(Calendar startTime) {
+    public void setStartTime(Calendar startTime)
+    {
+        /*Calendar temp = Calendar.getInstance();
+        if (startTime != null)
+            temp.setTime(startTime.getTime());*/
         this.mStartTime = startTime;
     }
 
@@ -128,6 +132,9 @@ public class WeekViewEvent implements Serializable{
     }
 
     public void setEndTime(Calendar endTime) {
+       /* Calendar temp = Calendar.getInstance();
+        if (endTime != null)
+            temp.setTime(endTime.getTime()); */
         this.mEndTime = endTime;
     }
 

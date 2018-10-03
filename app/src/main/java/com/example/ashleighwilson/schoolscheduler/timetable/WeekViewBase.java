@@ -1,6 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,9 +10,11 @@ import com.example.ashleighwilson.schoolscheduler.CalenderFrag;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class WeekViewBase extends WeekViewFragment
@@ -20,10 +23,13 @@ public class WeekViewBase extends WeekViewFragment
     List<WeekViewEvent> eventListByMonth;
     String monthKey;
     private static long eventViewId;
-    private static final String ARG_MONTH_KEY = "arg_month_key";
-    private static final String ARG_EVENT_LIST = "arg_event_list";
     public final static String ARG_EVENT_ID = "arg_event_id";
-    Context mContext;
+    Context mContext = MySchedulerApp.getInstance();
+    //List<WeekViewEvent> events = new ArrayList<>();
+    DbHelper dbHelper = new DbHelper(mContext);
+    //WeekViewEvent event;
+    WeekViewEvent dbEvent;
+    int START_YEAR, START_MONTH, START_HOUR, START_MIN, END_HOUR, END_MIN, END_MONTH = 0;
 
     public static WeekViewBase newInstance(long event_id)
     {
@@ -68,6 +74,13 @@ public class WeekViewBase extends WeekViewFragment
         {
             eventViewId = bundle.getLong(ARG_EVENT_ID);
         }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        Log.i(TAG, "onResume!");
     }
 
     @Override
@@ -119,22 +132,72 @@ public class WeekViewBase extends WeekViewFragment
 
         WeekViewUtil.masterEvents.put("" + event.getId(), event);
 
-        WeekViewEvent fileEvent = CalenderFrag.readObj(mContext);
-        events.add(fileEvent);
+        Cursor cursor = dbHelper.fetchEvents();
+
+        while (cursor.moveToNext())
+        {
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            String location = cursor.getString(2);
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(cursor.getLong(3));
+            start.set(Calendar.HOUR_OF_DAY, start.get(Calendar.HOUR_OF_DAY));
+            start.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
+            start.set(Calendar.MONTH, newMonth -1);
+            start.set(Calendar.YEAR, newYear);
+            Calendar end = Calendar.getInstance();
+            //end = (Calendar) start.clone();
+            end.setTimeInMillis(cursor.getLong(4));
+            end.set(Calendar.HOUR_OF_DAY, end.get(Calendar.HOUR_OF_DAY));
+            end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
+            end.set(Calendar.MONTH, newMonth -1);
+            int color = cursor.getInt(5);
+
+            WeekViewEvent dbEvent = new WeekViewEvent(id, name, start, end);
+            dbEvent.setColor(color);
+            dbEvent.setLocation(location);
+
+            events.add(dbEvent);
+            //WeekViewFragment.notifyWeekView();
+
+            WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
+
+        }
+
+        //WeekViewEvent fileEvent = CalenderFrag.readObj(mContext);
+        //events.add(fileEvent);
 
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
-        listener.refreshData(events);
-        //listener.refreshData(eventListByMonth);
+        //listener.refreshData(events);
         return events;
     }
 
-    public List<WeekViewEvent> loadEvents(List<WeekViewEvent> events)
+    public void eventDatabaseList()
     {
-        if (eventListByMonth != null)
-            return eventListByMonth;
-        else
-            return null;
+        //calendarEvent.clear();
+        Cursor cursor = dbHelper.fetchEvents();
+
+        while (cursor.moveToNext())
+        {
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            String location = cursor.getString(2);
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(cursor.getLong(3));
+            Calendar end = Calendar.getInstance();
+            end.setTimeInMillis(cursor.getLong(4));
+            int color = cursor.getInt(5);
+
+            dbEvent = new WeekViewEvent(id, name, start, end);
+             dbEvent.setColor(color);
+             dbEvent.setLocation(location);
+
+            //events.add(dbEvent);
+
+            //WeekViewUtil.masterEvents.put("" + event.getId(), event);
+
+        }
     }
 }

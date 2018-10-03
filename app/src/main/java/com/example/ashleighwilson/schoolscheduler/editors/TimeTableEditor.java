@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -72,7 +73,6 @@ public class TimeTableEditor extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //setHasOptionsMenu(true);
         dbHelper = new DbHelper(getApplicationContext());
 
         pref = new EventsPreference(getApplicationContext());
@@ -134,7 +134,7 @@ public class TimeTableEditor extends AppCompatActivity implements
             public void onClick(View v) {
                 SimpleTimeDialog.build()
                         .neut()
-                        .hour(12).minute(0)
+                        .hour(Calendar.HOUR_OF_DAY).minute(Calendar.MINUTE)
                         .set24HourView(false)
                         .show(TimeTableEditor.this, START_TIME_DIALOG);
             }
@@ -145,7 +145,7 @@ public class TimeTableEditor extends AppCompatActivity implements
             public void onClick(View v) {
                 SimpleTimeDialog.build()
                         .neut()
-                        .hour(12).minute(0)
+                        .hour(Calendar.HOUR_OF_DAY).minute(Calendar.MINUTE)
                         .set24HourView(false)
                         .show(TimeTableEditor.this, END_TIME_DIALOG);
             }
@@ -228,7 +228,7 @@ public class TimeTableEditor extends AppCompatActivity implements
                 c.set(Calendar.DAY_OF_MONTH, END_DAY);
                 Date date = new Date(extras.getLong(SimpleDateDialog.DATE));
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a", java.util.Locale.getDefault());
                 mDayEditText.setText(dateFormat.format(date));
                 return true;
             }
@@ -276,13 +276,28 @@ public class TimeTableEditor extends AppCompatActivity implements
         String roomString = mRoomEditText.getText().toString().trim();
 
         Calendar startTime = originalStartTime;
+        //Calendar startTime = Calendar.getInstance();
+        //startTime.setTimeInMillis(System.currentTimeMillis());
+        //startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
+        //startTime.set(Calendar.MINUTE, START_MINUTE);
         if (startTime == null)
         {
             startTime.setTimeInMillis(System.currentTimeMillis());
+            //startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
+            //startTime.set(Calendar.MINUTE, START_MINUTE);
+            //startTime.set(Calendar.MONTH, START_MONTH);
+            //startTime.set(Calendar.YEAR, START_YEAR);
+            //startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
         }
 
+
         Calendar endTime = (Calendar) startTime.clone();
+        //Calendar endTime = Calendar.getInstance();
         endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
+        //endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
+        //endTime.set(Calendar.MINUTE, END_MINUTE);
+        //endTime.set(Calendar.MONTH, END_MONTH);
+        //endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
         
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
@@ -338,6 +353,23 @@ public class TimeTableEditor extends AppCompatActivity implements
         setResult(RESULT_OK);
         finish();
 
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (event == null)
+        {
+            if (originalStartTime == null)
+            {
+                originalStartTime = Calendar.getInstance();
+                originalStartTime.setTimeInMillis(System.currentTimeMillis());
+            }
+            Calendar endTime = (Calendar) originalStartTime.clone();
+            endTime.setTimeInMillis(originalStartTime.getTimeInMillis() + (1000 * 60 * 60 *2));
+            setStartEndTime(originalStartTime, endTime);
+        }
     }
 
     @Override

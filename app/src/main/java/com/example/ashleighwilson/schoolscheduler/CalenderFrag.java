@@ -204,7 +204,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
 
         if (event != null)
         {
-            readEvent = readObj(mContext);
+            //readEvent = readObj(mContext);
             Log.i(TAG, "read object: " + readEvent);
         }
     }

@@ -1043,29 +1043,6 @@ public class WeekView extends View {
                     }
                 }
 
-                /*if (mPreviousPeriodEvents != null && mCurrentPeriodEvents != null && mNextPeriodEvents != null){
-                    if (periodToFetch == mFetchedPeriod-1){
-                        currentPeriodEvents = mPreviousPeriodEvents;
-                        nextPeriodEvents = mCurrentPeriodEvents;
-                    }
-                    else if (periodToFetch == mFetchedPeriod){
-                        previousPeriodEvents = mPreviousPeriodEvents;
-                        currentPeriodEvents = mCurrentPeriodEvents;
-                        nextPeriodEvents = mNextPeriodEvents;
-                    }
-                    else if (periodToFetch == mFetchedPeriod+1){
-                        previousPeriodEvents = mCurrentPeriodEvents;
-                        currentPeriodEvents = mNextPeriodEvents;
-                    }
-                }
-                if (currentPeriodEvents == null)
-                    currentPeriodEvents = mWeekViewLoader.onLoad(periodToFetch);
-                if (previousPeriodEvents == null)
-                    previousPeriodEvents = mWeekViewLoader.onLoad(periodToFetch-1);
-                if (nextPeriodEvents == null)
-                    nextPeriodEvents = mWeekViewLoader.onLoad(periodToFetch+1);
-                */
-
                 // Clear events.
                 mEventRects.clear();
                 WeekViewUtil.sortAndCacheEvents(previousPeriodEvents, mEventRects);
