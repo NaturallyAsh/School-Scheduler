@@ -88,6 +88,7 @@ public class TimeTableEditor extends AppCompatActivity implements
             if (bundle.containsKey("start"))
             {
                 originalStartTime = (Calendar) bundle.get("start");
+                Log.i(TAG, "original start time: " + originalStartTime);
             }
         }
 
@@ -369,6 +370,8 @@ public class TimeTableEditor extends AppCompatActivity implements
             Calendar endTime = (Calendar) originalStartTime.clone();
             endTime.setTimeInMillis(originalStartTime.getTimeInMillis() + (1000 * 60 * 60 *2));
             setStartEndTime(originalStartTime, endTime);
+
+            Log.i(TAG, "onResume start time:" + dateFormatter(originalStartTime) + "onResume end time: " + dateFormatter(endTime));
         }
     }
 

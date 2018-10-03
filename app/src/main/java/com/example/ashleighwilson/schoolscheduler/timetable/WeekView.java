@@ -258,6 +258,8 @@ public class WeekView extends View {
             // If the tap was on in an empty space, then trigger the callback.
             if (mEmptyViewClickListener != null && e.getX() > mHeaderColumnWidth && e.getY() > (mHeaderHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
+                //Calendar selectedTime = Calendar.getInstance();
+                //selectedTime.getTime();
                 if (selectedTime != null) {
                     playSoundEffect(SoundEffectConstants.CLICK);
                     mEmptyViewClickListener.onEmptyViewClicked(selectedTime);

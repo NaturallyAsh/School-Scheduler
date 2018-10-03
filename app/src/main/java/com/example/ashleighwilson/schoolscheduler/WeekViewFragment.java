@@ -423,6 +423,9 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                time.get(Calendar.HOUR_OF_DAY);
+                time.get(Calendar.MINUTE);
+                time.get(Calendar.SECOND);
                 showEventDetailsScreen(null, time);
             }
         });
