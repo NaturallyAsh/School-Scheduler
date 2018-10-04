@@ -150,6 +150,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         mWeekView.setEmptyViewClickListener(this);
 
+        //mWeekView.setAddEventClickListener(this);
+
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
@@ -187,8 +189,17 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             }
 
             @Override
-            public String interpretTime(int hour) {
-                return hour > 11 ? (hour - 12) + " PM" : (hour == 0 ? "12 AM" : hour + " AM");
+            public String interpretTime(int hour, int minutes) {
+                String strMinutes = String.format("%02d", minutes);
+                if (hour > 11) {
+                    return (hour - 12) + ":" + strMinutes + " PM";
+                } else {
+                    if (hour == 0) {
+                        return "12:" + strMinutes + " AM";
+                    } else {
+                        return hour + ":" + strMinutes + " AM";
+                    }
+                }
             }
         });
     }
