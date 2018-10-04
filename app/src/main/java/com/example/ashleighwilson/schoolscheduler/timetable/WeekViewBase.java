@@ -105,7 +105,7 @@ public class WeekViewBase extends WeekViewFragment
         startTime.set(Calendar.MONTH, newMonth - 1);
         startTime.set(Calendar.YEAR, newYear);
         Calendar endTime = (Calendar) startTime.clone();
-        endTime.add(Calendar.HOUR, 1);
+        endTime.add(Calendar.HOUR, 3);
         endTime.set(Calendar.MONTH, newMonth - 1);
         WeekViewEvent event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
                 startTime, endTime);
@@ -116,12 +116,12 @@ public class WeekViewBase extends WeekViewFragment
         WeekViewUtil.masterEvents.put("" + event.getId(), event);
 
         startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY, 3);
+        startTime.set(Calendar.HOUR_OF_DAY, 8);
         startTime.set(Calendar.MINUTE, 30);
         startTime.set(Calendar.MONTH, newMonth-1);
         startTime.set(Calendar.YEAR, newYear);
         endTime = (Calendar) startTime.clone();
-        endTime.set(Calendar.HOUR_OF_DAY, 4);
+        endTime.set(Calendar.HOUR_OF_DAY, 9);
         endTime.set(Calendar.MINUTE, 30);
         endTime.set(Calendar.MONTH, newMonth-1);
         event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
