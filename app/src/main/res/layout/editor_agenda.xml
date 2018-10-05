@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/toolbar_main"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/assignment_title"
+                style="@style/CategoryStyle"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <EditText
+                    android:id="@+id/assignment_title_edit_text"
+                    style="@style/EditorFieldStyle"
+                    android:fontFamily="sans-serif"
+                    android:hint="@string/title_hint"
+                    android:inputType="textCapWords" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/due_date_string"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <TextView
+                    android:id="@+id/agenda_due_date_text"
+                    style="@style/EditorFieldStyle"
+                    android:layout_marginTop="6dp"
+                    android:drawableBottom="@drawable/line"
+                    android:fontFamily="sans-serif"
+                    android:hint="@string/date_hint" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/subject_string"/>
+
+            <LinearLayout
+                style="@style/LinearStyle">
+
+                <EditText
+                    android:id="@+id/agenda_subject_edit_text"
+                    style="@style/EditorFieldStyle"
+                    android:ems="10"
+                    android:fontFamily="sans-serif"
+                    android:hint="@string/subject_hint"
+                    android:inputType="textCapCharacters" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:id="@+id/agenda_view_color"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/circle"/>
+
+            <Button
+                android:id="@+id/agenda_create_color"
+                android:layout_height="60dp"
+                android:layout_width="100dp"
+                android:layout_marginStart="65dp"
+                android:text="@string/pick_a_color_string"/>
+
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/add_a_note_hint"
+            android:inputType="textMultiLine"/>
+    </LinearLayout>
+</RelativeLayout>

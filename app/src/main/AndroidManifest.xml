@@ -65,8 +65,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity"/>
         </activity>
-        <activity android:name=".editors.TimeTableEditor" />
+        <activity
+            android:name=".editors.TimeTableEditor"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".OverviewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
+
         <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".editors.AgendaEditor"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".OverviewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
     </application>
 
 </manifest>

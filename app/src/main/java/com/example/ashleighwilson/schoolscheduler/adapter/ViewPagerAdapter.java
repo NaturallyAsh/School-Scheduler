@@ -1,15 +1,13 @@
 package com.example.ashleighwilson.schoolscheduler.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.ashleighwilson.schoolscheduler.CalenderFrag;
 import com.example.ashleighwilson.schoolscheduler.SubjectsFrag;
-import com.example.ashleighwilson.schoolscheduler.TasksFrag;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter
 {
@@ -36,7 +34,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter
             case 0:
                 return new SubjectsFrag();
             case 1:
-                return new TasksFrag();
+                return new AgendaFrag();
             case 2:
                 return new CalenderFrag();
         }

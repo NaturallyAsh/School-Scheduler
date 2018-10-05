@@ -73,6 +73,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
     TextView monthView, weekView, dayView;
+    private TextView emptyView;
     Toolbar toolbar;
     WeekViewEvent weekViewEvent;
     Calendar weekViewTime;
@@ -118,6 +119,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         toolbar = (Toolbar)getActivity().findViewById(R.id.week_toolbar);
 
         mAppBarLayout = (AppBarLayout) rootView.findViewById(R.id.app_bar_cal);
+
+        emptyView = rootView.findViewById(R.id.empty_calendar_view);
 
         calendar = (ExtendedCalendarView) rootView.findViewById(R.id.calendar);
 

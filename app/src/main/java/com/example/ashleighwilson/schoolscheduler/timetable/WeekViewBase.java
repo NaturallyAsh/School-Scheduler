@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.example.ashleighwilson.schoolscheduler.CalenderFrag;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
@@ -14,7 +13,6 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class WeekViewBase extends WeekViewFragment
@@ -25,18 +23,14 @@ public class WeekViewBase extends WeekViewFragment
     private static long eventViewId;
     public final static String ARG_EVENT_ID = "arg_event_id";
     Context mContext = MySchedulerApp.getInstance();
-    //List<WeekViewEvent> events = new ArrayList<>();
     DbHelper dbHelper = new DbHelper(mContext);
-    //WeekViewEvent event;
     WeekViewEvent dbEvent;
-    int START_YEAR, START_MONTH, START_HOUR, START_MIN, END_HOUR, END_MIN, END_MONTH = 0;
 
     public static WeekViewBase newInstance(long event_id)
     {
         WeekViewBase fragment = new WeekViewBase();
         Bundle bundle = new Bundle();
         bundle.putLong(ARG_EVENT_ID, event_id);
-        //bundle.putSerializable("events", (Serializable) eventInstance);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -60,7 +54,6 @@ public class WeekViewBase extends WeekViewFragment
         onAttachToPF(getParentFragment());
         setRetainInstance(true);
         Log.i(TAG, "onCreate!");
-        //eventListByMonth = (List<WeekViewEvent>) getArguments().getSerializable("events");
         mContext = MySchedulerApp.getInstance();
     }
 

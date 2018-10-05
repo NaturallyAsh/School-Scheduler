@@ -5,12 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:id="@+id/agenda_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/task_recycler_view"
+        android:id="@+id/agenda_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="120dp"/>
+        android:layout_marginTop="40dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,18 +25,18 @@
         android:layout_centerInParent="true">
 
         <TextView
-            android:id="@+id/empty_task_view"
+            android:id="@+id/empty_agenda_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:visibility="invisible"
-            android:text="@string/no_subjects"/>
+            android:text="@string/no_agendas_string"/>
 
     </RelativeLayout>
 
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_all_task"
+        android:id="@+id/fab_all_agenda"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_alignParentBottom="true"
@@ -46,7 +53,7 @@
         app:menu_labels_singleLine="true">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_task"
+            android:id="@+id/fab_agenda"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:fab_colorNormal="@color/teal"
@@ -55,7 +62,7 @@
             app:fab_size="mini"/>
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_record_task"
+            android:id="@+id/fab_record_agenda"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_colorNormal="@color/LightSeaGreen"

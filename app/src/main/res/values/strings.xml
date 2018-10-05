@@ -86,6 +86,14 @@
     <string name="or">or</string>
     <string name="login_button_string">Login</string>
     <string name="logout_action_view">Logout</string>
+    <string name="assignment_title">Assignment Title</string>
+    <string name="due_date_string">Due Date</string>
+    <string name="date_hint">date</string>
+    <string name="subject_string">Subject</string>
+    <string name="subject_hint">subject</string>
+    <string name="add_a_note_hint">Add a note</string>
+    <string name="no_agendas_string">No Agendas</string>
+    <string name="no_events_string">No Events</string>
 
 
 </resources>

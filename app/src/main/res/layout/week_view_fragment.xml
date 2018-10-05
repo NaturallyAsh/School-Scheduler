@@ -49,6 +49,15 @@
 
     </android.support.v7.widget.RecyclerView>
 
+    <TextView
+        android:id="@+id/empty_calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        android:text="@string/no_events_string"/>
+
     <com.example.ashleighwilson.schoolscheduler.timetable.WeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"

@@ -36,7 +36,7 @@ public class OverviewActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-    CharSequence tabTitles[] = {"SUBJECTS", "TASKS", "CALENDER"};
+    CharSequence tabTitles[] = {"SUBJECTS", "AGENDA", "CALENDER"};
     int numOfTabs = 3;
     ViewPagerAdapter adapter;
     AppBarLayout appBarLayout;
