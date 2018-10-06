@@ -54,12 +54,18 @@ public class DbHelper extends SQLiteOpenHelper
             TimeTableEntry.COLUMN_COLOR
     };
 
+    String[] spinnerColumns = new String[] {
+            SpinnerEntry._ID,
+            SpinnerEntry.COLUMN_SUBJECT
+            //SpinnerEntry.COLUMN_COLOR
+    };
+
     private static final String TAG = DbHelper.class.getSimpleName();
 
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 17;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -126,6 +132,20 @@ public class DbHelper extends SQLiteOpenHelper
             + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_COLOR + " INTEGER);";
 
+    public static final class SpinnerEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "subject_spinner";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_SUBJECT = "name";
+        //public final static String COLUMN_COLOR = "color";
+    }
+
+    String SQL_CREATE_SPINNER_TABLE = "CREATE TABLE " + SpinnerEntry.TABLE_NAME +
+            " ("
+            + SpinnerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + SpinnerEntry.COLUMN_SUBJECT + " TEXT);";
+            //+ SpinnerEntry.COLUMN_COLOR + " INTEGER);";
+
     public DbHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -138,6 +158,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL(SQL_CREATE_SUBJECTS_TABLE);
         db.execSQL(SQL_CREATE_RECORDINGS_TABLE);
         db.execSQL(SQL_CREATE_TIMETABLE_TABLE);
+        db.execSQL(SQL_CREATE_SPINNER_TABLE);
     }
 
     @Override
@@ -282,7 +303,9 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(RecordEntry.COLUMN_RECORD_LENGTH, length);
         values.put(RecordEntry.COLUMN_RECORD_TIME, System.currentTimeMillis());
 
-        return db.insert(RecordEntry.TABLE_NAME, null, values);
+        long id = db.insert(RecordEntry.TABLE_NAME, null, values);
+        db.close();
+        return id;
     }
 
     public long addAltRecording(RecordingModel model)
@@ -348,7 +371,9 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());
 
-        return db.insert(TimeTableEntry.TABLE_NAME, null, values);
+        long id = db.insert(TimeTableEntry.TABLE_NAME, null, values);
+        db.close();
+        return id;
     }
 
     /*public void timeTableList (List<WeekViewEvent> list)
@@ -378,6 +403,38 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(TimeTableEntry.TABLE_NAME, timeTableColumns, null, null,
                 null, null, null);
+    }
+
+    public void addToSpinner(String label)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SpinnerEntry.COLUMN_SUBJECT, label);
+        //values.put(SpinnerEntry.COLUMN_COLOR, model.getmColor());
+
+        db.insert(SpinnerEntry.TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public List<String> getAllLabels()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<String> labels = new ArrayList<>();
+
+        String selectQuery = "SELECT * FROM " + SpinnerEntry.TABLE_NAME;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                labels.add(cursor.getString(1));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return labels;
     }
 
     public long getTimeTableId(long id)

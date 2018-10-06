@@ -71,15 +71,17 @@
                 android:text="@string/subject_string"/>
 
             <LinearLayout
-                style="@style/LinearStyle">
+                style="@style/LinearStyle"
+                android:layout_height="match_parent">
 
-                <EditText
-                    android:id="@+id/agenda_subject_edit_text"
+                <Spinner
+                    android:id="@+id/agenda_subject_spinner"
                     style="@style/EditorFieldStyle"
+                    android:layout_height="match_parent"
                     android:ems="10"
                     android:fontFamily="sans-serif"
                     android:hint="@string/subject_hint"
-                    android:inputType="textCapCharacters" />
+                    android:prompt="@string/subject_title"/>
             </LinearLayout>
 
         </LinearLayout>

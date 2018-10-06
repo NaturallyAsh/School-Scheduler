@@ -237,6 +237,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmEndTime(endString);
 
         dbHelper.addClass(model);
+        dbHelper.addToSpinner(titleString);
         if (dbHelper == null)
         {
             Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();

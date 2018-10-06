@@ -2529,6 +2529,7 @@ public class WeekView extends View {
             verticalOffset = mHourHeight * (mMaxTime - mMinTime);
         else if (hour > mMinTime)
             verticalOffset = (int) (mHourHeight * hour);
+            //verticalOffset = (int) (mHourHeight * (hour - mMinTime));
 
         if (verticalOffset > mHourHeight * (mMaxTime - mMinTime) - getHeight() + mHeaderHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)
             verticalOffset = (int)(mHourHeight * (mMaxTime - mMinTime) - getHeight() + mHeaderHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom);

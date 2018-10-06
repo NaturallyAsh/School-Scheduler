@@ -71,8 +71,7 @@
         app:headerRowPadding="12dp"
         app:columnGap="8dp"
         app:noOfVisibleDays="3"
-        app:minTime="7"
-        app:maxTime="21"
+
         app:autoLimitTime="false"
         app:headerRowBackgroundColor="@color/white"
         app:newEventTimeResolutionInMinutes="15"

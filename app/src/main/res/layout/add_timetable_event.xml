@@ -79,7 +79,7 @@
                     android:ems="10"
                     android:fontFamily="sans-serif"
                     android:hint="@string/room_hint"
-                    android:inputType="textCapCharacters" />
+                    android:inputType="number" />
             </LinearLayout>
 
         </LinearLayout>
