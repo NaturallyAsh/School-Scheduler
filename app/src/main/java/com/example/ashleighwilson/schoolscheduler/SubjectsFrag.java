@@ -59,8 +59,6 @@ public class SubjectsFrag extends DialogFragment
     FloatingActionMenu fabAll;
     com.github.clans.fab.FloatingActionButton subFab;
     com.github.clans.fab.FloatingActionButton recFab;
-    static final int ALL_PERMISSIONS = 101;
-
 
     public SubjectsFrag() {
     }

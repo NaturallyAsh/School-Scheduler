@@ -97,7 +97,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/edit_button"
+            android:id="@+id/agenda_popup_bt"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="40dp"
             android:layout_height="wrap_content"

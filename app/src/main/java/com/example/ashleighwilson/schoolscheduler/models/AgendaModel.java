@@ -4,17 +4,23 @@ import java.util.Calendar;
 
 public class AgendaModel
 {
+    private int mId;
     private String mClassName;
     private String mAgendaTitle;
-    int mColor;
+    private int mColor;
     Calendar mDueDate;
 
-    public AgendaModel(String name, String title, int color, Calendar date)
+    public AgendaModel(int id, String name, String title, Calendar date, int color)
     {
+        this.mId = id;
         this.mClassName = name;
         this.mAgendaTitle = title;
         this.mColor = color;
         this.mDueDate = date;
+    }
+
+    public AgendaModel() {
+
     }
 
     public String getClassName()

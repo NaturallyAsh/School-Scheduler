@@ -134,6 +134,7 @@
     <orderEntry type="library" name="Gradle: io.realm:android-adapters-3.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-fragment-27.1.1" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:runtime-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.skydoves:powermenu-2.0.5" level="project" />
     <orderEntry type="library" name="Gradle: com.github.EunsilJo:TimeTable-1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:design-27.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:monitor-1.0.2" level="project" />

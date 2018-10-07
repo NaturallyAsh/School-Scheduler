@@ -1,7 +1,9 @@
 package com.example.ashleighwilson.schoolscheduler;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -12,29 +14,36 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
+import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
+import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
+import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 import com.github.clans.fab.FloatingActionMenu;
+import com.skydoves.powermenu.PowerMenu;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class AgendaFrag extends Fragment
 {
     FloatingActionMenu fabAll;
     com.github.clans.fab.FloatingActionButton agendaFab;
+    private Button popupBt;
     private TextView emptyView;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private DbHelper dbHelper;
     private AgendaAdapter agendaAdapter;
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
-    AgendaEditor agendaEditor;
-
+    private com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu iconMenu;
+    private Context mContext = MySchedulerApp.getInstance();
 
     public AgendaFrag() {
         // Required empty public constructor
@@ -61,6 +70,11 @@ public class AgendaFrag extends Fragment
         agendaFab.setOnClickListener(listener);
         emptyView = view.findViewById(R.id.empty_agenda_view);
 
+        dbHelper = new DbHelper(getActivity());
+
+        //iconMenu = PowerMenuUtils.getIconPowerMenu(mContext, this, onIconMenuItemClickListener);
+
+
         recyclerView = view.findViewById(R.id.agenda_recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -69,24 +83,45 @@ public class AgendaFrag extends Fragment
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        if (!(agendaList.size()< 1))
-        {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
-            recyclerView.setAdapter(agendaAdapter);
-            agendaAdapter.notifyDataSetChanged();
-        }
-        else
-        {
-            recyclerView.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(agendaAdapter);
-            agendaAdapter.notifyDataSetChanged();
-        }
+        agendaDbList();
 
         FloatingClicked();
 
         return view;
+    }
+
+    public void agendaDbList()
+    {
+        agendaList.clear();
+        Cursor cursor = dbHelper.getAgenda();
+        while (cursor.moveToNext())
+        {
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String title = cursor.getString(2);
+            Calendar dueDate = Calendar.getInstance();
+            dueDate.setTimeInMillis(cursor.getLong(3));
+            int color = cursor.getInt(4);
+
+            AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
+
+            agendaList.add(model);
+
+            if (!(agendaList.size() < 1))
+            {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+                recyclerView.setAdapter(agendaAdapter);
+                agendaAdapter.notifyDataSetChanged();
+            }
+            else
+            {
+                recyclerView.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                recyclerView.setAdapter(agendaAdapter);
+                agendaAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void FloatingClicked()
@@ -134,5 +169,4 @@ public class AgendaFrag extends Fragment
         inflater.inflate(R.menu.menu_overview, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 }

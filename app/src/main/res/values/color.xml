@@ -178,4 +178,8 @@
     <color name="text_two">#94ffffff</color>
     <color name="secondPage">#00838F</color>
     <color name="background">#131A56</color>
+
+    <color name="menu_background">#EDC9FF</color>
+    <color name="menu_text_selected">#AA00FF</color>
+    <color name="menu_text_no_selected">#dd000000</color>
 </resources>

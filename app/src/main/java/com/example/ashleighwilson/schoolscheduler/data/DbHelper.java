@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
@@ -60,12 +61,20 @@ public class DbHelper extends SQLiteOpenHelper
             //SpinnerEntry.COLUMN_COLOR
     };
 
+    String[] agendaColumns = new String[] {
+            AgendaEntry._ID,
+            AgendaEntry.COLUMN_NAME,
+            AgendaEntry.COLUMN_TITLE,
+            AgendaEntry.COLUMN_DUEDATE,
+            AgendaEntry.COLUMN_COLOR
+    };
+
     private static final String TAG = DbHelper.class.getSimpleName();
 
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 21;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -146,6 +155,24 @@ public class DbHelper extends SQLiteOpenHelper
             + SpinnerEntry.COLUMN_SUBJECT + " TEXT);";
             //+ SpinnerEntry.COLUMN_COLOR + " INTEGER);";
 
+    public static final class AgendaEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "agenda";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_NAME = "name";
+        public final static String COLUMN_TITLE = "title";
+        public final static String COLUMN_DUEDATE = "date";
+        public final static String COLUMN_COLOR = "color";
+    }
+
+    String SQL_CREATE_AGENDA_TABLE = "CREATE TABLE " + AgendaEntry.TABLE_NAME +
+            " ("
+            + AgendaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + AgendaEntry.COLUMN_NAME + " TEXT, "
+            + AgendaEntry.COLUMN_TITLE + " TEXT, "
+            + AgendaEntry.COLUMN_DUEDATE + " INTEGER, "
+            + AgendaEntry.COLUMN_COLOR + " INTEGER);";
+
     public DbHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -159,6 +186,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL(SQL_CREATE_RECORDINGS_TABLE);
         db.execSQL(SQL_CREATE_TIMETABLE_TABLE);
         db.execSQL(SQL_CREATE_SPINNER_TABLE);
+        db.execSQL(SQL_CREATE_AGENDA_TABLE);
     }
 
     @Override
@@ -167,6 +195,8 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + SchoolEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + RecordEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TimeTableEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + SpinnerEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AgendaEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -435,6 +465,37 @@ public class DbHelper extends SQLiteOpenHelper
         db.close();
 
         return labels;
+    }
+
+    public long addAgenda(AgendaModel model)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AgendaEntry.COLUMN_NAME, model.getClassName());
+        values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
+        values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate().getTimeInMillis());
+        values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
+
+        long id = db.insert(AgendaEntry.TABLE_NAME, null, values);
+        db.close();
+
+        return id;
+    }
+
+    public Cursor getAgenda()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        return db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
+                null, null, null);
+    }
+
+    public long deleteAgenda(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(AgendaEntry.TABLE_NAME, SchoolEntry._ID + " =?",
+                new String[]{String.valueOf(id)});
     }
 
     public long getTimeTableId(long id)

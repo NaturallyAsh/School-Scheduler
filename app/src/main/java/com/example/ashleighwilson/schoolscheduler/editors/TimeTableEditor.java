@@ -7,12 +7,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,8 +31,6 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 
-import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,12 +58,20 @@ public class TimeTableEditor extends AppCompatActivity implements
     public static int START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE = 0;
     public static int END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE = 0;
     static private int subColor;
-    private boolean mSubjectHasChanged = false;
     private boolean isEditMode;
     private WeekViewLoader mWeekViewLoader;
     WeekViewEvent event;
     DbHelper dbHelper;
     EventsPreference pref;
+
+    private boolean mSubjectHasChanged = false;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mSubjectHasChanged = true;
+            return false;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -106,6 +114,9 @@ public class TimeTableEditor extends AppCompatActivity implements
         mRoomEditText = findViewById(R.id.room_timetable);
         mStartTime = findViewById(R.id.timetable_start_time);
         mEndTime = findViewById(R.id.timetable_end_time);
+
+        mTitleEditText.setOnTouchListener(mTouchListener);
+        mRoomEditText.setOnTouchListener(mTouchListener);
 
         if (event != null)
         {
@@ -384,7 +395,7 @@ public class TimeTableEditor extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.menu_subject_editor, menu);
+        getMenuInflater().inflate(R.menu.menu_timetable_editor, menu);
         super.onCreateOptionsMenu(menu);
         return true;
     }
@@ -404,15 +415,14 @@ public class TimeTableEditor extends AppCompatActivity implements
             case android.R.id.home:
                 if (!mSubjectHasChanged)
                 {
-                    //onBackPressed();
-                    getFragmentManager().popBackStack();
+                    NavUtils.navigateUpFromSameTask(TimeTableEditor.this);
                     return true;
                 }
 
                 DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                       getFragmentManager().popBackStack();
+                        NavUtils.navigateUpFromSameTask(TimeTableEditor.this);
                     }
                 };
 

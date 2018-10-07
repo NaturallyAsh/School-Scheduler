@@ -111,6 +111,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:hint="@string/add_a_note_hint"
             android:inputType="textMultiLine"/>
     </LinearLayout>
