@@ -15,8 +15,10 @@ import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder>
@@ -48,11 +50,12 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
 
         holder.agendaTitle.setText(currentAgenda.getAgendaTitle());
         holder.className.setText(currentAgenda.getClassName());
+        holder.dueDate.setText(currentAgenda.getDueDate());
         holder.color.setBackgroundColor(currentAgenda.getmColor());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(currentAgenda.getDueDate().getTimeInMillis());
-        //holder.dueDate.setText(String.valueOf(calendar));
-
+        /*
+         * int difference = ((int)((currentTime.getTime() / (24*60*60*1000)) - (int)
+          * (endDate.getTime() / (24*60*60*1000))));
+          * */
         holder.popMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +82,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             super(itemView);
             className = itemView.findViewById(R.id.agenda_class_name);
             agendaTitle = itemView.findViewById(R.id.agenda_assignment_title_text);
-            dueDate = itemView.findViewById(R.id.agenda_due_date_text);
+            dueDate = itemView.findViewById(R.id.due_date_text);
             color = itemView.findViewById(R.id.agenda_color_item);
             popMenu = itemView.findViewById(R.id.agenda_popup_bt);
         }

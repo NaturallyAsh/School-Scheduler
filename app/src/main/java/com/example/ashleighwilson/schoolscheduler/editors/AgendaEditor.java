@@ -76,6 +76,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         viewColor = findViewById(R.id.agenda_view_color);
 
         mAssignmentTitle.setOnTouchListener(mTouchListener);
+        mClassName.setOnItemSelectedListener(this);
 
         loadSpinnerData();
 
@@ -175,17 +176,16 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     {
         AgendaModel model = new AgendaModel();
         String titleString = mAssignmentTitle.getText().toString().trim();
+        String dueDate = mDueDate.getText().toString().trim();
 
         model.setClassName(label);
         model.setAgendaTitle(titleString);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
-        Calendar time = Calendar.getInstance();
-        time.setTime(date);
-        model.setDueDate(time);
+        model.setDueDate(dueDate);
         model.setmColor(agendaColor);
 
         dbHelper.addAgenda(model);
         Log.i(TAG, "spinner label: " + label);
+        Log.i(TAG, "date: " + date);
 
         Toast.makeText(this, "Agenda saved", Toast.LENGTH_SHORT).show();
     }

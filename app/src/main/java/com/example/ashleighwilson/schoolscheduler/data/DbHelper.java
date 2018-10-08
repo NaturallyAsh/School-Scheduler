@@ -74,7 +74,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 21;
+    private static final int DATABASE_VERSION = 22;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -170,7 +170,7 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + AgendaEntry.COLUMN_NAME + " TEXT, "
             + AgendaEntry.COLUMN_TITLE + " TEXT, "
-            + AgendaEntry.COLUMN_DUEDATE + " INTEGER, "
+            + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
             + AgendaEntry.COLUMN_COLOR + " INTEGER);";
 
     public DbHelper(Context context)
@@ -473,7 +473,7 @@ public class DbHelper extends SQLiteOpenHelper
         ContentValues values = new ContentValues();
         values.put(AgendaEntry.COLUMN_NAME, model.getClassName());
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
-        values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate().getTimeInMillis());
+        values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
 
         long id = db.insert(AgendaEntry.TABLE_NAME, null, values);

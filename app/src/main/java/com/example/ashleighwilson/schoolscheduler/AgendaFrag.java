@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,12 +28,15 @@ import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 import com.github.clans.fab.FloatingActionMenu;
 import com.skydoves.powermenu.PowerMenu;
 
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 
 public class AgendaFrag extends Fragment
 {
+    private static final String TAG = AgendaFrag.class.getSimpleName();
+
     FloatingActionMenu fabAll;
     com.github.clans.fab.FloatingActionButton agendaFab;
     private Button popupBt;
@@ -99,9 +103,10 @@ public class AgendaFrag extends Fragment
             int id = cursor.getInt(0);
             String name = cursor.getString(1);
             String title = cursor.getString(2);
-            Calendar dueDate = Calendar.getInstance();
-            dueDate.setTimeInMillis(cursor.getLong(3));
+            String dueDate = cursor.getString(3);
             int color = cursor.getInt(4);
+
+            Log.i(TAG, "date: " + dueDate);
 
             AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
 
@@ -168,5 +173,12 @@ public class AgendaFrag extends Fragment
     {
         inflater.inflate(R.menu.menu_overview, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        agendaDbList();
     }
 }

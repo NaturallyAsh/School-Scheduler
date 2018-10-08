@@ -8,9 +8,9 @@ public class AgendaModel
     private String mClassName;
     private String mAgendaTitle;
     private int mColor;
-    Calendar mDueDate;
+    private String mDueDate;
 
-    public AgendaModel(int id, String name, String title, Calendar date, int color)
+    public AgendaModel(int id, String name, String title, String date, int color)
     {
         this.mId = id;
         this.mClassName = name;
@@ -53,12 +53,12 @@ public class AgendaModel
         this.mColor = color;
     }
 
-    public Calendar getDueDate()
+    public String getDueDate()
     {
         return mDueDate;
     }
 
-    public void setDueDate(Calendar date)
+    public void setDueDate(String date)
     {
         this.mDueDate = date;
     }
