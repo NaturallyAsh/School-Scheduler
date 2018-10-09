@@ -6,6 +6,7 @@ public class PowerMenuItem
     protected int icon;
     protected boolean isSelected;
     protected Object tag;
+    private int mId;
 
     public PowerMenuItem(String title) {
         this.title = title;
@@ -81,5 +82,15 @@ public class PowerMenuItem
 
     public void setIcon(int icon) {
         this.icon = icon;
+    }
+
+    public int getmId()
+    {
+        return mId;
+    }
+
+    public void setmId(int id)
+    {
+        this.mId = id;
     }
 }
