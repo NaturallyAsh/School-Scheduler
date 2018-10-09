@@ -10,17 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder>
@@ -29,12 +26,14 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     private List<AgendaModel> agendaData;
     private PowerMenu iconMenu;
     private OnMenuItemClickListener listener;
+    private DbHelper dbHelper;
 
 
     public AgendaAdapter(Context context, ArrayList<AgendaModel> models)
     {
         this.mContext = context;
         this.agendaData = models;
+        this.dbHelper = new DbHelper(mContext);
 
         setAgendaData(models);
     }
@@ -59,10 +58,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         holder.dueDate.setTag(holder);
         holder.color.setBackgroundColor(currentAgenda.getmColor());
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
-        /*
-         * int difference = ((int)((currentTime.getTime() / (24*60*60*1000)) - (int)
-          * (endDate.getTime() / (24*60*60*1000))));
-          * */
+
         holder.popMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +109,11 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         return agendaData.size();
     }
 
+    @Override
+    public long getItemId(int position)
+    {
+        return position;
+    }
 
     private OnMenuItemClickListener<PowerMenuItem> onIconMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
         @Override
@@ -136,8 +137,8 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         notifyItemRangeChanged(0, data.size());
     }
 
-    public void setCompletedTv()
+    public void dismissAgenda(int position)
     {
-
+        //dbHelper.deleteAgenda(agendaData.get(position).ge)
     }
 }

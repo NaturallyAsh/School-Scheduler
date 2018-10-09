@@ -84,7 +84,7 @@ public class AgendaModel
     public void setmInterval()
     {
         String strThatDay = mDueDate;
-        Log.i(TAG, "date: " + mDueDate);
+        //Log.i(TAG, "date: " + mDueDate);
 
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;

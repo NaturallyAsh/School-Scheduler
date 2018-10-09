@@ -494,7 +494,7 @@ public class DbHelper extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        return db.delete(AgendaEntry.TABLE_NAME, SchoolEntry._ID + " =?",
+        return db.delete(AgendaEntry.TABLE_NAME, AgendaEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
     }
 
