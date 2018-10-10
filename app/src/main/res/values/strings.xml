@@ -94,6 +94,7 @@
     <string name="add_a_note_hint">Add a note</string>
     <string name="no_agendas_string">No Agendas</string>
     <string name="no_events_string">No Events</string>
+    <string name="notification_string">Notification:</string>
 
 
 </resources>

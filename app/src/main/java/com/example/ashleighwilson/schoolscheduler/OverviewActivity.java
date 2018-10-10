@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 
 import java.util.ArrayList;

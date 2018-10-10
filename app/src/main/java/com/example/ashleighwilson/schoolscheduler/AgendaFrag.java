@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
@@ -61,6 +62,7 @@ public class AgendaFrag extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate!");
     }
 
     @Override
@@ -68,6 +70,7 @@ public class AgendaFrag extends Fragment
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_agendas, container, false);
+        Log.i(TAG, "onCreateView!");
 
         setHasOptionsMenu(true);
 
@@ -118,12 +121,13 @@ public class AgendaFrag extends Fragment
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+                            agendaAdapter.dismissAgenda(viewHolder.getAdapterPosition());
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+                            agendaAdapter.notifyItemRemoved(position + 1);
+                            agendaAdapter.notifyItemRangeChanged(position, agendaAdapter.getItemCount());
                         }
                     }).show();
                 }
@@ -147,7 +151,8 @@ public class AgendaFrag extends Fragment
             String dueDate = cursor.getString(3);
             int color = cursor.getInt(4);
 
-            Log.i(TAG, "date: " + dueDate);
+            //Log.i(TAG, "date: " + dueDate);
+            Log.i(TAG, "id: " + id);
 
             AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
 

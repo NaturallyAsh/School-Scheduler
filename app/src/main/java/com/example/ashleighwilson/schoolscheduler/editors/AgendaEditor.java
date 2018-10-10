@@ -17,13 +17,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
@@ -35,12 +38,13 @@ import java.util.Date;
 import java.util.List;
 
 public class AgendaEditor extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
-        SimpleDateDialog.OnDialogResultListener
+        SimpleDateDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener
 {
     private static final String TAG = AgendaEditor.class.getSimpleName();
 
     private EditText mAssignmentTitle;
     private TextView mDueDate, viewColor;
+    private Switch mNotification;
     private String label;
     private Spinner mClassName;
     private DbHelper dbHelper;
@@ -48,6 +52,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String COLOR_DIALOG = "color dialog";
     private static final String DATE_DIALOG = "date dialog";
     static private int agendaColor;
+    NotificationController controller;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -69,14 +74,17 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbHelper = new DbHelper(getApplicationContext());
+        controller = new NotificationController(this);
 
         mAssignmentTitle = findViewById(R.id.assignment_title_edit_text);
         mClassName = findViewById(R.id.agenda_subject_spinner);
         mDueDate = findViewById(R.id.agenda_due_date_text);
         viewColor = findViewById(R.id.agenda_view_color);
+        mNotification = findViewById(R.id.notification_switch);
 
         mAssignmentTitle.setOnTouchListener(mTouchListener);
         mClassName.setOnItemSelectedListener(this);
+        mNotification.setOnCheckedChangeListener(this);
 
         loadSpinnerData();
 
@@ -128,6 +136,19 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> arg0)
     {
 
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        AgendaModel model = new AgendaModel();
+        //model.setmNotification(mNotification.isChecked());
+        //mNotification.setChecked(model.ismNotification());
+        if(isChecked)
+        {
+            mNotification.setChecked(true);
+            Log.i(TAG, "switch: " + isChecked);
+            model.setmNotification(mNotification.isChecked());
+        }
     }
 
     private int getMatColor(String typeColor) {
@@ -182,11 +203,12 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         model.setAgendaTitle(titleString);
         model.setDueDate(dueDate);
         model.setmColor(agendaColor);
-
         dbHelper.addAgenda(model);
         Log.i(TAG, "spinner label: " + label);
         Log.i(TAG, "date: " + date);
 
+        controller.notificationTest3(titleString, dueDate);
+        //controller.notificationTest2(titleString, dueDate);
         Toast.makeText(this, "Agenda saved", Toast.LENGTH_SHORT).show();
     }
 

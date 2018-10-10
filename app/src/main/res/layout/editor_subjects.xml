@@ -76,7 +76,7 @@
                     android:id="@+id/subject_room"
                     android:ems="10"
                     android:hint="@string/room_hint"
-                    android:inputType="textCapCharacters"/>
+                    android:inputType="number"/>
             </LinearLayout>
 
         </LinearLayout>

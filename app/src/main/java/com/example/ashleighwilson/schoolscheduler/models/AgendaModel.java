@@ -1,9 +1,13 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
-import android.util.Log;
+import android.content.Context;
+
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -11,6 +15,7 @@ public class AgendaModel
 {
     private static final String TAG = AgendaModel.class.getSimpleName();
 
+    private Context mContext = MySchedulerApp.getInstance();
     private int mId;
     private String mClassName;
     private String mAgendaTitle;
@@ -18,6 +23,9 @@ public class AgendaModel
     private String mDueDate;
     private boolean mBefore;
     private long mInterval;
+    private boolean mNotification;
+    private ArrayList<AgendaModel> allList = new ArrayList<>();
+    private NotificationController controller = new NotificationController(mContext);
 
     public AgendaModel(int id, String name, String title, String date, int color)
     {
@@ -30,6 +38,16 @@ public class AgendaModel
 
     public AgendaModel() {
 
+    }
+
+    public int getmId()
+    {
+        return mId;
+    }
+
+    public void setmId(int id)
+    {
+        this.mId = id;
     }
 
     public String getClassName()
@@ -77,6 +95,17 @@ public class AgendaModel
         return mBefore;
     }
 
+    public boolean ismNotification()
+    {
+        return mNotification;
+    }
+
+    public void setmNotification(boolean notification)
+    {
+        this.mNotification = notification;
+        //controller.scheduleNotification();
+    }
+
     public long getmInterval() {
         return mInterval;
     }
@@ -108,5 +137,36 @@ public class AgendaModel
         }
         long days = diff / (24 * 60 * 60 * 1000);
         mInterval = days;
+    }
+
+    public ArrayList<AgendaModel> getAllList()
+    {
+        return allList;
+    }
+
+    public void setAllList(ArrayList<AgendaModel> list)
+    {
+        this.allList = list;
+    }
+
+    public void addAgendaList(AgendaModel model)
+    {
+        this.allList.add(model);
+    }
+
+    public AgendaModel getListById(int id)
+    {
+        ArrayList<AgendaModel> list = getAllList();
+        if (list != null)
+        {
+            for (int i = 0; i < list.size(); i++)
+            {
+                if (list.get(i).getmId() == id)
+                {
+                    return list.get(i);
+                }
+            }
+        }
+        return null;
     }
 }

@@ -108,6 +108,13 @@
 
         </LinearLayout>
 
+        <Switch
+            android:id="@+id/notification_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/notification_string"/>
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

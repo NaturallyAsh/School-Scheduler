@@ -12,7 +12,6 @@ public class PowerMenuUtils
         return new PowerMenu.Builder(context)
                 .addItem(new PowerMenuItem("Completed", R.drawable.check_black_18dp))
                 .addItem(new PowerMenuItem("Edit", R.drawable.edit_black_18dp))
-                .addItem(new PowerMenuItem("Other"))
                 //.setLifecycleOwner(lifecycleOwner)
                 .setOnMenuItemClickListener(onMenuItemClickListener)
                 .setAnimation(MenuAnimation.FADE)
@@ -20,4 +19,6 @@ public class PowerMenuUtils
                 .setMenuShadow(10f)
                 .build();
     }
+
+
 }

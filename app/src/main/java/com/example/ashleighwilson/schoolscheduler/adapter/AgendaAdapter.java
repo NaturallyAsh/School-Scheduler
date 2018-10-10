@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
+import com.example.ashleighwilson.schoolscheduler.powermenu.MenuListAdapter;
 import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu;
 import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
@@ -69,12 +70,13 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
                 }
                 iconMenu.showAsDropDown(v, -375, 0);
                 //onIconMenuItemClickListener.onItemClick(position, s);
+
             }
         });
 
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class ViewHolder extends RecyclerView.ViewHolder
     {
         TextView className;
         TextView agendaTitle;
@@ -93,13 +95,6 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             popMenu = itemView.findViewById(R.id.agenda_popup_bt);
             countdownDate = itemView.findViewById(R.id.countdown_date);
 
-            popMenu.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int id = dueDate.getId();
-            //onIconMenuItemClickListener.onItemClick();
         }
     }
 
@@ -122,8 +117,11 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             {
                 case 0:
                     Toast.makeText(mContext, "completed clicked", Toast.LENGTH_SHORT).show();
+                    iconMenu.setSelectedPosition(position);
+                    break;
                 case 1:
                     Toast.makeText(mContext, "edit clicked", Toast.LENGTH_SHORT).show();
+                    iconMenu.setSelectedPosition(position);
             }
             iconMenu.dismiss();
         }
@@ -139,6 +137,8 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
 
     public void dismissAgenda(int position)
     {
-        //dbHelper.deleteAgenda(agendaData.get(position).ge)
+        dbHelper.deleteAgenda(agendaData.get(position).getmId());
+        agendaData.remove(position);
+        notifyItemRemoved(position);
     }
 }

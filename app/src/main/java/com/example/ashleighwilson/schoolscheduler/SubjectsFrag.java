@@ -161,23 +161,21 @@ public class SubjectsFrag extends DialogFragment
 
             subMod.add(model);
 
+            if (!(subMod.size()<1))
+            {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+                recyclerView.setAdapter(recyclerSubAdapter);
+                recyclerSubAdapter.notifyDataSetChanged();
+            }
+            else
+            {
+                recyclerView.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                recyclerView.setAdapter(recyclerSubAdapter);
+                recyclerSubAdapter.notifyDataSetChanged();
+            }
         }
-
-        if (!(subMod.size()<1))
-        {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
-            recyclerView.setAdapter(recyclerSubAdapter);
-            recyclerSubAdapter.notifyDataSetChanged();
-        }
-        else
-        {
-            recyclerView.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(recyclerSubAdapter);
-            recyclerSubAdapter.notifyDataSetChanged();
-        }
-
     }
 
     public void OnAddSubjectSubmit(String title, String teacher, String room) {
