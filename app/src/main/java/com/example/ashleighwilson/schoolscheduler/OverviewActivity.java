@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -22,10 +23,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -39,9 +43,11 @@ public class OverviewActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     CharSequence tabTitles[] = {"SUBJECTS", "AGENDA", "CALENDER"};
     int numOfTabs = 3;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
     ViewPagerAdapter adapter;
     AppBarLayout appBarLayout;
     SessionManager session;
+    private ImageView backdropIV;
 
 
     @Override
@@ -79,7 +85,8 @@ public class OverviewActivity extends AppCompatActivity
         } */
 
         appBarLayout = findViewById(R.id.main_appBar);
-
+        collapsingToolbarLayout = findViewById(R.id.overview_collapsingTB);
+        backdropIV = findViewById(R.id.main_backdrop);
         final ViewPager viewPager = findViewById(R.id.viewpager);
 
 
@@ -96,6 +103,7 @@ public class OverviewActivity extends AppCompatActivity
 
         mNavigationView = findViewById(R.id.nav_view);
         setupDrawerContent(mNavigationView);
+        setImage();
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         viewPager.setOffscreenPageLimit(2);
@@ -104,7 +112,7 @@ public class OverviewActivity extends AppCompatActivity
             public void onTabSelected(TabLayout.Tab tab)
             {
                 viewPager.setCurrentItem(tab.getPosition());
-                toolbar.setTitle(adapter.getPageTitle(tab.getPosition()));
+                //toolbar.setTitle(adapter.getPageTitle(tab.getPosition()));
                 invalidateFragmentMenus(tab.getPosition());
             }
 
@@ -118,6 +126,19 @@ public class OverviewActivity extends AppCompatActivity
 
             }
         });
+        viewPager.setPageTransformer(false, new ViewPager.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                final float normalizedPosition = Math.abs(Math.abs(position) - 1);
+                page.setScaleX(normalizedPosition / 2 + 0.5f);
+                page.setScaleY(normalizedPosition / 2 + 0.5f);
+            }
+        });
+    }
+
+    private void setImage()
+    {
+        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 500).into(backdropIV);
     }
 
     private void invalidateFragmentMenus(int position)
