@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
@@ -76,6 +78,8 @@ public class NotificationController
     public void notificationTest3(String title, String date)
     {
         AgendaModel model = new AgendaModel();
+        AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         String dueDate = date;
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
@@ -91,20 +95,19 @@ public class NotificationController
         if (futureDay.after(curr))
         {
             long timeToNotify = futureDay.getTimeInMillis() - 1000 * 60 * 5;
-            //Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
-            Intent intent = new Intent(mContext, AgendaFrag.class);
-            //notifyEvent.putExtra("title", title);
+            Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
+            notifyEvent.putExtra("title", title);
             final int id = (int) System.currentTimeMillis();
             //notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            //PendingIntent notifyIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, 0);
-            int flags = PendingIntent.FLAG_CANCEL_CURRENT;
-            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, intent, flags);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
+            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent, 0);
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            //PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, intent, flags);
+            alrmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeToNotify, AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, CHANNEL_ID)
                     .setContentTitle(title)
-                    .setContentText("DUE: " + date)
+                    .setContentText("DUE: " + date).setSound(alarmSound)
                     .setSmallIcon(R.drawable.notification_important_black_18dp)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);

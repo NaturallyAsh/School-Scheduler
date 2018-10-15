@@ -95,6 +95,13 @@
     <string name="no_agendas_string">No Agendas</string>
     <string name="no_events_string">No Events</string>
     <string name="notification_string">Notification:</string>
+    <string name="no_notes_saved_string">No Notes Saved</string>
+    <string name="attachment_string">Attachment</string>
+    <string name="share_string">Share</string>
+    <string name="enable_checklist_string">Enable checklist</string>
+    <string name="disable_checklist_string">Disable checklist</string>
+    <string name="trash_string">Trash</string>
+    <string name="restore_trash_string">Restore from trash</string>
 
 
 </resources>

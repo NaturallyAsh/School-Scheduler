@@ -48,6 +48,9 @@ public class OverviewActivity extends AppCompatActivity
     AppBarLayout appBarLayout;
     SessionManager session;
     private ImageView backdropIV;
+    public static String POSITION = "position";
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
 
     @Override
@@ -56,6 +59,11 @@ public class OverviewActivity extends AppCompatActivity
         Log.i(TAG, "onCreate!");
 
         setContentView(R.layout.activity_main_nav);
+
+        if (savedInstanceState != null)
+        {
+
+        }
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -87,13 +95,13 @@ public class OverviewActivity extends AppCompatActivity
         appBarLayout = findViewById(R.id.main_appBar);
         collapsingToolbarLayout = findViewById(R.id.overview_collapsingTB);
         backdropIV = findViewById(R.id.main_backdrop);
-        final ViewPager viewPager = findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
 
 
         adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
         viewPager.setAdapter(adapter);
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         drawer = findViewById(R.id.drawer_layout);
@@ -113,7 +121,20 @@ public class OverviewActivity extends AppCompatActivity
             {
                 viewPager.setCurrentItem(tab.getPosition());
                 //toolbar.setTitle(adapter.getPageTitle(tab.getPosition()));
+                switch (tab.getPosition())
+                {
+                    case 0:
+                        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 500).into(backdropIV);
+                        break;
+                    case 1:
+                        Picasso.get().load(R.drawable.agenda_drawable).resize(600, 500).into(backdropIV);
+                        break;
+                    case 2:
+                        Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 500).into(backdropIV);
+                        break;
+                }
                 invalidateFragmentMenus(tab.getPosition());
+                backdropIV.invalidate();
             }
 
             @Override
@@ -148,6 +169,20 @@ public class OverviewActivity extends AppCompatActivity
             adapter.getItem(i).setHasOptionsMenu(i == position);
         }
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+        viewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
     @Override
