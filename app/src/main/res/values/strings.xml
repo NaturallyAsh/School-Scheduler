@@ -102,6 +102,11 @@
     <string name="disable_checklist_string">Disable checklist</string>
     <string name="trash_string">Trash</string>
     <string name="restore_trash_string">Restore from trash</string>
+    <string name="title_note_string">Title</string>
+    <string name="content_hint_string">Content</string>
+    <string name="add_reminder_hint">Add reminder</string>
+    <string name="stroke_string">Stroke</string>
+    <string name="stroke_size_string">Stroke size</string>
 
 
 </resources>

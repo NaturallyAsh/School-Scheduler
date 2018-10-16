@@ -182,4 +182,8 @@
     <color name="menu_background">#EDC9FF</color>
     <color name="menu_text_selected">#AA00FF</color>
     <color name="menu_text_no_selected">#dd000000</color>
+
+    <color name="text_color_lighter">#9b000000</color>
+    <color name="text_color">#b9000000</color>
+    <color name="text_gray">#2d2d2d</color>
 </resources>

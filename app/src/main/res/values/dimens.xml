@@ -50,4 +50,8 @@
     <dimen name="bottom_width">126dp</dimen>
     <dimen name="bottom_height">86dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="attachment_dialog_text_size">16sp</dimen>
+    <dimen name="attachment_dialog_drawable_padding">12dp</dimen>
+    <dimen name="attachment_dialog_items_padding">12dp</dimen>
 </resources>

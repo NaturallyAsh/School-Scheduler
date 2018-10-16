@@ -1,20 +1,35 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
+
+import com.example.ashleighwilson.schoolscheduler.notes.Constants;
+import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
 
 public class NotesActivity extends AppCompatActivity
 {
     private static final String TAG = NotesActivity.class.getSimpleName();
 
     private FragmentManager mFragmentManager;
+    public final String FRAGMENT_NOTE_DETAIL_TAG = "fragment_note_detail";
     public final String FRAGMENT_NOTE_LIST_TAG = "fragment_note_list";
+    public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
+    protected final int TRANSITION_VERTICAL = 0;
+    protected final int TRANSITION_HORIZONTAL = 1;
+    public Toolbar toolbar;
+    public Uri sketchUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -22,25 +37,13 @@ public class NotesActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_activity);
 
-        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Notes");
 
-        /*FloatingActionButton fab = findViewById(R.id.fab_notes);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        }); */
-
-        getFragmentManagerInstance();
-        if (getFragmentManagerInstance().findFragmentByTag(FRAGMENT_NOTE_LIST_TAG ) == null)
-        {
-            FragmentTransaction transaction = getFragmentManagerInstance().beginTransaction();
-            transaction.add(R.id.fragment_note_container, new NoteListFragment(), FRAGMENT_NOTE_LIST_TAG).commit();
-        }
+        init();
 
     }
 
@@ -53,4 +56,149 @@ public class NotesActivity extends AppCompatActivity
         return mFragmentManager;
     }
 
+    private void init()
+    {
+        getFragmentManagerInstance();
+        if (getFragmentManagerInstance().findFragmentByTag(FRAGMENT_NOTE_LIST_TAG ) == null)
+        {
+            FragmentTransaction transaction = getFragmentManagerInstance().beginTransaction();
+            transaction.add(R.id.fragment_note_container, new NoteListFragment(), FRAGMENT_NOTE_LIST_TAG).commit();
+        }
+
+        handleIntents();
+    }
+
+    public void switchToDetail(Note note)
+    {
+        FragmentTransaction transaction = getFragmentManagerInstance().beginTransaction();
+        animateTransition(transaction, TRANSITION_HORIZONTAL);
+        NotesDetailFragment mNotesDetailFragment = new NotesDetailFragment();
+        Bundle b = new Bundle();
+        b.putParcelable(Constants.INTENT_NOTE, note);
+        mNotesDetailFragment.setArguments(b);
+        if (getFragmentManagerInstance().findFragmentByTag(FRAGMENT_NOTE_DETAIL_TAG) == null)
+        {
+            transaction.replace(R.id.fragment_note_container, mNotesDetailFragment, FRAGMENT_NOTE_DETAIL_TAG)
+                    .addToBackStack(FRAGMENT_NOTE_LIST_TAG)
+                    .commitAllowingStateLoss();
+        }
+        else
+        {
+            getFragmentManagerInstance().popBackStackImmediate();
+            transaction.replace(R.id.fragment_note_container, mNotesDetailFragment, FRAGMENT_NOTE_DETAIL_TAG)
+                    .addToBackStack(FRAGMENT_NOTE_DETAIL_TAG)
+                    .commitAllowingStateLoss();
+        }
+    }
+
+    public void switchToList()
+    {
+        FragmentTransaction transaction = getFragmentManagerInstance().beginTransaction();
+        animateTransition(transaction, TRANSITION_HORIZONTAL);
+        NoteListFragment mNoteListFragment = new NoteListFragment();
+        transaction.replace(R.id.fragment_note_container, mNoteListFragment, FRAGMENT_NOTE_LIST_TAG)
+                .addToBackStack(FRAGMENT_NOTE_DETAIL_TAG).commitAllowingStateLoss();
+        getFragmentManagerInstance().getFragments();
+    }
+
+    private boolean receivedIntent(Intent i) {
+        return Constants.ACTION_SHORTCUT.equals(i.getAction())
+                || Constants.ACTION_NOTIFICATION_CLICK.equals(i.getAction())
+                || Constants.ACTION_WIDGET.equals(i.getAction())
+                || Constants.ACTION_WIDGET_TAKE_PHOTO.equals(i.getAction())
+                || ((Intent.ACTION_SEND.equals(i.getAction())
+                || Intent.ACTION_SEND_MULTIPLE.equals(i.getAction())
+                || Constants.INTENT_GOOGLE_NOW.equals(i.getAction()))
+                && i.getType() != null)
+                || i.getAction().contains(Constants.ACTION_NOTIFICATION_CLICK);
+    }
+
+    private void handleIntents()
+    {
+        Intent i = getIntent();
+        if (i.getAction() == null)
+            return;
+
+        if (receivedIntent(i))
+        {
+            Note note = i.getParcelableExtra(Constants.INTENT_NOTE);
+            if (note == null)
+            {
+                note = new Note();
+            }
+            switchToDetail(note);
+            return;
+        }
+
+        if (Intent.ACTION_VIEW.equals(i.getAction()))
+        {
+            switchToList();
+            return;
+        }
+    }
+
+    private Fragment checkFragmentInstance(int id, Object instanceClass)
+    {
+        Fragment result = null;
+        Fragment fragment = getFragmentManagerInstance().findFragmentById(id);
+        if (fragment != null && instanceClass.equals(fragment.getClass()))
+        {
+            result = fragment;
+        }
+        return result;
+    }
+
+    public void onBackPressed()
+    {
+        Fragment f = checkFragmentInstance(R.id.fragment_note_container, NotesDetailFragment.class);
+        if (f != null)
+        {
+            //((NotesDetailFragment) f).goBack = true;
+            getFragmentManagerInstance().popBackStack();
+            return;
+        }
+        f = checkFragmentInstance(R.id.fragment_note_container, NoteListFragment.class);
+        if (f != null)
+        {
+            //super.onBackPressed();
+            getFragmentManagerInstance().popBackStack();
+        }
+        f = checkFragmentInstance(R.id.fragment_note_container, SketchFragment.class);
+        if (f != null)
+        {
+            ((SketchFragment) f).save();
+
+            getFragmentManagerInstance().popBackStack();
+            return;
+        }
+
+        getFragmentManagerInstance().popBackStack();
+        //super.onBackPressed();
+    }
+
+    protected void animateTransition(FragmentTransaction transaction, int direction)
+    {
+        if (direction == TRANSITION_HORIZONTAL)
+        {
+            transaction.setCustomAnimations(R.anim.fade_in_support, R.anim.fade_out_support,
+                    R.anim.fade_in_support, R.anim.fade_out_support);
+        }
+        if (direction == TRANSITION_VERTICAL)
+        {
+            transaction.setCustomAnimations(R.anim.anim_in, R.anim.anim_out, R.anim.anim_in_pop,
+                    R.anim.anim_out_pop);
+        }
+    }
+
+    public Toolbar getToolbar() {
+        return this.toolbar;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_notes_detail, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 }

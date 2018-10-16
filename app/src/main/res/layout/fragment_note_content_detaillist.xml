@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingLeft="6dp">
+
+        <EditText
+            android:id="@+id/notedetaillist_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:hint="@string/content_hint_string"
+            android:inputType="textCapSentences|textMultiLine" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/note_reminder_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/icon_selector"
+        android:clickable="true"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/note_reminder_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:contentDescription="reminder"
+            android:src="@drawable/ic_alarm_add_black_18dp"/>
+
+        <TextView
+            android:id="@+id/note_reminder_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:freezesText="true"
+            android:gravity="center_vertical"
+            android:hint="@string/add_reminder_hint"/>
+
+    </LinearLayout>
+
+</LinearLayout>

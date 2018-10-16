@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
+    android:id="@+id/attachment_dialog_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableLeft="@drawable/ic_photo_camera_black_24dp"
+        android:drawableStart="@drawable/ic_photo_camera_black_24dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="Camera"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableLeft="@drawable/ic_videocam_black_24dp"
+        android:drawableStart="@drawable/ic_videocam_black_24dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="Video"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableLeft="@drawable/ic_insert_drive_file_black_24dp"
+        android:drawableStart="@drawable/ic_insert_drive_file_black_24dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="Files"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/recording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableLeft="@drawable/ic_mic_black_24dp"
+        android:drawableStart="@drawable/ic_mic_black_24dp"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="Record"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+    <com.neopixl.pixlui.components.textview.TextView
+        android:id="@+id/sketch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon_selector"
+        android:drawableLeft="@drawable/ic_action_sketch"
+        android:drawableStart="@drawable/ic_action_sketch"
+        android:drawablePadding="@dimen/attachment_dialog_drawable_padding"
+        android:padding="@dimen/attachment_dialog_items_padding"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="Sketch"
+        android:textSize="@dimen/attachment_dialog_text_size"
+        pixlui:typeface="Roboto-Regular.ttf"
+        android:textColor="@color/text_gray"/>
+
+</LinearLayout>
