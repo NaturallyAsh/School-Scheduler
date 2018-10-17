@@ -142,6 +142,7 @@
     <orderEntry type="library" name="Gradle: com.github.EunsilJo:TimeTable-1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:design-27.1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:monitor-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.afollestad.material-dialogs:core-0.9.6.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7-27.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.federicoiosue:Omni-Notes-Commons:1.2.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout-solver:1.1.2@jar" level="project" />
@@ -165,6 +166,7 @@
     <orderEntry type="library" name="Gradle: com.jakewharton:butterknife-annotations:8.8.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.alamkanak:android-week-view-1.2.6" level="project" />
     <orderEntry type="library" name="Gradle: io.realm:realm-annotations:4.3.1@jar" level="project" />
+    <orderEntry type="library" name="Gradle: me.zhanghai.android.materialprogressbar:library-1.4.2" level="project" />
     <orderEntry type="library" name="Gradle: com.github.federicoiosue:SimpleGallery-2.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-vector-drawable-27.1.1" level="project" />
     <orderEntry type="library" name="Gradle: io.realm:realm-android-library-4.3.1" level="project" />

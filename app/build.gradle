@@ -61,6 +61,7 @@ dependencies {
     implementation "com.github.skydoves:powermenu:2.0.5"
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.federicoiosue:pixlui:2.6'
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.larswerkman:HoloColorPicker:1.4'
     implementation 'com.github.federicoiosue:Omni-Notes-Commons:1.2.0'
     implementation ('com.github.federicoiosue:SimpleGallery:2.0.0') {

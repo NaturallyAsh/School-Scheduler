@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:fab_colorNormal="@color/teal"
-            app:fab_colorPressed="@color/teal"
+            app:fab_colorPressed="@color/green"
             app:fab_label="Add Note"
             app:fab_size="mini"/>
 
@@ -64,8 +64,18 @@
             android:id="@+id/fab_note_photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/LightSeaGreen"
+            app:fab_colorNormal="@color/Blue"
+            app:fab_colorPressed="@color/DeepSkyBlue"
             app:fab_label="Add Photo"
+            app:fab_size="mini"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_note_sketch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/MediumPurple"
+            app:fab_colorPressed="@color/Violet"
+            app:fab_label="Add Sketch"
             app:fab_size="mini"/>
 
     </com.github.clans.fab.FloatingActionMenu>

@@ -52,6 +52,8 @@ public class NoteListFragment extends Fragment
     FloatingActionButton noteFab;
     @BindView(R.id.fab_note_photo)
     FloatingActionButton photoFab;
+    @BindView(R.id.fab_note_sketch)
+    FloatingActionButton sketchFab;
     @BindView(R.id.expanded_imageview)
     ImageView expandedIV;
     @BindView(R.id.note_list_root)
@@ -82,6 +84,7 @@ public class NoteListFragment extends Fragment
 
         noteFab.setOnClickListener(listener);
         photoFab.setOnClickListener(listener);
+        sketchFab.setOnClickListener(listener);
 
 
         return rootView;
@@ -123,6 +126,8 @@ public class NoteListFragment extends Fragment
                     editNote2(new Note());
                     break;
                 case R.id.fab_note_photo:
+                    break;
+                case R.id.fab_note_sketch:
                     takeSketch(null);
                     break;
                 default:

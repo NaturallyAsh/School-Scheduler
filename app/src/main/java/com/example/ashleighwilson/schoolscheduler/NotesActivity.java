@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,13 +11,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
+
+import butterknife.BindView;
+import eltos.simpledialogfragment.SimpleDialog;
 
 public class NotesActivity extends AppCompatActivity
 {
@@ -26,8 +32,8 @@ public class NotesActivity extends AppCompatActivity
     public final String FRAGMENT_NOTE_DETAIL_TAG = "fragment_note_detail";
     public final String FRAGMENT_NOTE_LIST_TAG = "fragment_note_list";
     public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
-    protected final int TRANSITION_VERTICAL = 0;
-    protected final int TRANSITION_HORIZONTAL = 1;
+    public final int TRANSITION_VERTICAL = 0;
+    public final int TRANSITION_HORIZONTAL = 1;
     public Toolbar toolbar;
     public Uri sketchUri;
 
@@ -40,11 +46,21 @@ public class NotesActivity extends AppCompatActivity
         toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        //getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Notes");
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
         init();
 
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        init();
     }
 
     private FragmentManager getFragmentManagerInstance()
@@ -113,6 +129,15 @@ public class NotesActivity extends AppCompatActivity
                 || i.getAction().contains(Constants.ACTION_NOTIFICATION_CLICK);
     }
 
+    @Override
+    public void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntents();
+        Log.i(TAG, "onNewIntent");
+    }
+
     private void handleIntents()
     {
         Intent i = getIntent();
@@ -130,11 +155,26 @@ public class NotesActivity extends AppCompatActivity
             return;
         }
 
+        if (Constants.ACTION_SEND_AND_EXIT.equals(i.getAction()))
+        {
+            saveAndExit(i);
+            return;
+        }
+
         if (Intent.ACTION_VIEW.equals(i.getAction()))
         {
             switchToList();
             return;
         }
+    }
+
+    private void saveAndExit(Intent intent)
+    {
+        Note note = new Note();
+        note.setTitle(intent.getStringExtra(Intent.EXTRA_SUBJECT));
+        note.setContent(intent.getStringExtra(Intent.EXTRA_TEXT));
+
+        showToast("Note saved", Toast.LENGTH_SHORT);
     }
 
     private Fragment checkFragmentInstance(int id, Object instanceClass)
@@ -176,7 +216,7 @@ public class NotesActivity extends AppCompatActivity
         //super.onBackPressed();
     }
 
-    protected void animateTransition(FragmentTransaction transaction, int direction)
+    public void animateTransition(FragmentTransaction transaction, int direction)
     {
         if (direction == TRANSITION_HORIZONTAL)
         {
@@ -194,11 +234,24 @@ public class NotesActivity extends AppCompatActivity
         return this.toolbar;
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_notes_detail, menu);
         return super.onCreateOptionsMenu(menu);
+    } */
+
+    public void showError(String title, String message)
+    {
+        SimpleDialog.build()
+                .title(title)
+                .msg(message)
+                .show(this);
+    }
+
+    public void showToast(CharSequence text, int duration)
+    {
+        Toast.makeText(getApplicationContext(), text, duration).show();
     }
 }
