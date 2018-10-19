@@ -14,6 +14,9 @@ import android.support.v4.app.NotificationCompat;
 import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
+import com.example.ashleighwilson.schoolscheduler.notes.Constants;
+import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,25 +38,33 @@ public class NotificationController
         this.list = new ArrayList<>();
     }
 
-    public void scheduleNotification()
+    public static void scheduleReminder(Context context, Note note)
     {
-        for (int i = 0; i < list.size(); i++)
-        {
-            alarmManager.cancel(list.get(i));
+        if (note.getAlarm() != null) {
+            addReminder(context, note, Long.parseLong(note.getAlarm()));
         }
-        list.clear();
+    }
 
+    public static void addReminder(Context context, Note note, long reminder)
+    {
+        if (DateHelper.isFuture(reminder)) {
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.putExtra(Constants.INTENT_NOTE, ParcelableUtil.marshall(note));
+            PendingIntent sender = PendingIntent.getBroadcast(context, getRequestCode(note), intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder, sender);
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, reminder, sender);
+            }
+        }
+    }
 
-        //ArrayList<AgendaModel> noteList = new ArrayList<>();
-        //noteList = model.getAllList();
-        int id = model.getmId();
-        long timeToNotify = model.getmInterval();
-        Intent notify = new Intent(mContext, NotificationReceiver.class);
-        //notify.putExtra("id", id);
-        final int _id = (int) System.currentTimeMillis();
-        PendingIntent notifyIntent = PendingIntent.getBroadcast(mContext, _id, notify, 0);
-        list.add(notifyIntent);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeToNotify, notifyIntent);
+    static int getRequestCode(Note note) {
+        Long longCode = note.getCreation() != null ? note.getCreation() :
+                Calendar.getInstance().getTimeInMillis() / 1000L;
+        return longCode.intValue();
     }
 
     public void notificationTest2(String title, String date)

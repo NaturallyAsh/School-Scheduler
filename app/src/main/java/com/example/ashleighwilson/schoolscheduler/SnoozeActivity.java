@@ -1,0 +1,114 @@
+package com.example.ashleighwilson.schoolscheduler;
+
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
+import com.example.ashleighwilson.schoolscheduler.notes.Constants;
+import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
+
+import java.util.Calendar;
+
+public class SnoozeActivity extends AppCompatActivity implements OnReminderPickedListener
+{
+    private Note note;
+    private Note[] notes;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getIntent().getParcelableExtra(Constants.INTENT_NOTE) != null) {
+            note = getIntent().getParcelableExtra(Constants.INTENT_NOTE);
+            manageNotification();
+        }
+    }
+
+    private void manageNotification()
+    {
+        if (Constants.ACTION_DISMISS.equals(getIntent().getAction())) {
+            setNextRecurrentReminder(note);
+            finish();
+        } else if (Constants.ACTION_SNOOZE.equals(getIntent().getAction())) {
+            String snoozeDelay = Constants.PREF_SNOOZE_DEFAULT;
+            long newReminder = Calendar.getInstance().getTimeInMillis() + Integer.parseInt(snoozeDelay)
+                    * 60 * 1000;
+            updateNoteReminder(newReminder, note);
+            finish();
+        } else {
+            Intent intent = new Intent(this, NotesActivity.class);
+            intent.putExtra(Constants.INTENT_KEY, note.get_id());
+            intent.setAction(Constants.ACTION_NOTIFICATION_CLICK);
+            startActivity(intent);
+            finish();
+        }
+
+        removeNotification(note);
+    }
+
+    private void removeNotification(Note note)
+    {
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(String.valueOf(note.get_id()), 0);
+    }
+
+    public static void setNextRecurrentReminder(Note note)
+    {
+        if (!TextUtils.isEmpty(note.getRecurrenceRule())) {
+            long nextReminder = DateHelper.nextReminderFromRecurrenceRule(Long.parseLong(note.getAlarm()),
+                    note.getRecurrenceRule());
+            if (nextReminder > 0) {
+                updateNoteReminder(nextReminder, note, true);
+            }
+        } else {
+            new SaveNoteTask(false).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, note);
+        }
+    }
+
+    private static void updateNoteReminder(long reminder, Note note) {
+        updateNoteReminder(reminder, note, false);
+    }
+
+    private static void updateNoteReminder(long reminder, Note noteToUpdate, boolean updateNote) {
+        if (updateNote)
+            noteToUpdate.setAlarm(reminder);
+        else {
+            NotificationController.addReminder(MySchedulerApp.getInstance(), noteToUpdate, reminder);
+            DateHelper.getNoteReminderText(noteToUpdate.getAlarm(), reminder);
+        }
+    }
+
+    @Override
+    public void onReminderPicked(long reminder) {
+        if (this.note != null) {
+            this.note.setAlarm(reminder);
+        } else {
+            for (Note note : this.notes) {
+                note.setAlarm(reminder);
+            }
+        }
+    }
+
+    @Override
+    public void onRecurrenceReminderPicked(String recurrenceRule) {
+        if (this.note != null) {
+            this.note.setRecurrenceRule(recurrenceRule);
+            setNextRecurrentReminder(this.note);
+        } else {
+            for (Note note : this.notes) {
+                note.setRecurrenceRule(recurrenceRule);
+                setNextRecurrentReminder(note);
+            }
+            setResult(RESULT_OK, getIntent());
+        }
+        finish();
+    }
+}

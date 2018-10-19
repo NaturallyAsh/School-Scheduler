@@ -63,7 +63,10 @@ dependencies {
     implementation 'com.github.federicoiosue:pixlui:2.6'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.larswerkman:HoloColorPicker:1.4'
+    implementation 'com.appeaser.sublimepickerlibrary:sublimepickerlibrary:2.1.2'
     implementation 'com.github.federicoiosue:Omni-Notes-Commons:1.2.0'
+    implementation 'org.mnode.ical4j:ical4j:1.0.6'
+    implementation group: 'org.apache.commons', name: "commons-lang3", version: '3.7'
     implementation ('com.github.federicoiosue:SimpleGallery:2.0.0') {
         exclude group: 'com.android.support'
     }

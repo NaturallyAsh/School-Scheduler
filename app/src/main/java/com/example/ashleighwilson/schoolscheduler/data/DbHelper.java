@@ -16,11 +16,13 @@ import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
+import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class DbHelper extends SQLiteOpenHelper
@@ -69,12 +71,22 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_COLOR
     };
 
+    String[] noteColumns = new String[] {
+            NoteEntry._ID,
+            NoteEntry.KEY_CREATION,
+            NoteEntry.KEY_LAST_MOD,
+            NoteEntry.KEY_TITLE,
+            NoteEntry.KEY_CONTENT,
+            NoteEntry.KEY_REMINDER,
+            NoteEntry.KEY_RECURRENCE_RULE
+    };
+
     private static final String TAG = DbHelper.class.getSimpleName();
 
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 23;
+    private static final int DATABASE_VERSION = 24;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -149,6 +161,28 @@ public class DbHelper extends SQLiteOpenHelper
         //public final static String COLUMN_COLOR = "color";
     }
 
+    public static final class NoteEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "notes";
+        public final static String _ID = BaseColumns._ID;
+        public final static String KEY_CREATION = "creation";
+        public final static String KEY_LAST_MOD = "last_mod";
+        public final static String KEY_TITLE = "title";
+        public final static String KEY_CONTENT = "content";
+        public final static String KEY_REMINDER = "alarm";
+        public final static String KEY_RECURRENCE_RULE = "recurrence_rule";
+    }
+
+    String SQL_CREATE_NOTES_TABLE = "CREATE TABLE " + NoteEntry.TABLE_NAME +
+            " ("
+            + NoteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + NoteEntry.KEY_CREATION + " INTEGER, "
+            + NoteEntry.KEY_LAST_MOD + " INTEGER, "
+            + NoteEntry.KEY_TITLE + " TEXT, "
+            + NoteEntry.KEY_CONTENT + " TEXT, "
+            + NoteEntry.KEY_REMINDER + " TEXT, "
+            + NoteEntry.KEY_RECURRENCE_RULE + " TEXT);";
+
     String SQL_CREATE_SPINNER_TABLE = "CREATE TABLE " + SpinnerEntry.TABLE_NAME +
             " ("
             + SpinnerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -187,6 +221,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL(SQL_CREATE_TIMETABLE_TABLE);
         db.execSQL(SQL_CREATE_SPINNER_TABLE);
         db.execSQL(SQL_CREATE_AGENDA_TABLE);
+        db.execSQL(SQL_CREATE_NOTES_TABLE);
     }
 
     @Override
@@ -197,6 +232,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + TimeTableEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SpinnerEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AgendaEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + NoteEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -406,27 +442,6 @@ public class DbHelper extends SQLiteOpenHelper
         return id;
     }
 
-    /*public void timeTableList (List<WeekViewEvent> list)
-    {
-        WeekViewEvent event;
-        long start = event.getStartTime().getTimeInMillis();
-        long end = event.getEndTime().getTimeInMillis();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(TimeTableEntry.TABLE_NAME, timeTableColumns, null);
-        while (cursor.moveToNext())
-        {
-            WeekViewEvent current = new WeekViewEvent(
-                    cursor.getLong(1),
-                    cursor.getString(2),
-                    cursor.getLong(3),
-                    cursor.getLong(4)),
-                    cursor.getInt(5);
-            current.setmId(cursor.getInt(cursor.getColumnIndex(TimeTableEntry._ID)));
-            list.add(current);
-        }
-        cursor.close();
-    } */
-
     public Cursor fetchEvents()
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -497,6 +512,46 @@ public class DbHelper extends SQLiteOpenHelper
         return db.delete(AgendaEntry.TABLE_NAME, AgendaEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
     }
+
+    public Note updateNote(Note note, boolean updateLastMod)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NoteEntry.KEY_CREATION, note.getCreation() != null ? note.getCreation() :
+                Calendar.getInstance().getTimeInMillis());
+        values.put(NoteEntry.KEY_LAST_MOD, updateLastMod ? Calendar.getInstance().getTimeInMillis() :
+                (note.getLastModification() != null ? note.getLastModification() :
+                Calendar.getInstance().getTimeInMillis()));
+        values.put(NoteEntry.KEY_TITLE, note.getTitle());
+        values.put(NoteEntry.KEY_CONTENT, note.getContent());
+        values.put(NoteEntry.KEY_REMINDER, note.getAlarm());
+        values.put(NoteEntry.KEY_RECURRENCE_RULE, note.getRecurrenceRule());
+
+        db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+
+        note.setCreation(note.getCreation() != null ? note.getCreation() :
+            values.getAsLong(NoteEntry.KEY_CREATION));
+        note.setLastModification(values.getAsLong(NoteEntry.KEY_LAST_MOD));
+
+        db.close();
+
+        return note;
+    }
+
+    public long getmNote(long id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(NoteEntry.TABLE_NAME, noteColumns);
+
+        while (cursor.moveToNext()) {
+            id = cursor.getLong(cursor.getColumnIndex(NoteEntry._ID));
+        }
+        cursor.close();
+        return id;
+    }
+
 
     public long getTimeTableId(long id)
     {

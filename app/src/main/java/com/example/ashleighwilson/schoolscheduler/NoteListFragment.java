@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import it.feio.android.simplegallery.util.BitmapUtils;
 
+import com.example.ashleighwilson.schoolscheduler.adapter.NoteAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.models.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
@@ -35,7 +37,9 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class NoteListFragment extends Fragment
 {
@@ -61,6 +65,9 @@ public class NoteListFragment extends Fragment
     private NoteListFragment mNoteListFragment;
     private NotesActivity notesActivity;
     public Uri attachmentUri;
+    private List<Note> selectedNotes = new ArrayList<>();
+    private NoteAdapter listAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     //public NoteListFragment(){}
 
@@ -86,6 +93,10 @@ public class NoteListFragment extends Fragment
         photoFab.setOnClickListener(listener);
         sketchFab.setOnClickListener(listener);
 
+        recyclerView.setHasFixedSize(true);
+        listAdapter = new NoteAdapter(getContext(), selectedNotes);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
 
         return rootView;
     }

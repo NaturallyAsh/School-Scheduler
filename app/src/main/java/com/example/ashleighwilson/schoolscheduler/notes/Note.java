@@ -15,6 +15,13 @@ public class Note extends BaseNote implements Parcelable
 {
 
     private boolean passwordChecked = false;
+    private int mId;
+    private Long mCreation;
+    private Long mLastMod;
+    private String mTitle;
+    private String mContent;
+    private String mAlarm;
+    private String mRecurrenceRule;
 
 
     public Note() {
@@ -30,6 +37,64 @@ public class Note extends BaseNote implements Parcelable
                 longitude, category, locked, checklist);
     }
 
+    public Note(int id, Long creation, Long lastModification, String title, String content, String alarm,
+                String recurrenceRule) {
+        this.mId = id;
+        this.mCreation = creation;
+        this.mLastMod = lastModification;
+        this.mTitle = title;
+        this.mContent = content;
+        this.mAlarm = alarm;
+        this.mRecurrenceRule = recurrenceRule;
+    }
+
+    public int getmId() {return mId;}
+
+    public void setmId(int id) {this.mId = id;}
+
+    public Long getmCreation(){return mCreation;}
+
+    public void setmCreation(Long creation){this.mCreation = creation;}
+
+    public Long getmLastMod() {
+        return mLastMod;
+    }
+
+    public void setmLastMod(Long mLastMod) {
+        this.mLastMod = mLastMod;
+    }
+
+    public String getmTitle() {
+        return mTitle;
+    }
+
+    public void setmTitle(String mTitle) {
+        this.mTitle = mTitle;
+    }
+
+    public String getmContent() {
+        return mContent;
+    }
+
+    public void setmContent(String mContent) {
+        this.mContent = mContent;
+    }
+
+    public String getmAlarm() {
+        return mAlarm;
+    }
+
+    public void setmAlarm(String mAlarm) {
+        this.mAlarm = mAlarm;
+    }
+
+    public String getmRecurrenceRule() {
+        return mRecurrenceRule;
+    }
+
+    public void setmRecurrenceRule(String mRecurrenceRule) {
+        this.mRecurrenceRule = mRecurrenceRule;
+    }
 
     public Note(Note note) {
         super(note);

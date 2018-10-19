@@ -107,6 +107,7 @@
     <string name="add_reminder_hint">Add reminder</string>
     <string name="stroke_string">Stroke</string>
     <string name="stroke_size_string">Stroke size</string>
-
+    <string name="creation">Created:</string>
+    <string name="last_update">Updated:</string>
 
 </resources>

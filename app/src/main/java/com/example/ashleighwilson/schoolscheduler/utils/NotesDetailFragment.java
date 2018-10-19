@@ -4,17 +4,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
@@ -25,25 +31,38 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Date;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
+import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrenceFormatter;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.RecurrenceOptionCreator;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.RecordActivity;
 import com.example.ashleighwilson.schoolscheduler.SketchFragment;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
+import com.example.ashleighwilson.schoolscheduler.dialog.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.models.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
+import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
 
 import java.io.File;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NotesDetailFragment extends Fragment implements OnNoteSaved
-{
+public class NotesDetailFragment extends Fragment implements OnNoteSaved,
+        OnReminderPickedListener, View.OnTouchListener, View.OnClickListener {
+
     private static final String TAG = NotesDetailFragment.class.getSimpleName();
 
     private static final int TAKE_PHOTO = 1;
@@ -86,7 +105,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
     ViewStub attachmentsBelow;
     //@BindView(R.id.attachGridView)
     //ExpandableHeightGridView mGridView;
-
+    SelectedDate mSelectedDate;
+    int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
+    String mRecurrenceOption, mRecurrenceRule;
+    private OnReminderPickedListener mOnReminderPickedListener;
     private NotesDetailFragment mNotesDetailFragment;
     private NotesActivity mNotesActivity;
     public boolean goBack = false;
@@ -98,6 +120,38 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
     private MaterialDialog attachmentDialog;
     private RecordActivity recordActivity;
     public Uri attachmentUri;
+    RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
+        @Override
+        public void onCancelled() {
+            if (mCallback != null)
+                mCallback.onCancelled();
+
+
+        }
+
+        @Override
+        public void onDateTimeRecurrenceSet(SelectedDate selectedDate, int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption, String recurrenceRule) {
+
+            mSelectedDate = selectedDate;
+            mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
+            mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
+            mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
+
+            Log.i(TAG, "year: " + mReminderYear + " month: " + mReminderMonth + " day: " + mReminderDay);
+            mHour = hourOfDay;
+            mMinute = minute;
+            mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
+            mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
+
+            Log.i(TAG, "selected date: " + selectedDate + " hour: " + hourOfDay + " minute: " +
+                minute + " recurrence rule: " + recurrenceRule);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
+
+            dateTime.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
+        }
+    };
 
 
     @Override
@@ -143,6 +197,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
                 sketchEdited = null;
             }
         }
+
+
+        reminderLayout.setOnClickListener(this);
+        init();
 
         setHasOptionsMenu(true);
         setRetainInstance(false);
@@ -222,12 +280,82 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
 
     private void initViews()
     {
+        root.setOnTouchListener(this);
+
+
         initViewTitle();
         initViewContent();
+        //initViewReminder();
+    }
+
+    private void initViewFooter() {
+        String creation = DateHelper.dateFormatter(noteTmp.getCreation());
+        creationTV.append(creation.length() > 0 ? getString(R.string.creation) + " " +
+            creation : "");
+        if (creationTV.getText().length() == 0)
+            creationTV.setVisibility(View.GONE);
+
+        String lastMod = DateHelper.dateFormatter(noteTmp.getLastModification());
+        lastModTV.append(lastMod.length() > 0 ? getString(R.string.last_update) + " " +
+            lastMod : "");
+        if (lastModTV.getText().length() == 0)
+            lastModTV.setVisibility(View.GONE);
     }
 
     private void initViewTitle() {
         title.setText(noteTmp.getTitle());
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
+        recurrenceDialog.setCallback(mCallback);
+
+        Pair<Boolean, SublimeOptions> optionsPair = getOptions();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
+        recurrenceDialog.setArguments(bundle);
+
+        recurrenceDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+        recurrenceDialog.show(mNotesActivity.getSupportFragmentManager(),"SUBLIME_PICKER");
+
+        /*String reminderString = initReminder(noteTmp);
+        if (reminderString != null)
+            dateTime.setText(reminderString);
+
+        Log.i(TAG, "noteTmp: " + noteTmp); */
+    }
+
+    private void initViewReminder()
+    {
+        reminderLayout.setOnClickListener(v -> {
+            RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
+            recurrenceDialog.setCallback(mCallback);
+
+            Pair<Boolean, SublimeOptions> optionsPair = getOptions();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
+            recurrenceDialog.setArguments(bundle);
+
+            recurrenceDialog.show(mNotesActivity.getSupportFragmentManager(),"SUBLIME_PICKER");
+        });
+    }
+
+    private String initReminder(Note note)
+    {
+        if (noteTmp.getAlarm() == null)
+            return "";
+
+        long reminder = Long.parseLong(note.getAlarm());
+        String rule = note.getRecurrenceRule();
+        if (!TextUtils.isEmpty(rule)) {
+            return DateHelper.getNoteRecurrentReminderText(reminder, rule);
+        } else {
+            return DateHelper.getNoteReminderText("Reminder for: ", reminder);
+        }
 
     }
 
@@ -341,8 +469,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
 
     public void saveAndExit(OnNoteSaved noteSaved)
     {
-        mNotesActivity.showToast("Note Saved", Toast.LENGTH_SHORT);
+        mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
         goBack = true;
+        if (note != null)
+            NotificationController.scheduleReminder(mNotesActivity, note);
         saveNote(noteSaved);
     }
 
@@ -361,6 +491,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
         }
 
         noteTmp.setAttachmentsListOld(note.getAttachmentsList());
+
+        new SaveNoteTask(noteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                noteTmp);
+        //goHome();
 
     }
 
@@ -395,6 +529,24 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
         {
             mNotesActivity.getSupportFragmentManager().popBackStack();
         }
+        return true;
+    }
+
+    @Override
+    public void onReminderPicked(long reminder) {
+        noteTmp.setAlarm(reminder);
+        dateTime.setText(DateHelper.dateFormatter(reminder));
+    }
+
+    @Override
+    public void onRecurrenceReminderPicked(String recurrenceRule) {
+        noteTmp.setRecurrenceRule(recurrenceRule);
+    }
+
+
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
         return true;
     }
 
@@ -482,5 +634,24 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved
         attachmentUri = Uri.fromFile(f);
         videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
         startActivityForResult(videoIntent, TAKE_VIDEO);
+    }
+
+    public Pair<Boolean, SublimeOptions> getOptions()
+    {
+        SublimeOptions options = new SublimeOptions();
+        int displayOptions = 0;
+
+        displayOptions = SublimeOptions.ACTIVATE_DATE_PICKER + SublimeOptions.ACTIVATE_TIME_PICKER +
+                SublimeOptions.ACTIVATE_RECURRENCE_PICKER;
+
+        options.setDisplayOptions(displayOptions);
+
+        return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);
+
+    }
+
+    private NotesActivity getNotesActivity()
+    {
+        return (NotesActivity) getActivity();
     }
 }

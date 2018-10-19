@@ -17,9 +17,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import butterknife.BindView;
 import eltos.simpledialogfragment.SimpleDialog;
@@ -36,6 +40,7 @@ public class NotesActivity extends AppCompatActivity
     public final int TRANSITION_HORIZONTAL = 1;
     public Toolbar toolbar;
     public Uri sketchUri;
+    private DbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,6 +53,8 @@ public class NotesActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Notes");
+
+        dbHelper = new DbHelper(getApplicationContext());
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -173,8 +180,9 @@ public class NotesActivity extends AppCompatActivity
         Note note = new Note();
         note.setTitle(intent.getStringExtra(Intent.EXTRA_SUBJECT));
         note.setContent(intent.getStringExtra(Intent.EXTRA_TEXT));
-
+        dbHelper.updateNote(note, true);
         showToast("Note saved", Toast.LENGTH_SHORT);
+        finish();
     }
 
     private Fragment checkFragmentInstance(int id, Object instanceClass)
@@ -193,8 +201,9 @@ public class NotesActivity extends AppCompatActivity
         Fragment f = checkFragmentInstance(R.id.fragment_note_container, NotesDetailFragment.class);
         if (f != null)
         {
-            //((NotesDetailFragment) f).goBack = true;
-            getFragmentManagerInstance().popBackStack();
+            ((NotesDetailFragment) f).goBack = true;
+            //getFragmentManagerInstance().popBackStack();
+            ((NotesDetailFragment) f).saveAndExit((NotesDetailFragment) f);
             return;
         }
         f = checkFragmentInstance(R.id.fragment_note_container, NoteListFragment.class);
@@ -212,8 +221,8 @@ public class NotesActivity extends AppCompatActivity
             return;
         }
 
-        getFragmentManagerInstance().popBackStack();
-        //super.onBackPressed();
+        //getFragmentManagerInstance().popBackStack();
+        super.onBackPressed();
     }
 
     public void animateTransition(FragmentTransaction transaction, int direction)
