@@ -21,8 +21,11 @@ import java.util.Date;
 public class DateHelper
 {
 
-    public static String dateFormatter(long time)
+    public static String dateFormatter(Long time)
     {
+        if (time == null)
+            return "";
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(time);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy, hh:mm a");

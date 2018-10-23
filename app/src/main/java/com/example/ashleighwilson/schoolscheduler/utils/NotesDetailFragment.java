@@ -44,6 +44,8 @@ import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.RecordActivity;
 import com.example.ashleighwilson.schoolscheduler.SketchFragment;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.data.NoteUpdatedEvent;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
@@ -51,8 +53,13 @@ import com.example.ashleighwilson.schoolscheduler.dialog.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.models.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
 import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.Calendar;
@@ -119,13 +126,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private Note noteOriginal;
     private MaterialDialog attachmentDialog;
     private RecordActivity recordActivity;
+    private DbHelper dbHelper;
     public Uri attachmentUri;
     RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
         @Override
         public void onCancelled() {
             if (mCallback != null)
                 mCallback.onCancelled();
-
 
         }
 
@@ -162,6 +169,18 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment_note_detail, container, false);
@@ -175,6 +194,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         super.onActivityCreated(savedInstanceState);
 
         mNotesActivity = (NotesActivity) getActivity();
+        dbHelper = new DbHelper(getActivity());
 
         mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
@@ -197,7 +217,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 sketchEdited = null;
             }
         }
-
 
         reminderLayout.setOnClickListener(this);
         init();
@@ -253,6 +272,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         if (noteTmp == null) {
             noteTmp = new Note(note);
+            Log.i(TAG, "noteTmp: " + noteTmp);
         }
 
         initViews();
@@ -286,6 +306,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         initViewTitle();
         initViewContent();
         //initViewReminder();
+        initViewFooter();
     }
 
     private void initViewFooter() {
@@ -381,6 +402,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     {
         switch (item.getItemId())
         {
+            case R.id.action_save:
+
+                break;
             case R.id.menu_attachment:
                 showAttachmentsPopup();
                 break;
@@ -469,6 +493,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     public void saveAndExit(OnNoteSaved noteSaved)
     {
+        //Log.i(TAG, "saveAndExit");
+       /*if (isAdded()) {
+           mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
+           goBack = true;
+           //if (note != null)
+             //  NotificationController.scheduleReminder(mNotesActivity, note);
+           saveNote(noteSaved);
+       } */
         mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
         goBack = true;
         if (note != null)
@@ -485,8 +517,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 && noteTmp.getAttachmentsList().size() ==0)
         {
             Log.i(TAG, "Empty note not saved");
-            mNotesActivity.showToast("Note Saved", Toast.LENGTH_SHORT);
             goHome();
+            return;
+        }
+        if (saveNotNeeded()) {
+            //mNotesActivity.showToast("Save Not Needed", Toast.LENGTH_SHORT);
+            if (goBack) {
+                goHome();
+            }
             return;
         }
 
@@ -494,8 +532,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         new SaveNoteTask(noteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
                 noteTmp);
+        Log.i(TAG, "saveNote");
         //goHome();
 
+    }
+
+    private boolean saveNotNeeded() {
+        return !noteTmp.isChanged(note);
     }
 
     private String getNoteTitle()
@@ -518,6 +561,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     @Override
     public void onNoteSaved(Note noteSaved) {
+        EventBus.getDefault().post(new NoteUpdatedEvent());
+        Log.i(TAG, "onNoteSaved: note posted");
+
+        EventBus.getDefault().postSticky(noteSaved);
         note = new Note(noteSaved);
         if (goBack)
             goHome();
@@ -653,5 +700,11 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private NotesActivity getNotesActivity()
     {
         return (NotesActivity) getActivity();
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(NoteLoadedEvent noteLoadedEvent) {
+
     }
 }

@@ -161,7 +161,7 @@ public class SubjectsFrag extends DialogFragment
 
             subMod.add(model);
 
-            if (!(subMod.size()<1))
+            if (subMod.size() > 0)
             {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);

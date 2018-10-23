@@ -158,7 +158,7 @@ public class AgendaFrag extends Fragment
 
             agendaList.add(model);
 
-            if (!(agendaList.size() < 1))
+            if (agendaList.size() > 0)
             {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);

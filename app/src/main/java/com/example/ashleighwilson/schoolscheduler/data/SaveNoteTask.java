@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
@@ -9,6 +10,9 @@ import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
 public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
+
+    private static final String TAG = SaveNoteTask.class.getSimpleName();
+
     private Context mContext;
     private boolean mUpdateLastMod = true;
     private OnNoteSaved mOnNoteSaved;
@@ -46,6 +50,8 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
         super.onPostExecute(note);
         if (this.mOnNoteSaved != null) {
             mOnNoteSaved.onNoteSaved(note);
+
+            Log.i(TAG, "OnNoteSaved: " + mOnNoteSaved);
         }
     }
 }

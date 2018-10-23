@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_save"
+        android:title="@string/save_string"
+        android:icon="@drawable/ic_done"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/menu_attachment"
         android:icon="@drawable/ic_attachment_white_24dp"
         android:orderInCategory="100"
@@ -14,7 +20,7 @@
         android:icon="@drawable/ic_share_white_24dp"
         android:orderInCategory="200"
         android:title="@string/share_string"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_checklist_on"

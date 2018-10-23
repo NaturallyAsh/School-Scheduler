@@ -15,7 +15,7 @@ public class Note extends BaseNote implements Parcelable
 {
 
     private boolean passwordChecked = false;
-    private int mId;
+    private Integer mId;
     private Long mCreation;
     private Long mLastMod;
     private String mTitle;
@@ -37,7 +37,7 @@ public class Note extends BaseNote implements Parcelable
                 longitude, category, locked, checklist);
     }
 
-    public Note(int id, Long creation, Long lastModification, String title, String content, String alarm,
+    public Note(Integer id, Long creation, Long lastModification, String title, String content, String alarm,
                 String recurrenceRule) {
         this.mId = id;
         this.mCreation = creation;
@@ -48,9 +48,9 @@ public class Note extends BaseNote implements Parcelable
         this.mRecurrenceRule = recurrenceRule;
     }
 
-    public int getmId() {return mId;}
+    public Integer getmId() {return mId;}
 
-    public void setmId(int id) {this.mId = id;}
+    public void setmId(Integer id) {this.mId = id;}
 
     public Long getmCreation(){return mCreation;}
 

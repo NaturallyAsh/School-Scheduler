@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
@@ -28,6 +29,18 @@ import java.util.List;
 public class DbHelper extends SQLiteOpenHelper
 {
     private Context mContext;
+    private static DbHelper instance = null;
+
+    public static synchronized DbHelper getInstance() {
+        return getInstance(MySchedulerApp.getInstance());
+    }
+
+    public static synchronized DbHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DbHelper(context);
+        }
+        return instance;
+    }
 
     private static DbHelper dbHelper = null;
     String[] allColumns = new String[] {
@@ -86,7 +99,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 27;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -539,19 +552,76 @@ public class DbHelper extends SQLiteOpenHelper
         return note;
     }
 
-    public long getmNote(long id)
+    public Note getmNote(long id)
     {
+        List<Note> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
+                null, null, null);
 
-        Cursor cursor = db.rawQuery(NoteEntry.TABLE_NAME, noteColumns);
+        if (cursor.moveToFirst()) {
+            do {
+                Note note = new Note();
+                note.setmId(cursor.getInt(0));
+                note.setmCreation(cursor.getLong(1));
+                note.setmLastMod(cursor.getLong(2));
+                note.setmTitle(cursor.getString(3));
+                note.setmContent(cursor.getString(4));
+                note.setmAlarm(cursor.getString(5));
+                note.setmRecurrenceRule(cursor.getString(6));
+                list.add(note);
+            } while (cursor.moveToNext());
+        }
 
-        while (cursor.moveToNext()) {
-            id = cursor.getLong(cursor.getColumnIndex(NoteEntry._ID));
+        Note note;
+        if (list.size() > 0) {
+            note = list.get(0);
+        } else {
+            note = null;
         }
         cursor.close();
-        return id;
+        db.close();
+        return note;
     }
 
+    public Cursor getAltNotes() {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        return db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
+                null, null, null);
+    }
+
+    public ArrayList<Note> getAllNotes()
+    {
+        ArrayList<Note> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Note note = new Note();
+                note.setmId(cursor.getInt(0));
+                note.setmCreation(cursor.getLong(1));
+                note.setmLastMod(cursor.getLong(2));
+                note.setmTitle(cursor.getString(3));
+                note.setmContent(cursor.getString(4));
+                note.setmAlarm(cursor.getString(5));
+                note.setmRecurrenceRule(cursor.getString(6));
+                list.add(note);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public long deleteNote(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " =?",
+                new String[]{String.valueOf(id)});
+    }
 
     public long getTimeTableId(long id)
     {

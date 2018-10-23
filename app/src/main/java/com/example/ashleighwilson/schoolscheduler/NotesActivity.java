@@ -20,7 +20,11 @@ import android.widget.Toast;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,7 +47,7 @@ public class NotesActivity extends AppCompatActivity
     private DbHelper dbHelper;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_activity);
@@ -53,6 +57,7 @@ public class NotesActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Notes");
+        //EventBus.getDefault().register(this);
 
         dbHelper = new DbHelper(getApplicationContext());
 
@@ -64,11 +69,19 @@ public class NotesActivity extends AppCompatActivity
     }
 
     @Override
+    public void onStop()
+    {
+        super.onStop();
+        //EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onResume()
     {
         super.onResume();
         init();
     }
+
 
     private FragmentManager getFragmentManagerInstance()
     {
@@ -156,6 +169,10 @@ public class NotesActivity extends AppCompatActivity
             Note note = i.getParcelableExtra(Constants.INTENT_NOTE);
             if (note == null)
             {
+                //note = new Note();
+                note = DbHelper.getInstance().getmNote(note.getmId());
+            }
+            if (note == null) {
                 note = new Note();
             }
             switchToDetail(note);
