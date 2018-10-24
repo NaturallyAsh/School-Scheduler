@@ -41,7 +41,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     {
         this.mContext = context;
         this.notes = noteList;
-        this.dbHelper = new DbHelper(mContext);
+        this.dbHelper = DbHelper.getInstance();
         setOnNoteClickListener(listener);
     }
 

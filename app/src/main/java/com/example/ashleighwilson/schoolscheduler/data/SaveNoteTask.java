@@ -26,7 +26,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
         this.mOnNoteSaved = onNoteSaved;
         this.mUpdateLastMod = upDateLastMod;
 
-        dbHelper = new DbHelper(mContext);
+        dbHelper = DbHelper.getInstance();
     }
 
     public SaveNoteTask(boolean updateLastMod) {

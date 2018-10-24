@@ -34,7 +34,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     {
         this.mContext = context;
         this.agendaData = models;
-        this.dbHelper = new DbHelper(mContext);
+        this.dbHelper = DbHelper.getInstance();
 
         setAgendaData(models);
     }

@@ -4,32 +4,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
-import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import butterknife.BindView;
 import eltos.simpledialogfragment.SimpleDialog;
 
 public class NotesActivity extends AppCompatActivity
@@ -59,7 +46,7 @@ public class NotesActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Notes");
         //EventBus.getDefault().register(this);
 
-        dbHelper = new DbHelper(getApplicationContext());
+        dbHelper = DbHelper.getInstance();
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());

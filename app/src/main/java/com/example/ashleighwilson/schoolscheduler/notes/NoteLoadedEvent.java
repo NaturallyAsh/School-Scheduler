@@ -1,6 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.notes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NoteLoadedEvent
 {

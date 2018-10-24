@@ -9,11 +9,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.text.format.Time;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -31,26 +28,22 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.Date;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
-import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
-import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrenceFormatter;
-import com.appeaser.sublimepickerlibrary.recurrencepicker.RecurrenceOptionCreator;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.RecordActivity;
 import com.example.ashleighwilson.schoolscheduler.SketchFragment;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.data.NoteUpdatedEvent;
+import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.dialog.RecurrenceDialog;
-import com.example.ashleighwilson.schoolscheduler.models.Attachment;
+import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
@@ -194,7 +187,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         super.onActivityCreated(savedInstanceState);
 
         mNotesActivity = (NotesActivity) getActivity();
-        dbHelper = new DbHelper(getActivity());
+        dbHelper = DbHelper.getInstance();
 
         mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
@@ -576,10 +569,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     @Override
     public void onNoteSaved(Note noteSaved) {
-        EventBus.getDefault().post(new NoteUpdatedEvent());
+        //EventBus.getDefault().postSticky(new NoteUpdatedEvent());
         Log.i(TAG, "onNoteSaved: note posted");
 
-        EventBus.getDefault().postSticky(noteSaved);
+        EventBus.getDefault().postSticky(new NoteEvent(noteSaved));
         note = new Note(noteSaved);
         if (goBack)
             goHome();

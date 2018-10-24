@@ -76,7 +76,7 @@ public class RecordActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        dbHelper = new DbHelper(getApplicationContext());
+        dbHelper = DbHelper.getInstance();
 
         emptyView = findViewById(R.id.empty_record_view);
         recordFab = findViewById(R.id.show_rec_dialog);

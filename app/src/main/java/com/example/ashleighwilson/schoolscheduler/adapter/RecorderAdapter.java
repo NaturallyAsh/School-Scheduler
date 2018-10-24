@@ -42,7 +42,7 @@ public class RecorderAdapter extends RecyclerView.Adapter<RecorderAdapter.ViewHo
     {
         super();
         mContext = context;
-        dbHelper = new DbHelper(mContext);
+        dbHelper = DbHelper.getInstance();
         DbHelper.setOnDatabasedChangedListener(this);
         manager = layoutManager;
 

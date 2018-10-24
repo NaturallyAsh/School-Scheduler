@@ -42,7 +42,11 @@ public class DbHelper extends SQLiteOpenHelper
         return instance;
     }
 
-    private static DbHelper dbHelper = null;
+    private DbHelper(Context context){
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.mContext = context;
+    }
+
 
     String[] allColumns = new String[] {
             SchoolEntry._ID,
@@ -100,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 28;
+    private static final int DATABASE_VERSION = 30;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -221,11 +225,6 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
             + AgendaEntry.COLUMN_COLOR + " INTEGER);";
 
-    public DbHelper(Context context)
-    {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
-    }
 
     @Override
     public void onCreate(SQLiteDatabase db)
@@ -592,9 +591,13 @@ public class DbHelper extends SQLiteOpenHelper
                 null, null, null);
     }
 
-    public ArrayList<Note> getAllNotes()
+    public List<Note> getEveryNote() {
+        return getAllNotes();
+    }
+
+    public List<Note> getAllNotes()
     {
-        ArrayList<Note> list = new ArrayList<>();
+        List<Note> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
                 null, null, null);
@@ -612,6 +615,20 @@ public class DbHelper extends SQLiteOpenHelper
                 list.add(note);
             } while (cursor.moveToNext());
         }
+       /* if (cursor.moveToFirst()) {
+            do {
+                int i = 0;
+                Note note = new Note();
+                note.setmId(cursor.getInt(i++));
+                note.setmCreation(cursor.getLong(i++));
+                note.setmLastMod(cursor.getLong(i++));
+                note.setmTitle(cursor.getString(i++));
+                note.setmContent(cursor.getString(i++));
+                note.setmAlarm(cursor.getString(i++));
+                note.setmRecurrenceRule(cursor.getString(i++));
+                list.add(note);
+            } while (cursor.moveToNext());
+        } */
         cursor.close();
         db.close();
         return list;

@@ -73,7 +73,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        dbHelper = new DbHelper(getApplicationContext());
+        dbHelper = DbHelper.getInstance();
         controller = new NotificationController(this);
 
         mAssignmentTitle = findViewById(R.id.assignment_title_edit_text);

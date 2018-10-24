@@ -79,7 +79,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        dbHelper = new DbHelper(getApplicationContext());
+        dbHelper = DbHelper.getInstance();
         //model = dbHelper.getAllSubjects();
 
         Button colorSelector = findViewById(R.id.sub_create_button);

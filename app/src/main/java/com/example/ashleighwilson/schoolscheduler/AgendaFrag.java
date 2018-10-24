@@ -81,7 +81,7 @@ public class AgendaFrag extends Fragment
         agendaFab.setOnClickListener(listener);
         emptyView = view.findViewById(R.id.empty_agenda_view);
 
-        dbHelper = new DbHelper(getActivity());
+        dbHelper = DbHelper.getInstance();
 
         //iconMenu = PowerMenuUtils.getIconPowerMenu(mContext, this, onIconMenuItemClickListener);
 

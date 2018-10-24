@@ -3,15 +3,10 @@ package com.example.ashleighwilson.schoolscheduler.notes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.ashleighwilson.schoolscheduler.models.Attachment;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import it.feio.android.omninotes.commons.models.BaseCategory;
-import it.feio.android.omninotes.commons.models.BaseNote;
-
-public class Note extends BaseNote implements Parcelable
+public class Note extends BaseNote2 implements Parcelable
 {
 
     private boolean passwordChecked = false;
@@ -124,15 +119,7 @@ public class Note extends BaseNote implements Parcelable
 
 
     public List<Attachment> getAttachmentsList() {
-//		List<Attachment> list = new ArrayList<>();
-//		for (it.feio.android.omninotes.commons.models.Attachment attachment : super.getAttachmentsList()) {
-//			if (attachment.getClass().equals(Attachment.class)) {
-//				list.add((Attachment) attachment);
-//			} else {
-//				list.add(new Attachment(attachment));
-//			}
-//		}
-//		return list;
+//
         // FIXME This fixes https://github.com/federicoiosue/Omni-Notes/issues/199 but could introduce other issues
         return (List<Attachment>) super.getAttachmentsList();
     }
@@ -188,7 +175,7 @@ public class Note extends BaseNote implements Parcelable
 
 
     public void setCategory(Category category) {
-        if (category != null && category.getClass().equals(BaseCategory.class)) {
+        if (category != null && category.getClass().equals(BaseCategory2.class)) {
             setCategory(new Category(category));
         }
         super.setCategory(category);

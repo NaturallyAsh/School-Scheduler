@@ -81,7 +81,7 @@ public class TimeTableEditor extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        dbHelper = new DbHelper(getApplicationContext());
+        dbHelper = DbHelper.getInstance();
 
         pref = new EventsPreference(getApplicationContext());
 

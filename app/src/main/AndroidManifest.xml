@@ -85,6 +85,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity"/>
         </activity>
+        <activity android:name=".SnoozeActivity" />
+
         <receiver android:name=".data.NotificationReceiver"/>
     </application>
 

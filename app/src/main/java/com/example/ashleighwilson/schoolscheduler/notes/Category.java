@@ -3,9 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.notes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import it.feio.android.omninotes.commons.models.BaseCategory;
-
-public class Category extends BaseCategory implements Parcelable
+public class Category extends BaseCategory2 implements Parcelable
 {
     private Category(Parcel in) {
         setId(in.readLong());
@@ -20,7 +18,7 @@ public class Category extends BaseCategory implements Parcelable
     }
 
 
-    public Category(BaseCategory category) {
+    public Category(BaseCategory2 category) {
         super(category.getId(), category.getName(), category.getDescription(), category.getColor());
     }
 

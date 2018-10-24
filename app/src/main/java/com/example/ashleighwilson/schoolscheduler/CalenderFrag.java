@@ -87,7 +87,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
 
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        dbHelper = new DbHelper(getActivity());
+        dbHelper = DbHelper.getInstance();
 
         fab_all_cal = view.findViewById(R.id.fab_all_cal);
         fab_cal = view.findViewById(R.id.fab_cal);

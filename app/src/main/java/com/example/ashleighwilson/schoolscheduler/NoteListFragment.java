@@ -2,7 +2,6 @@ package com.example.ashleighwilson.schoolscheduler;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,10 +18,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +33,7 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
 import com.example.ashleighwilson.schoolscheduler.data.NoteLoaderTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
-import com.example.ashleighwilson.schoolscheduler.models.Attachment;
+import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.InterceptorLinearLayout;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
@@ -48,12 +45,9 @@ import com.github.clans.fab.FloatingActionMenu;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.w3c.dom.Text;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -86,6 +80,7 @@ public class NoteListFragment extends Fragment
     private RecyclerView.LayoutManager layoutManager;
     public NoteLoadedEvent noteLoadedEvent;
     private DbHelper dbHelper;
+    private NoteEvent noteEvent;
     NoteAdapter.NoteClickListener clickListener;
 
     //public NoteListFragment(){}
@@ -100,12 +95,35 @@ public class NoteListFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop(){
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(NoteEvent noteEvent) {
+        //NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+        //      "getAllNotes");
+        //EventBus.getDefault().removeStickyEvent(noteEvent);
+        selectedNotes.add(noteEvent.mNote);
+        Log.i(TAG, "sticky: " + noteEvent.mNote);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
         ButterKnife.bind(this, rootView);
 
-        dbHelper = new DbHelper(getActivity());
+        dbHelper = DbHelper.getInstance();
 
         fabNoteMenu.showMenu(true);
         fabNoteMenu.setClosedOnTouchOutside(true);
@@ -130,14 +148,14 @@ public class NoteListFragment extends Fragment
             }
         });
 
-
-        initListView();
-
-        NoteEvent noteEvent = EventBus.getDefault().removeStickyEvent(NoteEvent.class);
+        noteEvent = EventBus.getDefault().removeStickyEvent(NoteEvent.class);
         if (noteEvent != null) {
             selectedNotes.add(noteEvent.mNote);
             Log.i(TAG, "Note event: " + noteEvent.mNote);
         }
+
+        //loadedNotes();
+        initListView();
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |
                 ItemTouchHelper.UP, ItemTouchHelper.LEFT) {
@@ -186,12 +204,23 @@ public class NoteListFragment extends Fragment
         notesActivity = (NotesActivity) getActivity();
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    private void onEvent(NoteEvent noteEvent) {
-        //NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-          //      "getAllNotes");
-        EventBus.getDefault().removeStickyEvent(noteEvent);
-        selectedNotes.add(noteEvent.mNote);
+    private void loadedNotes() {
+        if (noteEvent != null) {
+            selectedNotes.add(noteEvent.mNote);
+        }
+
+        if (selectedNotes.size() > 0)
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyNotesView.setVisibility(View.GONE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            emptyNotesView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        }
     }
 
     private void initListView()
@@ -230,6 +259,10 @@ public class NoteListFragment extends Fragment
                 listAdapter.notifyDataSetChanged();
             }
         }
+
+        NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
+        //NoteLoaderTask.getInstance().execute();
+
     }
 
     private void FloatingClicked()

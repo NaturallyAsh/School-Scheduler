@@ -23,7 +23,7 @@ public class WeekViewBase extends WeekViewFragment
     private static long eventViewId;
     public final static String ARG_EVENT_ID = "arg_event_id";
     Context mContext = MySchedulerApp.getInstance();
-    DbHelper dbHelper = new DbHelper(mContext);
+    DbHelper dbHelper = DbHelper.getInstance();
     WeekViewEvent dbEvent;
 
     public static WeekViewBase newInstance(long event_id)

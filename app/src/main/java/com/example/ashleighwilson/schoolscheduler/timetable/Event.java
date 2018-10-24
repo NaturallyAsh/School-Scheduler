@@ -40,7 +40,7 @@ public class Event implements Serializable
     public List<WeekViewEvent> events = null;
     public List<WeekViewEvent> dbEvents = new ArrayList<>();
     Context mContext = MySchedulerApp.getInstance();
-    DbHelper dbHelper = new DbHelper(mContext);
+    DbHelper dbHelper = DbHelper.getInstance();
 
 
     public Event(Context context,int day, int year, int month){

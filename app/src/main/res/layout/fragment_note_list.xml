@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginRight="0dp"
+    android:layout_marginLeft="0dp">
 
     <com.example.ashleighwilson.schoolscheduler.notes.InterceptorLinearLayout
         android:id="@+id/note_list_root"
@@ -14,7 +16,10 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/note_list_rv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:paddingTop="8dp"
+            android:paddingRight="8dp"
+            android:paddingLeft="8dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

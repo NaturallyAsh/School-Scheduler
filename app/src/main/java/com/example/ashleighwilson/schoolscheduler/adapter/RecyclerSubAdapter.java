@@ -40,7 +40,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     {
         this.context = context;
         this.subMod = subList;
-        this.dbHelper = new DbHelper(context);
+        this.dbHelper = DbHelper.getInstance();
 
         setData(subList);
     }

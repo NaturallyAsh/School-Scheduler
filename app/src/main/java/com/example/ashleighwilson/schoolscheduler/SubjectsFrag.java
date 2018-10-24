@@ -82,7 +82,7 @@ public class SubjectsFrag extends DialogFragment
 
 
 
-        dbHelper = new DbHelper(getActivity());
+        dbHelper = DbHelper.getInstance();
 
         //dataSub = dbHelper.getAllSubjects();
 
