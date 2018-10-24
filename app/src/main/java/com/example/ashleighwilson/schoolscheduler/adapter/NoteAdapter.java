@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
+
+    private static final String TAG = NoteAdapter.class.getSimpleName();
+
     private Context mContext;
     private List<Note> notes;
     private Note note;
@@ -58,14 +62,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         final Note currentNote = notes.get(position);
 
         holder.title.setText(currentNote.getmTitle());
+        //holder.title.setText(currentNote.getTitle());
         holder.content.setText(currentNote.getmContent());
+        //holder.content.setText(currentNote.getContent());
         holder.alarmIcon.setVisibility(currentNote.getmAlarm() != null ? View.VISIBLE : View.INVISIBLE);
         holder.date.setText(currentNote.getmAlarm());
+        //holder.noteData = getItem(position);
 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
+        //public Note noteData;
 
         @BindView(R.id.note_item_root) public View root;
         @BindView(R.id.note_item_cardlayout) public View cardLayout;
@@ -81,11 +89,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String mTitle = title.getText().toString();
-                    String mContent = content.getText().toString();
-                    String mDate = date.getText().toString();
 
-                    //listener.OnNoteClicked(mTitle, mContent, mDate);
+                    listener.OnNoteClicked(v, getAdapterPosition());
+                    //Log.i(TAG, "adapterposition: " + getAdapterPosition() + " view: " + v);
                 }
             });
         }
@@ -104,7 +110,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     }
 
     public Note getItem(int position) {
-        return notes.get(position);
+        return notes != null ? notes.get(position) : null;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
     }
 
     public interface NoteClickListener

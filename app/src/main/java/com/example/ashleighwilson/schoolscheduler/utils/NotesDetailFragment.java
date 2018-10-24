@@ -295,6 +295,21 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             takePhoto();
         }
 
+        if(IntentChecker.checkAction(intent, Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE, Constants.INTENT_GOOGLE_NOW)
+                && intent.getType() != null) {
+
+            if (noteTmp == null)
+                noteTmp = new Note();
+
+            String title = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+            if (title != null)
+                noteTmp.setTitle(title);
+
+            String content = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if (content != null)
+                noteTmp.setContent(content);
+        }
+
         intent.setAction(null);
     }
 

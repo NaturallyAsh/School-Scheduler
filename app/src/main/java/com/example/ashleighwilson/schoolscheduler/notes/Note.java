@@ -48,6 +48,7 @@ public class Note extends BaseNote implements Parcelable
         this.mRecurrenceRule = recurrenceRule;
     }
 
+
     public Integer getmId() {return mId;}
 
     public void setmId(Integer id) {this.mId = id;}

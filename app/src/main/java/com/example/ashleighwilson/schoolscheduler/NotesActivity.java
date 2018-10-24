@@ -170,7 +170,7 @@ public class NotesActivity extends AppCompatActivity
             if (note == null)
             {
                 //note = new Note();
-                note = DbHelper.getInstance().getmNote(note.getmId());
+                note = DbHelper.getInstance().getmNote(i.getIntExtra(Constants.INTENT_NOTE, 0));
             }
             if (note == null) {
                 note = new Note();

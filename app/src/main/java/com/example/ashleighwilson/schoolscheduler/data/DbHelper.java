@@ -43,6 +43,7 @@ public class DbHelper extends SQLiteOpenHelper
     }
 
     private static DbHelper dbHelper = null;
+
     String[] allColumns = new String[] {
             SchoolEntry._ID,
             SchoolEntry.COLUMN_TITLE,
@@ -99,7 +100,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 28;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -166,14 +167,6 @@ public class DbHelper extends SQLiteOpenHelper
             + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_COLOR + " INTEGER);";
 
-    public static final class SpinnerEntry implements BaseColumns
-    {
-        public final static String TABLE_NAME = "subject_spinner";
-        public final static String _ID = BaseColumns._ID;
-        public final static String COLUMN_SUBJECT = "name";
-        //public final static String COLUMN_COLOR = "color";
-    }
-
     public static final class NoteEntry implements BaseColumns
     {
         public final static String TABLE_NAME = "notes";
@@ -195,6 +188,14 @@ public class DbHelper extends SQLiteOpenHelper
             + NoteEntry.KEY_CONTENT + " TEXT, "
             + NoteEntry.KEY_REMINDER + " TEXT, "
             + NoteEntry.KEY_RECURRENCE_RULE + " TEXT);";
+
+    public static final class SpinnerEntry implements BaseColumns
+    {
+        public final static String TABLE_NAME = "subject_spinner";
+        public final static String _ID = BaseColumns._ID;
+        public final static String COLUMN_SUBJECT = "name";
+        //public final static String COLUMN_COLOR = "color";
+    }
 
     String SQL_CREATE_SPINNER_TABLE = "CREATE TABLE " + SpinnerEntry.TABLE_NAME +
             " ("

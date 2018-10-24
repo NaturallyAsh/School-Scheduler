@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
 import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
@@ -17,6 +18,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
     private boolean mUpdateLastMod = true;
     private OnNoteSaved mOnNoteSaved;
     private DbHelper dbHelper;
+    public NoteLoadedEvent loadedEvent;
 
     public SaveNoteTask(OnNoteSaved onNoteSaved, boolean upDateLastMod) {
         super();
@@ -50,8 +52,8 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
         super.onPostExecute(note);
         if (this.mOnNoteSaved != null) {
             mOnNoteSaved.onNoteSaved(note);
-
             Log.i(TAG, "OnNoteSaved: " + mOnNoteSaved);
+            //loadedEvent.notes.add(note);
         }
     }
 }

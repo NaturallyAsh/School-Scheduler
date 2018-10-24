@@ -57,7 +57,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-public class NoteListFragment extends Fragment implements NoteAdapter.NoteClickListener
+public class NoteListFragment extends Fragment
 {
     private static final String TAG = NoteListFragment.class.getSimpleName();
 
@@ -122,7 +122,10 @@ public class NoteListFragment extends Fragment implements NoteAdapter.NoteClickL
         listAdapter.setOnNoteClickListener(new NoteAdapter.NoteClickListener() {
             @Override
             public void OnNoteClicked(View view, int position) {
-                editNote(listAdapter.getItem(position), view);
+                Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
+                //Note note = listAdapter.getItem(position);
+                //Log.i(TAG, "note adapt: " + note);
+                //editNote(listAdapter.getItem(position), view);
 
             }
         });
@@ -333,10 +336,5 @@ public class NoteListFragment extends Fragment implements NoteAdapter.NoteClickL
         sketchFragment.setArguments(b);
         transaction.replace(R.id.fragment_note_container, sketchFragment, notesActivity.FRAGMENT_SKETCH_TAG)
                 .addToBackStack(notesActivity.FRAGMENT_NOTE_DETAIL_TAG).commit();
-    }
-
-
-    @Override
-    public void OnNoteClicked(View view, int position) {
     }
 }
