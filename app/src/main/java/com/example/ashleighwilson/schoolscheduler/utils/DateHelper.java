@@ -3,10 +3,12 @@ package com.example.ashleighwilson.schoolscheduler.utils;
 import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.Time;
+import android.util.Log;
 
 import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrenceFormatter;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.property.RRule;
@@ -20,6 +22,7 @@ import java.util.Date;
 
 public class DateHelper
 {
+    private static final String TAG = DateHelper.class.getSimpleName();
 
     public static String dateFormatter(Long time)
     {
@@ -95,5 +98,38 @@ public class DateHelper
             e.printStackTrace();
         }
         return 0L;
+    }
+
+    public static String formatShortTime(Context mContext, long time) {
+        String m = String.valueOf(time / 1000 / 60);
+        String s = String.format("%02d", (time / 1000) % 60);
+        return m + ":" + s;
+    }
+
+    public static String getLocalizedDateTime(Context mContext,
+                                              String dateString, String format) {
+        String res = null;
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        Date date = null;
+        try {
+            date = sdf.parse(dateString);
+        } catch (ParseException e) {
+            sdf = new SimpleDateFormat(Constants.DATE_FORMAT_SORTABLE_OLD);
+            try {
+                date = sdf.parse(dateString);
+            } catch (ParseException e1) {
+                Log.e(TAG, "String is not formattable into date");
+            }
+        }
+
+        if (date != null) {
+            String dateFormatted = android.text.format.DateUtils.formatDateTime(mContext, date.getTime(), android
+                    .text.format.DateUtils.FORMAT_ABBREV_MONTH);
+            String timeFormatted = android.text.format.DateUtils.formatDateTime(mContext, date.getTime(), android
+                    .text.format.DateUtils.FORMAT_SHOW_TIME);
+            res = dateFormatted + " " + timeFormatted;
+        }
+
+        return res;
     }
 }

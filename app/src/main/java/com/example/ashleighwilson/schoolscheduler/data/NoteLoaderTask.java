@@ -61,6 +61,6 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
     public void onPostExecute(ArrayList<Note> notes) {
         super.onPostExecute(notes);
         EventBus.getDefault().post(new NoteLoadedEvent(notes));
-        Log.i(TAG, "loaded event: " + notes.size());
+        Log.i(TAG, "loaded event: " + notes);
     }
 }

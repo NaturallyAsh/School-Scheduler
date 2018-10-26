@@ -53,6 +53,16 @@ public class BaseNote2 implements Serializable {
         this.checklist = checklist == 1;
     }
 
+    public BaseNote2(Long creation, Long lastModification, String title, String content, String alarm,
+                     String recurrenceRule) {
+        this.creation = creation;
+        this.lastModification = lastModification;
+        this.title = title;
+        this.content = content;
+        this.alarm = alarm;
+        this.recurrenceRule = recurrenceRule;
+    }
+
     public BaseNote2(BaseNote2 baseNote) {
         this.buildFromNote(baseNote);
     }

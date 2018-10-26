@@ -24,7 +24,7 @@ public class InterceptorLinearLayout extends LinearLayout
     {
         if (mOnViewTouchedListener != null)
         {
-            mOnViewTouchedListener.onViewTouchOccured(event);
+            mOnViewTouchedListener.onViewTouchOccurred(event);
         }
         return super.onInterceptTouchEvent(event);
     }

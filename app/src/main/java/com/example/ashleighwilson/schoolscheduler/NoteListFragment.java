@@ -140,11 +140,8 @@ public class NoteListFragment extends Fragment
         listAdapter.setOnNoteClickListener(new NoteAdapter.NoteClickListener() {
             @Override
             public void OnNoteClicked(View view, int position) {
-                Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
-                //Note note = listAdapter.getItem(position);
-                //Log.i(TAG, "note adapt: " + note);
-                //editNote(listAdapter.getItem(position), view);
-
+                //Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
+                editNote(listAdapter.getItem(position), view);
             }
         });
 
@@ -234,7 +231,7 @@ public class NoteListFragment extends Fragment
         Cursor cursor = dbHelper.getAltNotes();
         while (cursor.moveToNext())
         {
-            Integer id = cursor.getInt(0);
+            //Integer id = cursor.getInt(0);
             Long creation = cursor.getLong(1);
             Long lastMod = cursor.getLong(2);
             String title = cursor.getString(3);
@@ -242,7 +239,7 @@ public class NoteListFragment extends Fragment
             String alarm = cursor.getString(5);
             String rule = cursor.getString(6);
 
-            Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
+            Note note = new Note(creation, lastMod, title, content, alarm, rule);
 
             selectedNotes.add(note);
 

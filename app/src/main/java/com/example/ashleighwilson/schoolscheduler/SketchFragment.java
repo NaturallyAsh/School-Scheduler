@@ -21,6 +21,7 @@ import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.ashleighwilson.schoolscheduler.notes.OnDrawChangedListener;
 import com.example.ashleighwilson.schoolscheduler.notes.SketchView;
 import com.larswerkman.holocolorpicker.ColorPicker;
@@ -131,7 +132,15 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener
             }
             private void askForErase()
             {
-
+                new MaterialDialog.Builder(getActivity())
+                        .content("Erase sketch?")
+                        .positiveText("Confirm")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                mSketchView.erase();
+                            }
+                        });
             }
         });
 

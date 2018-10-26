@@ -109,5 +109,8 @@
     <string name="stroke_size_string">Stroke size</string>
     <string name="creation">Created:</string>
     <string name="last_update">Updated:</string>
+    <string name="storage_not_available">Storage note available</string>
+    <string name="gallery">Gallery</string>
+    <string name="share">Share</string>
 
 </resources>

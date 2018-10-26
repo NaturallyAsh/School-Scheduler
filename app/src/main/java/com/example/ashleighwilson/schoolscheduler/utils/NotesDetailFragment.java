@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -33,10 +34,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
+import com.example.ashleighwilson.schoolscheduler.GalleryActivity;
 import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.RecordActivity;
 import com.example.ashleighwilson.schoolscheduler.SketchFragment;
+import com.example.ashleighwilson.schoolscheduler.adapter.AttachmentAdapter;
+import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
@@ -47,6 +51,7 @@ import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
+import com.example.ashleighwilson.schoolscheduler.notes.OnAttachingFileListener;
 import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
 
@@ -55,13 +60,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NotesDetailFragment extends Fragment implements OnNoteSaved,
-        OnReminderPickedListener, View.OnTouchListener, View.OnClickListener {
+        OnReminderPickedListener, View.OnTouchListener, View.OnClickListener,
+        OnAttachingFileListener {
 
     private static final String TAG = NotesDetailFragment.class.getSimpleName();
 
@@ -103,8 +110,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     ViewStub attachmentsAbove;
     @BindView(R.id.detail_attachments_below)
     ViewStub attachmentsBelow;
-    //@BindView(R.id.attachGridView)
-    //ExpandableHeightGridView mGridView;
+    @Nullable
+    @BindView(R.id.attachGridView)
+    ExpandableHeightGridView mGridView;
     SelectedDate mSelectedDate;
     int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
     String mRecurrenceOption, mRecurrenceRule;
@@ -121,6 +129,8 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private RecordActivity recordActivity;
     private DbHelper dbHelper;
     public Uri attachmentUri;
+    private AttachmentAdapter mAttachmentAdapter;
+
     RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
         @Override
         public void onCancelled() {
@@ -301,9 +311,30 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             String content = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (content != null)
                 noteTmp.setContent(content);
+
+            importAttachments(intent);
         }
 
         intent.setAction(null);
+    }
+
+    private void importAttachments(Intent intent) {
+        if (!intent.hasExtra(Intent.EXTRA_STREAM)) return;
+
+        if (intent.getExtras().get(Intent.EXTRA_STREAM) instanceof Uri) {
+            Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            // Google Now passes Intent as text but with audio recording attached the case must be handled like this
+            if (!Constants.INTENT_GOOGLE_NOW.equals(intent.getAction())) {
+                String name = Storage.getNameFromUri(mNotesActivity, uri);
+                new AttachmentTask(this, uri, name, this).execute();
+            }
+        } else {
+            ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            for (Uri uriSingle :uris) {
+                String name = Storage.getNameFromUri(mNotesActivity, uriSingle);
+                new AttachmentTask(this, uriSingle, name, this).execute();
+            }
+        }
     }
 
     private void initViews()
@@ -314,6 +345,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         initViewTitle();
         initViewContent();
         //initViewReminder();
+        initViewAttachments();
         initViewFooter();
     }
 
@@ -334,6 +366,62 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private void initViewTitle() {
         title.setText(noteTmp.getTitle());
 
+    }
+
+    private void initViewAttachments() {
+
+        attachmentsBelow.inflate();
+        mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.attachGridView);
+
+        mAttachmentAdapter = new AttachmentAdapter(mNotesActivity, noteTmp.getAttachmentsList(), mGridView);
+
+        mGridView.setAdapter(mAttachmentAdapter);
+        mGridView.autoresize();
+
+        mGridView.setOnItemClickListener((parent, view, position, id) -> {
+            Attachment attachment = (Attachment) parent.getAdapter().getItem(position);
+            Uri uri = attachment.getUri();
+            Intent attachmentIntent;
+            if (Constants.MIME_TYPE_FILES.equals(attachment.getMime_type())) {
+                attachmentIntent = new Intent(Intent.ACTION_VIEW);
+                attachmentIntent.setDataAndType(uri, Storage.getMimeType(mNotesActivity,
+                        attachment.getUri()));
+                attachmentIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                if (IntentChecker.isAvailable(mNotesActivity.getApplicationContext(), attachmentIntent,
+                        null)) {
+                    startActivity(attachmentIntent);
+                } else {
+                    mNotesActivity.showToast("Feature unavailable on this device", Toast.LENGTH_SHORT);
+                }
+
+            } else if (Constants.MIME_TYPE_IMAGE.equals(attachment.getMime_type())
+                    || Constants.MIME_TYPE_SKETCH.equals(attachment.getMime_type())
+                    || Constants.MIME_TYPE_VIDEO.equals(attachment.getMime_type())) {
+
+                noteTmp.setTitle(getNoteTitle());
+                noteTmp.setContent(getNoteContent());
+                String title1 = noteTmp.getTitle();
+
+                int clickedImage = 0;
+                ArrayList<Attachment> images = new ArrayList<>();
+                for (Attachment mAttachment : noteTmp.getAttachmentsList()) {
+                    if (Constants.MIME_TYPE_IMAGE.equals(mAttachment.getMime_type())
+                            || Constants.MIME_TYPE_SKETCH.equals(mAttachment.getMime_type())
+                            || Constants.MIME_TYPE_VIDEO.equals(mAttachment.getMime_type())) {
+                        images.add(mAttachment);
+                        if (mAttachment.equals(attachment)) {
+                            clickedImage = images.size() - 1;
+                        }
+                    }
+                }
+
+                attachmentIntent = new Intent(mNotesActivity, GalleryActivity.class);
+                attachmentIntent.putExtra(Constants.GALLERY_TITLE, title1);
+                attachmentIntent.putParcelableArrayListExtra(Constants.GALLERY_IMAGES, images);
+                attachmentIntent.putExtra(Constants.GALLERY_CLICKED_IMAGE, clickedImage);
+                startActivity(attachmentIntent);
+            }
+        });
     }
 
     @Override
@@ -433,18 +521,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         return super.onOptionsItemSelected(item);
     }
 
-    private void addAttachment(Attachment attachment)
-    {
-        noteTmp.addAttachment(attachment);
-    }
-
     private void showAttachmentsPopup()
     {
         LayoutInflater inflater = mNotesActivity.getLayoutInflater();
         final View layout = inflater.inflate(R.layout.attachment_dialog, null);
 
         attachmentDialog = new MaterialDialog.Builder(mNotesActivity)
-                .autoDismiss(true)
+                .autoDismiss(false)
                 .customView(layout, false)
                 .build();
         attachmentDialog.show();
@@ -476,10 +559,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 case TAKE_PHOTO:
                     attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_IMAGE);
                     addAttachment(attachment);
+                    mAttachmentAdapter.notifyDataSetChanged();
+                    mGridView.autoresize();
                     break;
                 case TAKE_VIDEO:
                     attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_VIDEO);
                     addAttachment(attachment);
+                    mAttachmentAdapter.notifyDataSetChanged();
+                    mGridView.autoresize();
                     break;
                 case FILES:
                     onActivityResultManageReceivedFiles(intent);
@@ -487,6 +574,8 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 case SKETCH:
                     attachment = new Attachment(attachmentUri, Constants.MIME_TYPE_SKETCH);
                     addAttachment(attachment);
+                    mAttachmentAdapter.notifyDataSetChanged();
+                    mGridView.autoresize();
                     break;
                 default:
                     Log.i(TAG, "Wrong element chosen");
@@ -502,18 +591,18 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     public void saveAndExit(OnNoteSaved noteSaved)
     {
         //Log.i(TAG, "saveAndExit");
-       /*if (isAdded()) {
+       if (isAdded()) {
            mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
            goBack = true;
            //if (note != null)
              //  NotificationController.scheduleReminder(mNotesActivity, note);
            saveNote(noteSaved);
-       } */
-        mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
+       }
+        /*mNotesActivity.showToast("Note Updated", Toast.LENGTH_SHORT);
         goBack = true;
         if (note != null)
             NotificationController.scheduleReminder(mNotesActivity, note);
-        saveNote(noteSaved);
+        saveNote(noteSaved);*/
     }
 
     public void saveNote(OnNoteSaved noteSaved)
@@ -570,10 +659,11 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Override
     public void onNoteSaved(Note noteSaved) {
         //EventBus.getDefault().postSticky(new NoteUpdatedEvent());
-        Log.i(TAG, "onNoteSaved: note posted");
 
         EventBus.getDefault().postSticky(new NoteEvent(noteSaved));
         note = new Note(noteSaved);
+        Log.i(TAG, "onNoteSaved: " + noteSaved);
+
         if (goBack)
             goHome();
     }
@@ -604,6 +694,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     public boolean onTouch(View v, MotionEvent event) {
         return true;
     }
+
 
     public class AttachmentOnClickListener implements View.OnClickListener
     {
@@ -714,5 +805,42 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(NoteLoadedEvent noteLoadedEvent) {
 
+    }
+
+    @Override
+    public void onAttachingFileErrorOccurred(Attachment attachment) {
+        mNotesActivity.showToast("Error saving attachments", Toast.LENGTH_SHORT);
+        if (noteTmp.getAttachmentsList().contains(attachment)) {
+            removeAttachment(attachment);
+            mAttachmentAdapter.notifyDataSetChanged();
+            mGridView.autoresize();
+        }
+    }
+
+    @Override
+    public void onAttachingFileFinished(Attachment attachment) {
+        addAttachment(attachment);
+        mAttachmentAdapter.notifyDataSetChanged();
+        mGridView.autoresize();
+    }
+
+    private void addAttachment(Attachment attachment)
+    {
+        noteTmp.addAttachment(attachment);
+    }
+
+    private void removeAttachment(Attachment attachment) {
+        noteTmp.removeAttachment(attachment);
+    }
+
+    private void removeAttachment(int position) {
+        noteTmp.removeAttachment(noteTmp.getAttachmentsList().get(position));
+    }
+
+    private void removeAllAttachments() {
+        noteTmp.setAttachmentsList(new ArrayList<>());
+        mAttachmentAdapter = new AttachmentAdapter(mNotesActivity, new ArrayList<>(), mGridView);
+        mGridView.invalidateViews();
+        mGridView.setAdapter(mAttachmentAdapter);
     }
 }

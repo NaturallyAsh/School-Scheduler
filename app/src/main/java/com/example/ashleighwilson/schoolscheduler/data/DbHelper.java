@@ -17,6 +17,7 @@ import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
+import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
@@ -104,7 +105,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 30;
+    private static final int DATABASE_VERSION = 34;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -193,6 +194,30 @@ public class DbHelper extends SQLiteOpenHelper
             + NoteEntry.KEY_REMINDER + " TEXT, "
             + NoteEntry.KEY_RECURRENCE_RULE + " TEXT);";
 
+    public static final class AttachEntry implements BaseColumns
+    {
+        public static final String TABLE_ATTACHMENTS = "attachments";
+        // Attachments table columns
+        public static final String KEY_ATTACHMENT_ID = "attachment_id";
+        public static final String KEY_ATTACHMENT_URI = "uri";
+        public static final String KEY_ATTACHMENT_NAME = "name";
+        public static final String KEY_ATTACHMENT_SIZE = "size";
+        public static final String KEY_ATTACHMENT_LENGTH = "length";
+        public static final String KEY_ATTACHMENT_MIME_TYPE = "mime_type";
+        public static final String KEY_ATTACHMENT_NOTE_ID = "note_id";
+    }
+
+    String SQL_CREATE_ATTACHMENT_TABLE = "CREATE TABLE " + AttachEntry.TABLE_ATTACHMENTS +
+            " ("
+            + AttachEntry.KEY_ATTACHMENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + AttachEntry.KEY_ATTACHMENT_URI + " TEXT, "
+            + AttachEntry.KEY_ATTACHMENT_NAME + " TEXT, "
+            + AttachEntry.KEY_ATTACHMENT_SIZE + " INTEGER, "
+            + AttachEntry.KEY_ATTACHMENT_LENGTH + " INTEGER, "
+            + AttachEntry.KEY_ATTACHMENT_MIME_TYPE + " TEXT, "
+            + AttachEntry.KEY_ATTACHMENT_NOTE_ID + " INTEGER);";
+
+
     public static final class SpinnerEntry implements BaseColumns
     {
         public final static String TABLE_NAME = "subject_spinner";
@@ -235,6 +260,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL(SQL_CREATE_SPINNER_TABLE);
         db.execSQL(SQL_CREATE_AGENDA_TABLE);
         db.execSQL(SQL_CREATE_NOTES_TABLE);
+        db.execSQL(SQL_CREATE_ATTACHMENT_TABLE);
     }
 
     @Override
@@ -246,6 +272,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + SpinnerEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AgendaEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + NoteEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + AttachEntry.TABLE_ATTACHMENTS);
         onCreate(db);
     }
 
@@ -530,6 +557,8 @@ public class DbHelper extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        db.beginTransaction();
+
         ContentValues values = new ContentValues();
         values.put(NoteEntry.KEY_CREATION, note.getCreation() != null ? note.getCreation() :
                 Calendar.getInstance().getTimeInMillis());
@@ -543,13 +572,48 @@ public class DbHelper extends SQLiteOpenHelper
 
         db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 
+        List<Attachment> deletedAttachments = note.getAttachmentsListOld();
+        for (Attachment attachment : note.getAttachmentsList()) {
+            updateAttachment(note.get_id() != null ? note.get_id() : values.getAsLong(NoteEntry.KEY_CREATION),
+                    attachment);
+            deletedAttachments.remove(attachment);
+        }
+        for (Attachment attachmentDeleted : deletedAttachments) {
+            db.delete(AttachEntry.TABLE_ATTACHMENTS, AttachEntry.KEY_ATTACHMENT_ID + " = ?",
+                    new String[]{String.valueOf(attachmentDeleted.getId())});
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
         note.setCreation(note.getCreation() != null ? note.getCreation() :
             values.getAsLong(NoteEntry.KEY_CREATION));
         note.setLastModification(values.getAsLong(NoteEntry.KEY_LAST_MOD));
 
-        db.close();
+        //db.close();
 
         return note;
+    }
+
+    public Note getNoteAt(int position) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToPosition(position)) {
+                Note note = new Note();
+                note.set_id(cursor.getLong(0));
+                note.setCreation(cursor.getLong(1));
+                note.setLastModification(cursor.getLong(2));
+                note.setTitle(cursor.getString(3));
+                note.setContent(cursor.getString(4));
+                note.setAlarm(cursor.getString(5));
+                note.setRecurrenceRule(cursor.getString(6));
+
+                cursor.close();
+                return note;
+            }
+            return null;
     }
 
     public Note getmNote(long id)
@@ -602,7 +666,7 @@ public class DbHelper extends SQLiteOpenHelper
         Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
                 null, null, null);
 
-        if (cursor.moveToFirst()) {
+        /*if (cursor.moveToFirst()) {
             do {
                 Note note = new Note();
                 note.setmId(cursor.getInt(0));
@@ -614,21 +678,23 @@ public class DbHelper extends SQLiteOpenHelper
                 note.setmRecurrenceRule(cursor.getString(6));
                 list.add(note);
             } while (cursor.moveToNext());
-        }
-       /* if (cursor.moveToFirst()) {
+        }*/
+       if (cursor.moveToFirst()) {
             do {
                 int i = 0;
                 Note note = new Note();
-                note.setmId(cursor.getInt(i++));
-                note.setmCreation(cursor.getLong(i++));
-                note.setmLastMod(cursor.getLong(i++));
-                note.setmTitle(cursor.getString(i++));
-                note.setmContent(cursor.getString(i++));
-                note.setmAlarm(cursor.getString(i++));
-                note.setmRecurrenceRule(cursor.getString(i++));
+                note.setCreation(cursor.getLong(i++));
+                note.setLastModification(cursor.getLong(i++));
+                note.setTitle(cursor.getString(i++));
+                note.setContent(cursor.getString(i++));
+                note.setAlarm(cursor.getString(i++));
+                note.setRecurrenceRule(cursor.getString(i++));
                 list.add(note);
+
+                note.setAttachmentsList(getNoteAttachment(note));
+
             } while (cursor.moveToNext());
-        } */
+        }
         cursor.close();
         db.close();
         return list;
@@ -639,6 +705,80 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
+    }
+
+    public Attachment updateAttachment(long noteId, Attachment attachment) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AttachEntry.KEY_ATTACHMENT_ID, attachment.getId() != null ? attachment.getId() :
+            Calendar.getInstance().getTimeInMillis());
+        values.put(AttachEntry.KEY_ATTACHMENT_NOTE_ID, noteId);
+        values.put(AttachEntry.KEY_ATTACHMENT_URI, attachment.getUri().toString());
+        values.put(AttachEntry.KEY_ATTACHMENT_MIME_TYPE, attachment.getMime_type());
+        values.put(AttachEntry.KEY_ATTACHMENT_NAME, attachment.getName());
+        values.put(AttachEntry.KEY_ATTACHMENT_SIZE, attachment.getSize());
+        values.put(AttachEntry.KEY_ATTACHMENT_LENGTH, attachment.getLength());
+
+        db.insertWithOnConflict(AttachEntry.TABLE_ATTACHMENTS, AttachEntry.KEY_ATTACHMENT_ID, values,
+                SQLiteDatabase.CONFLICT_REPLACE);
+        return attachment;
+    }
+
+    public ArrayList<Attachment> getNoteAttachment(Note note) {
+        ArrayList<Attachment> attachmentList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + AttachEntry.TABLE_ATTACHMENTS + " WHERE " +
+                AttachEntry.KEY_ATTACHMENT_NOTE_ID + " = " + note.get_id();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+
+            if (cursor.moveToFirst()) {
+                Attachment mAttachment;
+                do {
+                    mAttachment = new Attachment(
+                            cursor.getLong(0),
+                            Uri.parse(cursor.getString(1)),
+                            cursor.getString(2),
+                            cursor.getInt(3),
+                            cursor.getLong(4),
+                            cursor.getString(5));
+                    attachmentList.add(mAttachment);
+                }while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return attachmentList;
+
+    }
+
+    public ArrayList<Attachment> getAttachments() {
+        ArrayList<Attachment> attachmentList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(AttachEntry.TABLE_ATTACHMENTS, null);
+
+            if (cursor.moveToFirst()) {
+                Attachment mAttachment;
+                do {
+                    mAttachment = new Attachment(
+                            cursor.getLong(0),
+                            Uri.parse(cursor.getString(1)),
+                            cursor.getString(2),
+                            cursor.getInt(3),
+                            cursor.getLong(4),
+                            cursor.getString(5));
+                    attachmentList.add(mAttachment);
+                }while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return attachmentList;
     }
 
     public long getTimeTableId(long id)

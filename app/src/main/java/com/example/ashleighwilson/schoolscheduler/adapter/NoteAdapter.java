@@ -15,6 +15,7 @@ import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +62,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     {
         final Note currentNote = notes.get(position);
 
-        holder.title.setText(currentNote.getmTitle());
-        //holder.title.setText(currentNote.getTitle());
-        holder.content.setText(currentNote.getmContent());
-        //holder.content.setText(currentNote.getContent());
-        holder.alarmIcon.setVisibility(currentNote.getmAlarm() != null ? View.VISIBLE : View.INVISIBLE);
-        holder.date.setText(currentNote.getmAlarm());
+        //holder.title.setText(currentNote.getmTitle());
+        holder.title.setText(currentNote.getTitle());
+        //holder.content.setText(currentNote.getmContent());
+        holder.content.setText(currentNote.getContent());
+        holder.alarmIcon.setVisibility(currentNote.getAlarm() != null ? View.VISIBLE : View.INVISIBLE);
+        //holder.alarmIcon.setVisibility(currentNote.getmAlarm() != null ? View.VISIBLE : View.INVISIBLE);
+        //holder.date.setText(currentNote.getAlarm());
+        String modText = DateHelper.dateFormatter(currentNote.getLastModification());
+        holder.date.setText("Updated: " + "" + modText);
         //holder.noteData = getItem(position);
+
 
     }
 
@@ -110,7 +115,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     }
 
     public Note getItem(int position) {
-        return notes != null ? notes.get(position) : null;
+        return notes != null ? dbHelper.getNoteAt(position) : null;
     }
 
     public List<Note> getNotes() {
