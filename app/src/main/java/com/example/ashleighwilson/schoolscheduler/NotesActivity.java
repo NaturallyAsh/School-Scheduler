@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
-import com.example.ashleighwilson.schoolscheduler.utils.NotesDetailFragment;
 
 import eltos.simpledialogfragment.SimpleDialog;
 
@@ -147,6 +146,7 @@ public class NotesActivity extends AppCompatActivity
 
     private void handleIntents()
     {
+        Log.i(TAG, "handling intents");
         Intent i = getIntent();
         if (i.getAction() == null)
             return;

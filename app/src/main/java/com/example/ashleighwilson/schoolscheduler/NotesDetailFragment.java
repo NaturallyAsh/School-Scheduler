@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.utils;
+package com.example.ashleighwilson.schoolscheduler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -34,16 +34,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
-import com.example.ashleighwilson.schoolscheduler.GalleryActivity;
-import com.example.ashleighwilson.schoolscheduler.NotesActivity;
-import com.example.ashleighwilson.schoolscheduler.R;
-import com.example.ashleighwilson.schoolscheduler.RecordActivity;
-import com.example.ashleighwilson.schoolscheduler.SketchFragment;
 import com.example.ashleighwilson.schoolscheduler.adapter.AttachmentAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
-import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
+import com.example.ashleighwilson.schoolscheduler.utils.ExpandableHeightGridView;
 import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.dialog.RecurrenceDialog;
@@ -54,6 +50,7 @@ import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
 import com.example.ashleighwilson.schoolscheduler.notes.OnAttachingFileListener;
 import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
+import com.example.ashleighwilson.schoolscheduler.utils.IntentChecker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,6 +59,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -255,10 +253,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         super.onPause();
         activityPausing = true;
 
-        if (!goBack)
+        /*if (!goBack)
         {
             saveNote(this);
-        }
+        }*/
     }
 
     private void init()
@@ -275,7 +273,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         if (noteTmp == null) {
             noteTmp = new Note(note);
-            Log.i(TAG, "noteTmp: " + noteTmp);
+            //Log.i(TAG, "noteTmp: " + noteTmp);
         }
 
         initViews();
@@ -370,8 +368,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     private void initViewAttachments() {
 
-        attachmentsBelow.inflate();
-        mGridView = (ExpandableHeightGridView) getView().findViewById(R.id.attachGridView);
+        attachmentsAbove.inflate();
+
+        mGridView = root.findViewById(R.id.attachGridView);
 
         mAttachmentAdapter = new AttachmentAdapter(mNotesActivity, noteTmp.getAttachmentsList(), mGridView);
 
@@ -585,7 +584,18 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     private void onActivityResultManageReceivedFiles(Intent intent)
     {
-
+        List<Uri> uris = new ArrayList<>();
+        if (intent.getClipData() != null) {
+            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                uris.add(intent.getClipData().getItemAt(i).getUri());
+            }
+        } else {
+            uris.add(intent.getData());
+        }
+        for (Uri uri : uris) {
+            String name = Storage.getNameFromUri(mNotesActivity, uri);
+            new AttachmentTask(this, uri, name, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
     public void saveAndExit(OnNoteSaved noteSaved)
@@ -695,31 +705,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         return true;
     }
 
-
-    public class AttachmentOnClickListener implements View.OnClickListener
-    {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId())
-            {
-                case R.id.camera:
-                    takePhoto();
-                    break;
-                case R.id.recording:
-                    startActivity(new Intent(getContext(), RecordActivity.class));
-                    break;
-                case R.id.video:
-                    takeVideo();
-                    break;
-                case R.id.files:
-                    break;
-                case R.id.sketch:
-                    takeSketch(null);
-                    break;
-            }
-        }
-    }
-
     private void takeSketch(Attachment attachment)
     {
         File f = Storage.createNewAttachmentFile(mNotesActivity, Constants.MIME_TYPE_SKETCH_EXT);
@@ -758,6 +743,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         }
 
         attachmentUri = Uri.fromFile(f);
+        Log.i(TAG, "attachment photo Uri: " + attachmentUri);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }
@@ -780,6 +766,33 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         attachmentUri = Uri.fromFile(f);
         videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
         startActivityForResult(videoIntent, TAKE_VIDEO);
+    }
+
+    public class AttachmentOnClickListener implements View.OnClickListener
+    {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId())
+            {
+                case R.id.camera:
+                    takePhoto();
+                    attachmentDialog.dismiss();
+                    break;
+                case R.id.recording:
+                    startActivity(new Intent(getContext(), RecordActivity.class));
+                    break;
+                case R.id.video:
+                    takeVideo();
+                    attachmentDialog.dismiss();
+                    break;
+                case R.id.files:
+                    break;
+                case R.id.sketch:
+                    takeSketch(null);
+                    attachmentDialog.dismiss();
+                    break;
+            }
+        }
     }
 
     public Pair<Boolean, SublimeOptions> getOptions()
@@ -820,6 +833,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Override
     public void onAttachingFileFinished(Attachment attachment) {
         addAttachment(attachment);
+
         mAttachmentAdapter.notifyDataSetChanged();
         mGridView.autoresize();
     }

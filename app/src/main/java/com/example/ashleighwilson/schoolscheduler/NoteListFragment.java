@@ -32,6 +32,7 @@ import com.example.ashleighwilson.schoolscheduler.adapter.NoteAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
 import com.example.ashleighwilson.schoolscheduler.data.NoteLoaderTask;
+import com.example.ashleighwilson.schoolscheduler.data.NoteProcessorDelete;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
@@ -109,11 +110,8 @@ public class NoteListFragment extends Fragment
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onEvent(NoteEvent noteEvent) {
-        //NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-        //      "getAllNotes");
-        //EventBus.getDefault().removeStickyEvent(noteEvent);
+
         selectedNotes.add(noteEvent.mNote);
-        Log.i(TAG, "sticky: " + noteEvent.mNote);
 
     }
 
@@ -148,7 +146,6 @@ public class NoteListFragment extends Fragment
         noteEvent = EventBus.getDefault().removeStickyEvent(NoteEvent.class);
         if (noteEvent != null) {
             selectedNotes.add(noteEvent.mNote);
-            Log.i(TAG, "Note event: " + noteEvent.mNote);
         }
 
         //loadedNotes();
@@ -177,6 +174,7 @@ public class NoteListFragment extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             listAdapter.dismissNote(viewHolder.getAdapterPosition());
+                            //deleteNotesExecute();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -201,37 +199,13 @@ public class NoteListFragment extends Fragment
         notesActivity = (NotesActivity) getActivity();
     }
 
-    private void loadedNotes() {
-        if (noteEvent != null) {
-            selectedNotes.add(noteEvent.mNote);
-        }
-
-        if (selectedNotes.size() > 0)
-        {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyNotesView.setVisibility(View.GONE);
-            recyclerView.setAdapter(listAdapter);
-            listAdapter.notifyDataSetChanged();
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            emptyNotesView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(listAdapter);
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
     private void initListView()
     {
-
-//        if (noteLoadedEvent.notes != null)
-  //          selectedNotes = noteLoadedEvent.notes;
-        //NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-          //      "getAllNotes");
         selectedNotes.clear();
         Cursor cursor = dbHelper.getAltNotes();
         while (cursor.moveToNext())
         {
-            //Integer id = cursor.getInt(0);
+            int id = cursor.getInt(0);
             Long creation = cursor.getLong(1);
             Long lastMod = cursor.getLong(2);
             String title = cursor.getString(3);
@@ -239,11 +213,11 @@ public class NoteListFragment extends Fragment
             String alarm = cursor.getString(5);
             String rule = cursor.getString(6);
 
-            Note note = new Note(creation, lastMod, title, content, alarm, rule);
+            Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
 
             selectedNotes.add(note);
 
-            if (selectedNotes.size() > 0)
+            if (!(listAdapter.getItemCount() == 0))
             {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyNotesView.setVisibility(View.GONE);
@@ -322,8 +296,11 @@ public class NoteListFragment extends Fragment
         if (expandedIV != null)
         {
             View targetView = null;
-            if (targetView == null)
+            if (note.getAttachmentsList().size() > 0)
             {
+                targetView = view.findViewById(R.id.attachmentThumbnail);
+            }
+            if (targetView == null) {
                 targetView = new ImageView(notesActivity);
                 targetView.setBackgroundColor(Color.WHITE);
             }
@@ -366,5 +343,15 @@ public class NoteListFragment extends Fragment
         sketchFragment.setArguments(b);
         transaction.replace(R.id.fragment_note_container, sketchFragment, notesActivity.FRAGMENT_SKETCH_TAG)
                 .addToBackStack(notesActivity.FRAGMENT_NOTE_DETAIL_TAG).commit();
+    }
+
+    private List<Note> getSelectedNotes() {
+        return selectedNotes;
+    }
+
+    private void deleteNotesExecute() {
+        listAdapter.removeNote(selectedNotes.size());
+        new NoteProcessorDelete(getSelectedNotes()).process();
+        selectedNotes.clear();
     }
 }

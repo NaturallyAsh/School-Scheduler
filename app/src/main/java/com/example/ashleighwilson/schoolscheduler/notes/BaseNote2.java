@@ -12,6 +12,7 @@ public class BaseNote2 implements Serializable {
     private String title;
     private String content;
     private Long creation;
+    private int id;
     private Long lastModification;
     private Boolean archived;
     private Boolean trashed;
@@ -63,6 +64,17 @@ public class BaseNote2 implements Serializable {
         this.recurrenceRule = recurrenceRule;
     }
 
+    public BaseNote2(int id, Long creation, Long lastModification, String title, String content, String alarm,
+                     String recurrenceRule) {
+        this.id = id;
+        this.creation = creation;
+        this.lastModification = lastModification;
+        this.title = title;
+        this.content = content;
+        this.alarm = alarm;
+        this.recurrenceRule = recurrenceRule;
+    }
+
     public BaseNote2(BaseNote2 baseNote) {
         this.buildFromNote(baseNote);
     }
@@ -106,6 +118,14 @@ public class BaseNote2 implements Serializable {
 
     public Long get_id() {
         return this.creation;
+    }
+
+    public void setID(int id) {
+        this.id = id;
+    }
+
+    public int getID() {
+        return this.id;
     }
 
     public String getTitle() {

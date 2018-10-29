@@ -105,7 +105,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 34;
+    private static final int DATABASE_VERSION = 37;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -414,24 +414,6 @@ public class DbHelper extends SQLiteOpenHelper
         return id;
     }
 
-    public long addAltRecording(RecordingModel model)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put(RecordEntry.COLUMN_NAME, model.getName());
-        values.put(RecordEntry.COLUMN_FILE_PATH, model.getFilePath());
-        values.put(RecordEntry.COLUMN_RECORD_LENGTH, model.getNewLength());
-        values.put(RecordEntry.COLUMN_RECORD_TIME, System.currentTimeMillis());
-
-        long rowId = db.insert(RecordEntry.TABLE_NAME, null, values);
-
-        if (mOnDatabaseChangedListener != null)
-            mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
-
-        return rowId;
-    }
-
     public int getRecordCount()
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -572,12 +554,14 @@ public class DbHelper extends SQLiteOpenHelper
 
         db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 
+        //Updating attachments
         List<Attachment> deletedAttachments = note.getAttachmentsListOld();
         for (Attachment attachment : note.getAttachmentsList()) {
             updateAttachment(note.get_id() != null ? note.get_id() : values.getAsLong(NoteEntry.KEY_CREATION),
                     attachment);
             deletedAttachments.remove(attachment);
         }
+        //Remove from db deleted attachments
         for (Attachment attachmentDeleted : deletedAttachments) {
             db.delete(AttachEntry.TABLE_ATTACHMENTS, AttachEntry.KEY_ATTACHMENT_ID + " = ?",
                     new String[]{String.valueOf(attachmentDeleted.getId())});
@@ -614,38 +598,6 @@ public class DbHelper extends SQLiteOpenHelper
                 return note;
             }
             return null;
-    }
-
-    public Note getmNote(long id)
-    {
-        List<Note> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
-                null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                Note note = new Note();
-                note.setmId(cursor.getInt(0));
-                note.setmCreation(cursor.getLong(1));
-                note.setmLastMod(cursor.getLong(2));
-                note.setmTitle(cursor.getString(3));
-                note.setmContent(cursor.getString(4));
-                note.setmAlarm(cursor.getString(5));
-                note.setmRecurrenceRule(cursor.getString(6));
-                list.add(note);
-            } while (cursor.moveToNext());
-        }
-
-        Note note;
-        if (list.size() > 0) {
-            note = list.get(0);
-        } else {
-            note = null;
-        }
-        cursor.close();
-        db.close();
-        return note;
     }
 
     public Cursor getAltNotes() {
@@ -700,12 +652,35 @@ public class DbHelper extends SQLiteOpenHelper
         return list;
     }
 
-    public long deleteNote(int id) {
+    public void deleteNote(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        return db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " =?",
+
+        db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
     }
+
+    public boolean deleteNoteProcess(Note note) {
+        return deleteNoteProcess(note, false);
+    }
+
+    private boolean deleteNoteProcess(Note note, boolean keepAttachments) {
+        int deletedNotes;
+        boolean result = true;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        deletedNotes = db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " = ?", new String[]
+                {String.valueOf(note.get_id())});
+        if (!keepAttachments) {
+            int deletedAttachments = db.delete(AttachEntry.TABLE_ATTACHMENTS, AttachEntry.KEY_ATTACHMENT_NOTE_ID +
+             " = ?", new String[]{String.valueOf(note.get_id())});
+            result = result && deletedAttachments == note.getAttachmentsList().size();
+        }
+
+        result = result && deletedNotes == 1;
+        return result;
+    }
+
 
     public Attachment updateAttachment(long noteId, Attachment attachment) {
         SQLiteDatabase db = this.getWritableDatabase();

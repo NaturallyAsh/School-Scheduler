@@ -112,5 +112,6 @@
     <string name="storage_not_available">Storage note available</string>
     <string name="gallery">Gallery</string>
     <string name="share">Share</string>
+    <string name="note_thumbnail">note thumbnail</string>
 
 </resources>

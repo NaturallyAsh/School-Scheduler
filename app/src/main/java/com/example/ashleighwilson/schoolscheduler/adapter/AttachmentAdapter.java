@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,15 @@ import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.utils.BitmapHelper;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.example.ashleighwilson.schoolscheduler.utils.ExpandableHeightGridView;
+import com.example.ashleighwilson.schoolscheduler.utils.SquareImageView;
 
 import java.util.Collections;
 import java.util.List;
 
 public class AttachmentAdapter extends BaseAdapter {
+
+    private static final String TAG = AttachmentAdapter.class.getSimpleName();
+
     private Activity mActivity;
     private List<Attachment> attachmentList;
     private LayoutInflater inflater;
@@ -37,18 +42,21 @@ public class AttachmentAdapter extends BaseAdapter {
 
     public class AttachmentHolder {
         TextView text;
-        ImageView image;
+        SquareImageView image;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        Log.i(TAG, "Gridview called for position: " + position);
+
         Attachment currentAttachment = attachmentList.get(position);
         AttachmentHolder holder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.gridview_item, parent, false);
 
             holder = new AttachmentHolder();
-            holder.image = (ImageView) convertView.findViewById(R.id.gridview_item_picture);
-            holder.text = (TextView) convertView.findViewById(R.id.gridview_item_text);
+            holder.image = convertView.findViewById(R.id.gridview_item_picture);
+            holder.text = convertView.findViewById(R.id.gridview_item_text);
             convertView.setTag(holder);
         } else {
             holder = (AttachmentHolder) convertView.getTag();
@@ -93,7 +101,7 @@ public class AttachmentAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public List<Attachment> getAttachmentList() {
+    public List<Attachment> getAttachmentsList() {
         return this.attachmentList;
     }
 

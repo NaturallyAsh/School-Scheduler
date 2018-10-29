@@ -316,6 +316,18 @@ public class Storage
         return res;
     }
 
+    public static boolean deleteExternalStoragePrivateFile(Context mContext, String name) {
+        if (!checkStorage()) {
+            Toast.makeText(mContext, "Storage not available", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        File file = new File(mContext.getExternalFilesDir(null), name);
+        file.delete();
+
+        return true;
+    }
+
 
     public static String getRealPathFromURI(Context mContext, Uri contentUri) {
         String[] proj = {MediaStore.Images.Media.DATA};
