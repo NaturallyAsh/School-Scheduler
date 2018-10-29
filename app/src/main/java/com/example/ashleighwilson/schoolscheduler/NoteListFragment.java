@@ -79,12 +79,9 @@ public class NoteListFragment extends Fragment
     private List<Note> selectedNotes = new ArrayList<>();
     public NoteAdapter listAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    public NoteLoadedEvent noteLoadedEvent;
     private DbHelper dbHelper;
     private NoteEvent noteEvent;
     NoteAdapter.NoteClickListener clickListener;
-
-    //public NoteListFragment(){}
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -106,6 +103,12 @@ public class NoteListFragment extends Fragment
         EventBus.getDefault().unregister(this);
         super.onStop();
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initListView();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -148,7 +151,6 @@ public class NoteListFragment extends Fragment
             selectedNotes.add(noteEvent.mNote);
         }
 
-        //loadedNotes();
         initListView();
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |
@@ -174,7 +176,6 @@ public class NoteListFragment extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             listAdapter.dismissNote(viewHolder.getAdapterPosition());
-                            //deleteNotesExecute();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -203,6 +204,7 @@ public class NoteListFragment extends Fragment
     {
         selectedNotes.clear();
         Cursor cursor = dbHelper.getAltNotes();
+
         while (cursor.moveToNext())
         {
             int id = cursor.getInt(0);
@@ -214,8 +216,9 @@ public class NoteListFragment extends Fragment
             String rule = cursor.getString(6);
 
             Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
-
+            note.setAttachmentsList(dbHelper.getNoteAttachment(note));
             selectedNotes.add(note);
+
 
             if (!(listAdapter.getItemCount() == 0))
             {
@@ -232,7 +235,6 @@ public class NoteListFragment extends Fragment
         }
 
         NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
-        //NoteLoaderTask.getInstance().execute();
 
     }
 

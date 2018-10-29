@@ -93,7 +93,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
-        //public Note noteData;
 
         @BindView(R.id.note_item_root) public View root;
         @BindView(R.id.note_item_cardlayout) public View cardLayout;
@@ -113,7 +112,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
                 public void onClick(View v) {
 
                     listener.OnNoteClicked(v, getAdapterPosition());
-                    //Log.i(TAG, "adapterposition: " + getAdapterPosition() + " view: " + v);
                 }
             });
         }

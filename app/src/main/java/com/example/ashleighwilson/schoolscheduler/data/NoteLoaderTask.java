@@ -52,7 +52,6 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
                 e.printStackTrace();
             }
         }
-        Log.i(TAG, "background notes: " + notes.size());
 
         return notes;
     }
@@ -61,6 +60,5 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, ArrayList<Note>> {
     public void onPostExecute(ArrayList<Note> notes) {
         super.onPostExecute(notes);
         EventBus.getDefault().post(new NoteLoadedEvent(notes));
-        Log.i(TAG, "loaded event: " + notes);
     }
 }

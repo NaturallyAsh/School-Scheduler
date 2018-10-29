@@ -635,6 +635,7 @@ public class DbHelper extends SQLiteOpenHelper
             do {
                 int i = 0;
                 Note note = new Note();
+                note.setID(cursor.getInt(i++));
                 note.setCreation(cursor.getLong(i++));
                 note.setLastModification(cursor.getLong(i++));
                 note.setTitle(cursor.getString(i++));

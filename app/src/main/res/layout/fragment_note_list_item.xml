@@ -39,6 +39,7 @@
                     android:layout_weight="1"
                     android:gravity="top|left"
                     android:singleLine="true"
+                    android:textStyle="bold"
                     android:textAppearance="@style/Text.Big" />
 
                 <ImageView
@@ -69,6 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|start"
+                    android:layout_marginTop="10dp"
                     android:maxLines="@integer/textview_max_lines_expanded"
                     android:textAppearance="@style/Text.Normal" />
 
@@ -77,6 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|left"
+                    android:layout_marginTop="8dp"
                     android:textAppearance="@style/Text.Small" />
 
             </LinearLayout>
