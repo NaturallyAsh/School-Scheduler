@@ -35,6 +35,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     private Context mContext;
     private List<Note> notes;
     private Note currentNote;
+    private Note note;
     private DbHelper dbHelper;
     private SparseBooleanArray selectedItems = new SparseBooleanArray();
     NoteClickListener listener;
@@ -73,7 +74,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         holder.content.setText(currentNote.getContent());
         holder.alarmIcon.setVisibility(currentNote.getAlarm() != null ? View.VISIBLE : View.INVISIBLE);
         //holder.date.setText(currentNote.getAlarm());
-        String modText = DateHelper.dateFormatter(currentNote.getLastModification());
+        String modText = DateHelper.prettyTime(currentNote.getLastModification());
         holder.date.setText("Updated: " + "" + modText);
         holder.attachmentIcon.setVisibility(currentNote.getAttachmentsList().size() > 0
             ? View.VISIBLE : View.GONE);
@@ -82,7 +83,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         } else {
             Attachment mAttachment = currentNote.getAttachmentsList().get(0);
             Uri thumbnailUri = BitmapHelper.getThumbnailUri(mContext, mAttachment);
-            Log.i(TAG, "thumbnail Uri: " + thumbnailUri);
             Glide.with(mContext)
                     .load(thumbnailUri)
                     .centerCrop()
@@ -153,17 +153,23 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         notifyItemRangeChanged(0, noteModel.size());
     }
 
-    public void deleteNote() {
+    /*public void deleteNote() {
         dbHelper.deleteNoteProcess(currentNote);
-    }
+    } */
 
     public void dismissNote(int position)
     {
-        //dbHelper.deleteNote(getItem(position).get_id());
+        //dbHelper.deleteNote(notes.get(position).get_id());
         dbHelper.deleteNote(notes.get(position).getID());
         notes.remove(position);
         notifyItemRemoved(position);
         //notifyItemRangeChanged(position, getItemCount());
+    }
+
+    public void deleteNote(int position) {
+        dbHelper.deleteNote(notes.get(position).getID());
+        notes.remove(position);
+        notifyItemRemoved(position);
     }
 
     public void removeNote(int position) {

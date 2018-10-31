@@ -348,13 +348,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     }
 
     private void initViewFooter() {
-        String creation = DateHelper.dateFormatter(noteTmp.getCreation());
+        String creation = DateHelper.prettyTime(noteTmp.getCreation());
         creationTV.append(creation.length() > 0 ? getString(R.string.creation) + " " +
             creation : "");
         if (creationTV.getText().length() == 0)
             creationTV.setVisibility(View.GONE);
 
-        String lastMod = DateHelper.dateFormatter(noteTmp.getLastModification());
+        String lastMod = DateHelper.prettyTime(noteTmp.getLastModification());
         lastModTV.append(lastMod.length() > 0 ? getString(R.string.last_update) + " " +
             lastMod : "");
         if (lastModTV.getText().length() == 0)

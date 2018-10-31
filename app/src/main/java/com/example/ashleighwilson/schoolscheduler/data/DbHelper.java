@@ -91,7 +91,7 @@ public class DbHelper extends SQLiteOpenHelper
     };
 
     String[] noteColumns = new String[] {
-            NoteEntry._ID,
+            NoteEntry.KEY_ID,
             NoteEntry.KEY_CREATION,
             NoteEntry.KEY_LAST_MOD,
             NoteEntry.KEY_TITLE,
@@ -105,7 +105,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 37;
+    private static final int DATABASE_VERSION = 47;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -175,7 +175,7 @@ public class DbHelper extends SQLiteOpenHelper
     public static final class NoteEntry implements BaseColumns
     {
         public final static String TABLE_NAME = "notes";
-        public final static String _ID = BaseColumns._ID;
+        public final static String KEY_ID = "note_id";
         public final static String KEY_CREATION = "creation";
         public final static String KEY_LAST_MOD = "last_mod";
         public final static String KEY_TITLE = "title";
@@ -186,7 +186,7 @@ public class DbHelper extends SQLiteOpenHelper
 
     String SQL_CREATE_NOTES_TABLE = "CREATE TABLE " + NoteEntry.TABLE_NAME +
             " ("
-            + NoteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + NoteEntry.KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + NoteEntry.KEY_CREATION + " INTEGER, "
             + NoteEntry.KEY_LAST_MOD + " INTEGER, "
             + NoteEntry.KEY_TITLE + " TEXT, "
@@ -542,6 +542,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.beginTransaction();
 
         ContentValues values = new ContentValues();
+        //values.put(NoteEntry.KEY_ID, note.get_id());
         values.put(NoteEntry.KEY_CREATION, note.getCreation() != null ? note.getCreation() :
                 Calendar.getInstance().getTimeInMillis());
         values.put(NoteEntry.KEY_LAST_MOD, updateLastMod ? Calendar.getInstance().getTimeInMillis() :
@@ -552,7 +553,7 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(NoteEntry.KEY_REMINDER, note.getAlarm());
         values.put(NoteEntry.KEY_RECURRENCE_RULE, note.getRecurrenceRule());
 
-        db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry.KEY_ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 
         //Updating attachments
         List<Attachment> deletedAttachments = note.getAttachmentsListOld();
@@ -594,6 +595,8 @@ public class DbHelper extends SQLiteOpenHelper
                 note.setAlarm(cursor.getString(5));
                 note.setRecurrenceRule(cursor.getString(6));
 
+                note.setAttachmentsList(getNoteAttachment(note));
+
                 cursor.close();
                 return note;
             }
@@ -618,24 +621,11 @@ public class DbHelper extends SQLiteOpenHelper
         Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, null, null,
                 null, null, null);
 
-        /*if (cursor.moveToFirst()) {
-            do {
-                Note note = new Note();
-                note.setmId(cursor.getInt(0));
-                note.setmCreation(cursor.getLong(1));
-                note.setmLastMod(cursor.getLong(2));
-                note.setmTitle(cursor.getString(3));
-                note.setmContent(cursor.getString(4));
-                note.setmAlarm(cursor.getString(5));
-                note.setmRecurrenceRule(cursor.getString(6));
-                list.add(note);
-            } while (cursor.moveToNext());
-        }*/
        if (cursor.moveToFirst()) {
             do {
                 int i = 0;
                 Note note = new Note();
-                note.setID(cursor.getInt(i++));
+                note.set_id(cursor.getLong(i++));
                 note.setCreation(cursor.getLong(i++));
                 note.setLastModification(cursor.getLong(i++));
                 note.setTitle(cursor.getString(i++));
@@ -649,16 +639,41 @@ public class DbHelper extends SQLiteOpenHelper
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db.close();
+        //db.close();
         return list;
+    }
+
+    public Note getNote(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, NoteEntry.KEY_ID + " = ?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+            Note note = new Note(
+                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_ID)),
+                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_CREATION)),
+                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_LAST_MOD)),
+                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_TITLE)),
+                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_CONTENT)),
+                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_REMINDER)),
+                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_RECURRENCE_RULE)));
+
+            note.setAttachmentsList(getNoteAttachment(note));
+        cursor.close();
+
+        return note;
     }
 
     public void deleteNote(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 
-        db.delete(NoteEntry.TABLE_NAME, NoteEntry._ID + " =?",
+        db.delete(NoteEntry.TABLE_NAME, NoteEntry.KEY_ID + " = ?",
                 new String[]{String.valueOf(id)});
+
+        db.close();
     }
 
     public boolean deleteNoteProcess(Note note) {
@@ -723,8 +738,9 @@ public class DbHelper extends SQLiteOpenHelper
                 }while (cursor.moveToNext());
             }
         } finally {
-            if (cursor != null)
+            if (cursor != null) {
                 cursor.close();
+            }
         }
         return attachmentList;
 

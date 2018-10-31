@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -14,11 +15,13 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.property.RRule;
 
 import org.apache.commons.lang.StringUtils;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateHelper
 {
@@ -131,5 +134,30 @@ public class DateHelper
         }
 
         return res;
+    }
+
+    public static String getDateTimeShort(Context mContext, Long date) {
+        int flags = DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_WEEKDAY
+                | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_DATE;
+
+        return (date == null) ? "" : DateUtils.formatDateTime(mContext, date, flags)
+                + " " + DateUtils.formatDateTime(mContext, date, DateUtils.FORMAT_SHOW_TIME);
+    }
+
+    public static String prettyTime(Long timeInMilli) {
+        return prettyTime(timeInMilli, MySchedulerApp.getInstance().getResources().getConfiguration().locale);
+    }
+
+    public static String prettyTime(Long timeInmilli, Locale locale) {
+        if (timeInmilli == null)
+            return "";
+
+        Date date = new Date(timeInmilli);
+        PrettyTime pt = new PrettyTime();
+        if (locale != null) {
+            pt.setLocale(locale);
+        }
+
+        return pt.format(date);
     }
 }

@@ -47,7 +47,6 @@ public class AttachmentAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Log.i(TAG, "Gridview called for position: " + position);
 
         Attachment currentAttachment = attachmentList.get(position);
         AttachmentHolder holder;

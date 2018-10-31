@@ -77,10 +77,12 @@ public class NoteListFragment extends Fragment
     private NotesActivity notesActivity;
     public Uri attachmentUri;
     private List<Note> selectedNotes = new ArrayList<>();
+    private List<Note> getAllNotes = new ArrayList<>();
     public NoteAdapter listAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private DbHelper dbHelper;
     private NoteEvent noteEvent;
+    private Note note;
     NoteAdapter.NoteClickListener clickListener;
 
     @Override
@@ -106,9 +108,16 @@ public class NoteListFragment extends Fragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         initListView();
+        Log.i(TAG, "resumed");
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -125,6 +134,7 @@ public class NoteListFragment extends Fragment
         ButterKnife.bind(this, rootView);
 
         dbHelper = DbHelper.getInstance();
+
 
         fabNoteMenu.showMenu(true);
         fabNoteMenu.setClosedOnTouchOutside(true);
@@ -176,6 +186,7 @@ public class NoteListFragment extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             listAdapter.dismissNote(viewHolder.getAdapterPosition());
+                            //listAdapter.deleteNote(viewHolder.getAdapterPosition());
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -207,7 +218,7 @@ public class NoteListFragment extends Fragment
 
         while (cursor.moveToNext())
         {
-            int id = cursor.getInt(0);
+            long id = cursor.getLong(0);
             Long creation = cursor.getLong(1);
             Long lastMod = cursor.getLong(2);
             String title = cursor.getString(3);
@@ -219,6 +230,7 @@ public class NoteListFragment extends Fragment
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
             selectedNotes.add(note);
 
+            Log.i(TAG, "id: " + id);
 
             if (!(listAdapter.getItemCount() == 0))
             {
@@ -234,9 +246,25 @@ public class NoteListFragment extends Fragment
             }
         }
 
+        /*if (!(listAdapter.getItemCount() == 0))
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyNotesView.setVisibility(View.GONE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            emptyNotesView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        }*/
+
+
         NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
 
     }
+
+
 
     private void FloatingClicked()
     {
@@ -281,8 +309,11 @@ public class NoteListFragment extends Fragment
 
     void editNote2(Note note)
     {
-        if (note.getmId() != null) {
-            notesActivity.switchToDetail(note);
+        if (note.get_id() == null) {
+            //notesActivity.switchToDetail(note);
+            Log.i(TAG, "adding new note");
+        } else {
+            Log.i(TAG, "editing note with id: " + note.get_id());
         }
         notesActivity.switchToDetail(note);
     }

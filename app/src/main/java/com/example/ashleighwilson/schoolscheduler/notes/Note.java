@@ -48,7 +48,7 @@ public class Note extends BaseNote2 implements Parcelable
         super(creation, lastModification, title, content, alarm, recurrenceRule);
     }
 
-    public Note(int id, Long creation, Long lastModification, String title, String content, String alarm,
+    public Note(long id, Long creation, Long lastModification, String title, String content, String alarm,
                 String recurrenceRule) {
         super(id, creation, lastModification, title, content, alarm, recurrenceRule);
     }

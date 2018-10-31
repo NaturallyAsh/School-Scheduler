@@ -213,8 +213,8 @@ public class NotesActivity extends AppCompatActivity
         f = checkFragmentInstance(R.id.fragment_note_container, NoteListFragment.class);
         if (f != null)
         {
-            //super.onBackPressed();
-            getFragmentManagerInstance().popBackStack();
+            super.onBackPressed();
+            //getFragmentManagerInstance().popBackStack();
         }
         f = checkFragmentInstance(R.id.fragment_note_container, SketchFragment.class);
         if (f != null)
