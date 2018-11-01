@@ -17,7 +17,8 @@
         android:id="@+id/agenda_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="?attr/actionBarSize"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,42 +35,6 @@
 
     </RelativeLayout>
 
-
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_all_agenda"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="10dp"
-        app:menu_colorNormal="@color/colorPrimary"
-        app:menu_colorPressed="@color/aqua"
-        app:menu_openDirection="up"
-        app:menu_showShadow="true"
-        app:menu_labels_position="left"
-        app:menu_labels_ellipsize="end"
-        app:menu_fab_show_animation="@anim/fab_scale_up"
-        app:menu_fab_hide_animation="@anim/fab_scale_down"
-        app:menu_labels_singleLine="true">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_agenda"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:fab_colorNormal="@color/teal"
-            app:fab_colorPressed="@color/teal"
-            app:fab_label="Add Assignment"
-            app:fab_size="mini"/>
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_record_agenda"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/LightSeaGreen"
-            app:fab_colorPressed="@color/green"
-            app:fab_label="Add Recording"
-            app:fab_size="mini"/>
-
-    </com.github.clans.fab.FloatingActionMenu>
+    <include layout="@layout/fab_agenda"/>
 
 </RelativeLayout>

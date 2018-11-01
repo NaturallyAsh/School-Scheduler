@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ public class OverviewActivity extends AppCompatActivity
     CharSequence tabTitles[] = {"SUBJECTS", "AGENDA", "CALENDER"};
     int numOfTabs = 3;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private NestedScrollView nestedScrollView;
     ViewPagerAdapter adapter;
     AppBarLayout appBarLayout;
     SessionManager session;
@@ -124,13 +126,14 @@ public class OverviewActivity extends AppCompatActivity
                 switch (tab.getPosition())
                 {
                     case 0:
-                        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 500).into(backdropIV);
+                        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
                         break;
                     case 1:
-                        Picasso.get().load(R.drawable.agenda_drawable).resize(600, 500).into(backdropIV);
+                        Picasso.get().load(R.drawable.agenda_drawable).resize(600, 300).into(backdropIV);
+                        //collapsingToolbarLayout.setBackgroundResource(R.drawable.agenda_drawable);
                         break;
                     case 2:
-                        Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 500).into(backdropIV);
+                        Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 300).into(backdropIV);
                         break;
                 }
                 invalidateFragmentMenus(tab.getPosition());
@@ -159,7 +162,7 @@ public class OverviewActivity extends AppCompatActivity
 
     private void setImage()
     {
-        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 500).into(backdropIV);
+        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
     }
 
     private void invalidateFragmentMenus(int position)

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".OverviewActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -16,7 +17,8 @@
             android:id="@+id/overview_collapsingTB"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:fitsSystemWindows="true">
 
             <ImageView
                 android:id="@+id/main_backdrop"
@@ -55,7 +57,6 @@
                 app:tabGravity="fill" />
 
     </FrameLayout>
-
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager"

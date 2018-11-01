@@ -68,6 +68,9 @@ dependencies {
     implementation 'org.mnode.ical4j:ical4j:1.0.6'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
+    implementation 'com.github.florent37:materialviewpager:1.2.3'
+    implementation 'com.flaviofaria:kenburnsview:1.0.7'
+    implementation 'com.jpardogo.materialtabstrip:library:1.1.0'
     implementation group: 'org.apache.commons', name: "commons-lang3", version: '3.7'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation ('com.github.federicoiosue:SimpleGallery:2.0.0') {
