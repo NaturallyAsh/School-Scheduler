@@ -122,6 +122,8 @@ public class SubjectsFrag extends DialogFragment
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
                             recyclerSubAdapter.dismissItem(viewHolder.getAdapterPosition());
+                            if (recyclerSubAdapter.getItemCount() == 0)
+                                updateUI();
 
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -160,21 +162,25 @@ public class SubjectsFrag extends DialogFragment
             SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end);
 
             subMod.add(model);
+        }
 
-            if (subMod.size() > 0)
-            {
-                recyclerView.setVisibility(View.VISIBLE);
-                emptyView.setVisibility(View.GONE);
-                recyclerView.setAdapter(recyclerSubAdapter);
-                recyclerSubAdapter.notifyDataSetChanged();
-            }
-            else
-            {
-                recyclerView.setVisibility(View.GONE);
-                emptyView.setVisibility(View.VISIBLE);
-                recyclerView.setAdapter(recyclerSubAdapter);
-                recyclerSubAdapter.notifyDataSetChanged();
-            }
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (recyclerSubAdapter.getItemCount() == 0)
+        {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(recyclerSubAdapter);
+            recyclerSubAdapter.notifyDataSetChanged();
+        }
+        else
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setAdapter(recyclerSubAdapter);
+            recyclerSubAdapter.notifyDataSetChanged();
         }
     }
 

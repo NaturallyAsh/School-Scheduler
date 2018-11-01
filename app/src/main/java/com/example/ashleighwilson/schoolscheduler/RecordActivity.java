@@ -123,11 +123,10 @@ public class RecordActivity extends AppCompatActivity
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
-                            //subMod.remove(viewHolder.getAdapterPosition());
-                            //dbHelper.delete(recyclerSubAdapter.getItemCount());
-                            //recyclerSubAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                            recorderAdapter.removeRecord(viewHolder.getAdapterPosition());
 
+                            recorderAdapter.removeRecord(viewHolder.getAdapterPosition());
+                            if (recorderAdapter.getItemCount() == 0)
+                                setData();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override

@@ -186,7 +186,8 @@ public class NoteListFragment extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             listAdapter.dismissNote(viewHolder.getAdapterPosition());
-                            //listAdapter.deleteNote(viewHolder.getAdapterPosition());
+                            if (listAdapter.getItemCount() == 0)
+                                updateUI();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -230,41 +231,27 @@ public class NoteListFragment extends Fragment
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
             selectedNotes.add(note);
 
-            Log.i(TAG, "id: " + id);
-
-            if (!(listAdapter.getItemCount() == 0))
-            {
-                recyclerView.setVisibility(View.VISIBLE);
-                emptyNotesView.setVisibility(View.GONE);
-                recyclerView.setAdapter(listAdapter);
-                listAdapter.notifyDataSetChanged();
-            } else {
-                recyclerView.setVisibility(View.GONE);
-                emptyNotesView.setVisibility(View.VISIBLE);
-                recyclerView.setAdapter(listAdapter);
-                listAdapter.notifyDataSetChanged();
-            }
         }
-
-        /*if (!(listAdapter.getItemCount() == 0))
-        {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyNotesView.setVisibility(View.GONE);
-            recyclerView.setAdapter(listAdapter);
-            listAdapter.notifyDataSetChanged();
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            emptyNotesView.setVisibility(View.VISIBLE);
-            recyclerView.setAdapter(listAdapter);
-            listAdapter.notifyDataSetChanged();
-        }*/
-
+        updateUI();
 
         NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
 
     }
 
-
+    private void updateUI() {
+        if (listAdapter.getItemCount() == 0)
+        {
+            recyclerView.setVisibility(View.GONE);
+            emptyNotesView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyNotesView.setVisibility(View.GONE);
+            recyclerView.setAdapter(listAdapter);
+            listAdapter.notifyDataSetChanged();
+        }
+    }
 
     private void FloatingClicked()
     {

@@ -55,7 +55,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="200dp"
         android:gravity="center"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:text="@string/no_events_string"/>
 
     <com.example.ashleighwilson.schoolscheduler.timetable.WeekView

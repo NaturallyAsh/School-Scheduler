@@ -308,11 +308,17 @@ public class DbHelper extends SQLiteOpenHelper
                 null, null, null);
     }
 
-    public long getSubjectCount()
+    public int getSubjectCount()
     {
         SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {SchoolEntry._ID};
 
-        return DatabaseUtils.queryNumEntries(db, SchoolEntry.TABLE_NAME);
+        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, projection, null, null,
+                null, null, null);
+
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 
     public ArrayList<SubjectsModel> getAllSubjects()
@@ -542,7 +548,6 @@ public class DbHelper extends SQLiteOpenHelper
         db.beginTransaction();
 
         ContentValues values = new ContentValues();
-        //values.put(NoteEntry.KEY_ID, note.get_id());
         values.put(NoteEntry.KEY_CREATION, note.getCreation() != null ? note.getCreation() :
                 Calendar.getInstance().getTimeInMillis());
         values.put(NoteEntry.KEY_LAST_MOD, updateLastMod ? Calendar.getInstance().getTimeInMillis() :
@@ -643,27 +648,17 @@ public class DbHelper extends SQLiteOpenHelper
         return list;
     }
 
-    public Note getNote(long id) {
+    public int getNoteCount()
+    {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(NoteEntry.TABLE_NAME, noteColumns, NoteEntry.KEY_ID + " = ?",
-                new String[]{String.valueOf(id)}, null, null, null, null);
+        String[] projection = {NoteEntry.KEY_ID};
 
-        if (cursor != null)
-            cursor.moveToFirst();
+        Cursor cursor = db.query(NoteEntry.TABLE_NAME, projection, null, null,
+                null, null, null);
 
-            Note note = new Note(
-                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_ID)),
-                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_CREATION)),
-                 cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_LAST_MOD)),
-                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_TITLE)),
-                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_CONTENT)),
-                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_REMINDER)),
-                 cursor.getString(cursor.getColumnIndex(NoteEntry.KEY_RECURRENCE_RULE)));
-
-            note.setAttachmentsList(getNoteAttachment(note));
+        int count = cursor.getCount();
         cursor.close();
-
-        return note;
+        return count;
     }
 
     public void deleteNote(long id) {

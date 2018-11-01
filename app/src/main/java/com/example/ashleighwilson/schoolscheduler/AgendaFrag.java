@@ -122,6 +122,8 @@ public class AgendaFrag extends Fragment
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             agendaAdapter.dismissAgenda(viewHolder.getAdapterPosition());
+                            if (agendaAdapter.getItemCount() == 0)
+                                updateUI();
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -151,27 +153,28 @@ public class AgendaFrag extends Fragment
             String dueDate = cursor.getString(3);
             int color = cursor.getInt(4);
 
-            //Log.i(TAG, "date: " + dueDate);
-            Log.i(TAG, "id: " + id);
-
             AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
 
             agendaList.add(model);
+        }
 
-            if (agendaList.size() > 0)
-            {
-                recyclerView.setVisibility(View.VISIBLE);
-                emptyView.setVisibility(View.GONE);
-                recyclerView.setAdapter(agendaAdapter);
-                agendaAdapter.notifyDataSetChanged();
-            }
-            else
-            {
-                recyclerView.setVisibility(View.GONE);
-                emptyView.setVisibility(View.VISIBLE);
-                recyclerView.setAdapter(agendaAdapter);
-                agendaAdapter.notifyDataSetChanged();
-            }
+        updateUI();
+    }
+
+    private void updateUI() {
+        if (agendaAdapter.getItemCount() == 0)
+        {
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(agendaAdapter);
+            agendaAdapter.notifyDataSetChanged();
+        }
+        else
+        {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+            recyclerView.setAdapter(agendaAdapter);
+            agendaAdapter.notifyDataSetChanged();
         }
     }
 

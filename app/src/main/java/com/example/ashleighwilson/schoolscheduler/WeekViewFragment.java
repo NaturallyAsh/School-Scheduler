@@ -266,6 +266,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         if (events == null || events.size() == 0)
         {
             eventList.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
             Calendar cal = Calendar.getInstance();
             cal.set(eventObj.getYear(), eventObj.getMonth(), eventObj.getDay());
             showEventDetailsScreen(null, cal);
@@ -273,6 +274,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         else
         {
             eventList.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
             if (eventAdapter == null)
             {
                 eventAdapter = new EventAdapter(getContext(), events, this);
