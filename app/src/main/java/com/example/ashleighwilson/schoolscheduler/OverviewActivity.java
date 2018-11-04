@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,10 +28,9 @@ import android.support.design.widget.AppBarLayout;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
-import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -62,11 +62,6 @@ public class OverviewActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main_nav);
 
-        if (savedInstanceState != null)
-        {
-
-        }
-
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
@@ -89,16 +84,16 @@ public class OverviewActivity extends AppCompatActivity
 
         Add logout button somewhere...
          */
-        /*if (Build.VERSION.SDK_INT > 22)
+        if (Build.VERSION.SDK_INT > 22)
         {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMS);
-        } */
+        }
 
         appBarLayout = findViewById(R.id.main_appBar);
         collapsingToolbarLayout = findViewById(R.id.overview_collapsingTB);
+        collapsingToolbarLayout.setTitleEnabled(false);
         backdropIV = findViewById(R.id.main_backdrop);
         viewPager = findViewById(R.id.viewpager);
-
 
         adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
         viewPager.setAdapter(adapter);
@@ -113,6 +108,7 @@ public class OverviewActivity extends AppCompatActivity
 
         mNavigationView = findViewById(R.id.nav_view);
         setupDrawerContent(mNavigationView);
+
         setImage();
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -126,14 +122,25 @@ public class OverviewActivity extends AppCompatActivity
                 switch (tab.getPosition())
                 {
                     case 0:
-                        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
+                        Glide.with(getApplicationContext())
+                                .load(R.drawable.curriculum)
+                                //.apply(new RequestOptions().override(600, 400))
+                                .into(backdropIV);
+                        //Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
                         break;
                     case 1:
-                        Picasso.get().load(R.drawable.agenda_drawable).resize(600, 300).into(backdropIV);
-                        //collapsingToolbarLayout.setBackgroundResource(R.drawable.agenda_drawable);
+                        Glide.with(getApplicationContext())
+                                .load(R.drawable.agenda_drawable)
+                                //.apply(new RequestOptions().override(600, 600))
+                                .into(backdropIV);
+                        //Picasso.get().load(R.drawable.agenda_drawable).resize(600, 300).into(backdropIV);
                         break;
                     case 2:
-                        Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 300).into(backdropIV);
+                        Glide.with(getApplicationContext())
+                                .load(R.drawable.calendar_events_drawable)
+                                //.apply(new RequestOptions().override(600, 300))
+                                .into(backdropIV);
+                        //Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 300).into(backdropIV);
                         break;
                 }
                 invalidateFragmentMenus(tab.getPosition());
@@ -162,7 +169,11 @@ public class OverviewActivity extends AppCompatActivity
 
     private void setImage()
     {
-        Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
+        Glide.with(getApplicationContext())
+                .load(R.drawable.curriculum)
+                //.apply(new RequestOptions().override(600, 100))
+                .into(backdropIV);
+        //Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
     }
 
     private void invalidateFragmentMenus(int position)
@@ -178,14 +189,14 @@ public class OverviewActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+        //outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        viewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
+        //viewPager.setCurrentItem(savedInstanceState.getInt(POSITION));
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
@@ -20,6 +21,7 @@ import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.example.ashleighwilson.schoolscheduler.utils.ExpandableHeightGridView;
 import com.example.ashleighwilson.schoolscheduler.utils.SquareImageView;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,8 +95,8 @@ public class AttachmentAdapter extends BaseAdapter {
         Uri thumbnailUri = BitmapHelper.getThumbnailUri(mActivity, currentAttachment);
         Glide.with(mActivity.getApplicationContext())
                 .load(thumbnailUri)
-                .centerCrop()
-                .crossFade()
+                .apply(new RequestOptions().centerCrop())
+                .transition(withCrossFade())
                 .into(holder.image);
 
         return convertView;

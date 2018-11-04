@@ -186,4 +186,5 @@
     <color name="text_color_lighter">#9b000000</color>
     <color name="text_color">#b9000000</color>
     <color name="text_gray">#2d2d2d</color>
+    <color name="transparent">#0000</color>
 </resources>

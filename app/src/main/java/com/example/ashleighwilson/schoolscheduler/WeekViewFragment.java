@@ -43,11 +43,8 @@ import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekView;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
-import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.masterEvents;
-import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.monthMasterEvents;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -279,6 +276,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             {
                 eventAdapter = new EventAdapter(getContext(), events, this);
                 eventList.setAdapter(eventAdapter);
+
             }
             else
             {

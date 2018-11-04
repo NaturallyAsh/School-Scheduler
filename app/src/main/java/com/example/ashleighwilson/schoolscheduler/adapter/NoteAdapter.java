@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.ashleighwilson.schoolscheduler.NotesActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
@@ -24,6 +25,7 @@ import com.example.ashleighwilson.schoolscheduler.utils.SquareImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,8 +87,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             Uri thumbnailUri = BitmapHelper.getThumbnailUri(mContext, mAttachment);
             Glide.with(mContext)
                     .load(thumbnailUri)
-                    .centerCrop()
-                    .crossFade()
+                    .apply(new RequestOptions().centerCrop())
+                    .transition(withCrossFade())
                     .into(holder.attachmentThumbnail);
         }
     }
