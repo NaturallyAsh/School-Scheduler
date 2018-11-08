@@ -548,6 +548,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.beginTransaction();
 
         ContentValues values = new ContentValues();
+        values.put(NoteEntry.KEY_ID, note.getID());
         values.put(NoteEntry.KEY_CREATION, note.getCreation() != null ? note.getCreation() :
                 Calendar.getInstance().getTimeInMillis());
         values.put(NoteEntry.KEY_LAST_MOD, updateLastMod ? Calendar.getInstance().getTimeInMillis() :

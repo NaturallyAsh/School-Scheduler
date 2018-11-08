@@ -267,16 +267,21 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         if (noteOriginal == null) {
             noteOriginal = getArguments().getParcelable(Constants.INTENT_NOTE);
+
         }
 
         if (note == null) {
             note = new Note(noteOriginal);
+
         }
 
         if (noteTmp == null) {
-            noteTmp = new Note(note);
-            //Log.i(TAG, "noteTmp: " + noteTmp);
+            //I used getArguments for note tmp in order to edit note
+            //by the same id used in notelistfragment cursor
+            noteTmp = getArguments().getParcelable(Constants.INTENT_NOTE);
+
         }
+
 
         initViews();
     }
@@ -641,7 +646,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         new SaveNoteTask(noteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
                 noteTmp);
-        Log.i(TAG, "note tmp id: " + noteTmp.get_id());
+
         //goHome();
 
     }
@@ -670,11 +675,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     @Override
     public void onNoteSaved(Note noteSaved) {
-        //EventBus.getDefault().postSticky(new NoteUpdatedEvent());
 
         EventBus.getDefault().postSticky(new NoteEvent(noteSaved));
         note = new Note(noteSaved);
-        Log.i(TAG, "onNoteSaved: " + noteSaved);
 
         if (goBack)
             goHome();
@@ -745,7 +748,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         }
 
         attachmentUri = Uri.fromFile(f);
-        Log.i(TAG, "attachment photo Uri: " + attachmentUri);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, attachmentUri);
         startActivityForResult(intent, TAKE_PHOTO);
     }

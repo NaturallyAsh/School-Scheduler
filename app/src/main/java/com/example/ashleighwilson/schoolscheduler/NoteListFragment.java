@@ -120,7 +120,6 @@ public class NoteListFragment extends Fragment
     public void onResume() {
         super.onResume();
         initListView();
-        Log.i(TAG, "resumed");
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -155,8 +154,7 @@ public class NoteListFragment extends Fragment
         listAdapter.setOnNoteClickListener(new NoteAdapter.NoteClickListener() {
             @Override
             public void OnNoteClicked(View view, int position) {
-                //Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
-                //editNote(listAdapter.getItem(position), view);
+
                 editNote(listAdapter.getNotes().get(position), view);
             }
         });
@@ -235,7 +233,6 @@ public class NoteListFragment extends Fragment
             Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
 
-            Log.i(TAG, "cursor id: " + id);
             selectedNotes.add(note);
 
         }
@@ -305,12 +302,10 @@ public class NoteListFragment extends Fragment
     void editNote2(Note note)
     {
         if (note.getID() == null) {
-            //notesActivity.switchToDetail(note);
             Log.i(TAG, "adding new note");
         } else {
             Log.i(TAG, "editing note with id: " + note.get_id());
         }
-        Log.i(TAG, "note getID: " + note.getID());
         notesActivity.switchToDetail(note);
     }
 
