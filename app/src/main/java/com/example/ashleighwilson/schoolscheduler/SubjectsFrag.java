@@ -95,6 +95,21 @@ public class SubjectsFrag extends DialogFragment
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && fabAll.isShown())
+                    fabAll.hideMenu(true);
+            }
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fabAll.showMenu(true);
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        }); */
+
         subjectDatabaseList();
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback

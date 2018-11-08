@@ -12,7 +12,7 @@ public class BaseNote2 implements Serializable {
     private String title;
     private String content;
     private Long creation;
-    private long id;
+    private Long id;
     private Long lastModification;
     private Boolean archived;
     private Boolean trashed;
@@ -120,11 +120,11 @@ public class BaseNote2 implements Serializable {
         return this.creation;
     }
 
-    public void setID(long id) {
+    public void setID(Long id) {
         this.id = id;
     }
 
-    public long getID() {
+    public Long getID() {
         return this.id;
     }
 

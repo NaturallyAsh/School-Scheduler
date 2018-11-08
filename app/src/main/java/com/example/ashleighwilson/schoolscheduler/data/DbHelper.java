@@ -592,7 +592,7 @@ public class DbHelper extends SQLiteOpenHelper
 
         if (cursor.moveToPosition(position)) {
                 Note note = new Note();
-                note.set_id(cursor.getLong(0));
+                note.setID(cursor.getLong(0));
                 note.setCreation(cursor.getLong(1));
                 note.setLastModification(cursor.getLong(2));
                 note.setTitle(cursor.getString(3));
@@ -605,6 +605,7 @@ public class DbHelper extends SQLiteOpenHelper
                 cursor.close();
                 return note;
             }
+
             return null;
     }
 
@@ -766,6 +767,17 @@ public class DbHelper extends SQLiteOpenHelper
                 cursor.close();
         }
         return attachmentList;
+    }
+
+    public long getNoteById(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(NoteEntry.TABLE_NAME, noteColumns);
+
+        while (cursor.moveToNext()) {
+            id = cursor.getLong(cursor.getColumnIndex(NoteEntry.KEY_ID));
+        }
+        cursor.close();
+        return id;
     }
 
     public long getTimeTableId(long id)

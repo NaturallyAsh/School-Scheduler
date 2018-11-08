@@ -1,7 +1,9 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -17,9 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
+import com.example.ashleighwilson.schoolscheduler.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +49,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     private List<EventRect> mEventRects;
     private OnMonthChaneListener monthChangeListener;
 
+
     public interface OnDayClickListener{
         public void onDayClicked(AdapterView<?> adapter, View view, int position, long id, Event day);
     }
@@ -72,6 +73,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     public ExtendedCalendarView(Context context, AttributeSet attrs,int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
+
         init();
     }
 

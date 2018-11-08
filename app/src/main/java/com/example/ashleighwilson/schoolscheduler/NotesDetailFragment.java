@@ -158,6 +158,8 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
 
             dateTime.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
+
+            noteTmp.setAlarm(calendar.getTimeInMillis());
         }
     };
 
@@ -639,7 +641,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         new SaveNoteTask(noteSaved, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
                 noteTmp);
-        Log.i(TAG, "saveNote");
+        Log.i(TAG, "note tmp id: " + noteTmp.get_id());
         //goHome();
 
     }

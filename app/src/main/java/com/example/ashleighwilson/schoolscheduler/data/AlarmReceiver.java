@@ -55,8 +55,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         intent.putExtras(bundle);
         intent.setAction(Constants.ACTION_NOTIFICATION_CLICK + Long.toString(System.currentTimeMillis()));
 
-        PendingIntent notifyIntent = PendingIntent.getActivity(mContext, getUniqueRequestCode(note),
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 

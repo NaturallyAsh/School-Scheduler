@@ -136,7 +136,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     }
 
     public List<Note> getNotes() {
-        return notes;
+        return this.notes;
     }
 
     public interface NoteClickListener

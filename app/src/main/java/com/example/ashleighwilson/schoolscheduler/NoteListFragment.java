@@ -2,7 +2,9 @@ package com.example.ashleighwilson.schoolscheduler;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -92,6 +94,7 @@ public class NoteListFragment extends Fragment
         mNoteListFragment = this;
         setHasOptionsMenu(true);
         setRetainInstance(true);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
@@ -145,6 +148,7 @@ public class NoteListFragment extends Fragment
 
         recyclerView.setHasFixedSize(true);
         listAdapter = new NoteAdapter(getContext(), selectedNotes);
+        //listAdapter = new NoteAdapter(getContext());
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
@@ -152,7 +156,8 @@ public class NoteListFragment extends Fragment
             @Override
             public void OnNoteClicked(View view, int position) {
                 //Toast.makeText(getContext(), "position: " + position, Toast.LENGTH_SHORT).show();
-                editNote(listAdapter.getItem(position), view);
+                //editNote(listAdapter.getItem(position), view);
+                editNote(listAdapter.getNotes().get(position), view);
             }
         });
 
@@ -229,9 +234,12 @@ public class NoteListFragment extends Fragment
 
             Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
+
+            Log.i(TAG, "cursor id: " + id);
             selectedNotes.add(note);
 
         }
+
         updateUI();
 
         NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
@@ -296,12 +304,13 @@ public class NoteListFragment extends Fragment
 
     void editNote2(Note note)
     {
-        if (note.get_id() == null) {
+        if (note.getID() == null) {
             //notesActivity.switchToDetail(note);
             Log.i(TAG, "adding new note");
         } else {
             Log.i(TAG, "editing note with id: " + note.get_id());
         }
+        Log.i(TAG, "note getID: " + note.getID());
         notesActivity.switchToDetail(note);
     }
 
