@@ -13,6 +13,7 @@ public class MySchedulerApp extends Application
 
     private static MySchedulerApp myApp;
     public static String CHANNEL_ID = "channel_id";
+    public static NotificationChannel channel;
 
     public static MySchedulerApp getInstance()
     {
@@ -34,14 +35,14 @@ public class MySchedulerApp extends Application
         super.onLowMemory();
     }
 
-    private void createChannel()
+    public void createChannel()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
             CharSequence name = "notification_channel";
             String description = "Reminders";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             channel.enableVibration(true);
 

@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.data;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,9 +10,15 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+import com.example.ashleighwilson.schoolscheduler.NoteListFragment;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
@@ -25,11 +32,14 @@ import java.util.Calendar;
 import java.util.Date;
 public class NotificationController
 {
+    private static final String TAG = NotificationController.class.getSimpleName();
+
     private Context mContext;
     private AlarmManager alarmManager;
     private ArrayList<PendingIntent> list;
     private AgendaModel model;
     public static final String CHANNEL_ID = "channel_id";
+    public static final int NOTE_ID = 0;
 
     public NotificationController(Context context)
     {
@@ -47,17 +57,28 @@ public class NotificationController
 
     public static void addReminder(Context context, Note note, long reminder)
     {
+
         if (DateHelper.isFuture(reminder)) {
+
+
+            SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
+            Date date = new Date(reminder);
+
+
+            Calendar futureDay = Calendar.getInstance();
+            futureDay.setTime(date);
+
+            long timeToNotify = futureDay.getTimeInMillis() - 1000 * 60 * 5;
+
             Intent intent = new Intent(context, AlarmReceiver.class);
             intent.putExtra(Constants.INTENT_NOTE, ParcelableUtil.marshall(note));
             PendingIntent sender = PendingIntent.getBroadcast(context, getRequestCode(note), intent,
                     PendingIntent.FLAG_CANCEL_CURRENT);
+
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder, sender);
-            } else {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, reminder, sender);
-            }
+            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminder, sender);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeToNotify, AlarmManager.INTERVAL_DAY,
+                    sender);
         }
     }
 
@@ -65,25 +86,6 @@ public class NotificationController
         Long longCode = note.getCreation() != null ? note.getCreation() :
                 Calendar.getInstance().getTimeInMillis() / 1000L;
         return longCode.intValue();
-    }
-
-    public void notificationTest2(String title, String date)
-    {
-        Intent intent = new Intent(mContext, AgendaFrag.class);
-
-        int requestID = (int) System.currentTimeMillis();
-        int flags = PendingIntent.FLAG_CANCEL_CURRENT;
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, requestID, intent, flags);
-
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, CHANNEL_ID)
-                .setContentTitle(title)
-                .setContentText(date)
-                .setSmallIcon(R.drawable.notification_important_black_18dp)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(requestID, notification.build());
     }
 
     public void notificationTest3(String title, String date)
@@ -126,6 +128,27 @@ public class NotificationController
             NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(id, notification.build());
 
+        }
+    }
+
+    public static void removeReminder(Context context, Note note) {
+        if (!TextUtils.isEmpty(note.getAlarm())) {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, NotificationReceiver.class);
+            PendingIntent p = PendingIntent.getBroadcast(context, getRequestCode(note), intent, 0);
+            am.cancel(p);
+            p.cancel();
+        }
+    }
+
+    public static void showReminderMessage(String reminderString) {
+        if (reminderString != null) {
+            long reminder = Long.parseLong(reminderString);
+            if (reminder > Calendar.getInstance().getTimeInMillis()) {
+                new Handler(MySchedulerApp.getInstance().getMainLooper()).post(() -> Toast.makeText(MySchedulerApp.getInstance(),
+                        "Reminder set for " + DateHelper.getDateTimeShort(MySchedulerApp.getInstance(),
+                                reminder), Toast.LENGTH_LONG).show());
+            }
         }
     }
 }

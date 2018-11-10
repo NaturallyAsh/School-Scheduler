@@ -62,7 +62,7 @@ public class DateHelper
 
     public static String getNoteReminderText(String msg, long reminder)
     {
-        return msg + dateFormatter(reminder);
+        return msg + getDateTimeShort(MySchedulerApp.getInstance(), reminder);
     }
 
     public static boolean isFuture(long timestamp)

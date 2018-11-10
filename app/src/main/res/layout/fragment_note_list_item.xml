@@ -47,7 +47,7 @@
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="top|end"
-                    android:src="@drawable/ic_alarm_add_black_18dp"
+                    android:src="@drawable/ic_alarm_black_18dp"
                     android:visibility="gone"/>
 
                 <ImageView

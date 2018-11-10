@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.dialog;
+package com.example.ashleighwilson.schoolscheduler.notes;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -17,22 +17,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
-import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
-import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
+import com.example.ashleighwilson.schoolscheduler.dialog.PlaybackFragment;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class PlaybackFragment extends DialogFragment{
+public class NoteRecordPlayback extends DialogFragment {
 
     private static final String LOG_TAG = "PlaybackFragment";
 
-    private static final String TAG = PlaybackFragment.class.getSimpleName();
+    private static final String TAG = NoteRecordPlayback.class.getSimpleName();
 
-    private static final String ARG_ITEM = "recording_item";
-    private RecordingModel item;
+    private static final String ARG_NAME = "record_name";
+    private static final String ARG_PATH = "record_path";
+    private static final String ARG_LENGTH = "record_length";
     private String name;
+    private String path;
     private long length;
 
     private Handler mHandler = new Handler();
@@ -52,10 +53,12 @@ public class PlaybackFragment extends DialogFragment{
     long minutes = 0;
     long seconds = 0;
 
-    public PlaybackFragment newInstance(RecordingModel item) {
-        PlaybackFragment f = new PlaybackFragment();
+    public NoteRecordPlayback newInstance(String name, String path, long length) {
+        NoteRecordPlayback f = new NoteRecordPlayback();
         Bundle b = new Bundle();
-        b.putParcelable(ARG_ITEM, item);
+        b.putString(ARG_NAME, name);
+        b.putString(ARG_PATH, path);
+        b.putLong(ARG_LENGTH, length);
         f.setArguments(b);
 
         return f;
@@ -64,9 +67,12 @@ public class PlaybackFragment extends DialogFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        item = getArguments().getParcelable(ARG_ITEM);
+        //item = getArguments().getParcelable(ARG_ITEM);
+        name = getArguments().getString(ARG_NAME);
+        path = getArguments().getString(ARG_PATH);
+        length = getArguments().getLong(ARG_LENGTH);
 
-        long itemDuration = item.getLength();
+        long itemDuration = length;
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
         seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
@@ -148,7 +154,7 @@ public class PlaybackFragment extends DialogFragment{
             }
         });
 
-        mFileNameTextView.setText(item.getName());
+        mFileNameTextView.setText(name);
         mFileLengthTextView.setText(String.format("%02d:%02d", minutes,seconds));
 
         builder.setView(view);
@@ -213,7 +219,7 @@ public class PlaybackFragment extends DialogFragment{
         mMediaPlayer = new MediaPlayer();
 
         try {
-            mMediaPlayer.setDataSource(item.getFilePath());
+            mMediaPlayer.setDataSource(path);
             mMediaPlayer.prepare();
             mSeekBar.setMax(mMediaPlayer.getDuration());
 
@@ -227,7 +233,6 @@ public class PlaybackFragment extends DialogFragment{
             Log.e(LOG_TAG, "prepare() failed ");
         }
 
-        Log.i(TAG, "data source " + item.getFilePath());
 
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -248,7 +253,7 @@ public class PlaybackFragment extends DialogFragment{
         mMediaPlayer = new MediaPlayer();
 
         try {
-            mMediaPlayer.setDataSource(item.getFilePath());
+            mMediaPlayer.setDataSource(path);
             mMediaPlayer.prepare();
             mSeekBar.setMax(mMediaPlayer.getDuration());
             mMediaPlayer.seekTo(progress);

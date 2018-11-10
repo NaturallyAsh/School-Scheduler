@@ -60,6 +60,7 @@ public class RecordDialog extends DialogFragment
     private Timer _timer;
     private int recorderSecondsElapsed;
     private int playerSecondsElapsed;
+    public boolean isRecording = false;
 
     private ClickListener _clickListener;
     Recorder recorder;
@@ -230,8 +231,6 @@ public class RecordDialog extends DialogFragment
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), timeStamp + ".wav");
         _AudioSavePathInDevice = file.getPath();
-        Log.i(TAG, "path: " + _AudioSavePathInDevice);
-        Log.i(TAG, "time stamp: " + timeStamp);
 
         return file;
     }
@@ -241,6 +240,8 @@ public class RecordDialog extends DialogFragment
     }
 
     private void startMediaPlayer() {
+
+        isRecording = true;
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(_AudioSavePathInDevice);
@@ -274,6 +275,8 @@ public class RecordDialog extends DialogFragment
     }
 
     private void stopMediaPlayer() {
+        isRecording = false;
+
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.reset();

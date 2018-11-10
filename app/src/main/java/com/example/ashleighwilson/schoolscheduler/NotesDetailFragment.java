@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,6 +39,10 @@ import com.example.ashleighwilson.schoolscheduler.adapter.AttachmentAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NoteEvent;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.dialog.PlaybackFragment;
+import com.example.ashleighwilson.schoolscheduler.dialog.RecordDialog;
+import com.example.ashleighwilson.schoolscheduler.notes.NoteRecordPlayback;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.example.ashleighwilson.schoolscheduler.utils.ExpandableHeightGridView;
 import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
@@ -52,6 +57,7 @@ import com.example.ashleighwilson.schoolscheduler.notes.OnNoteSaved;
 import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
 import com.example.ashleighwilson.schoolscheduler.utils.IntentChecker;
 
+import org.apache.commons.lang.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -66,7 +72,7 @@ import butterknife.ButterKnife;
 
 public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         OnReminderPickedListener, View.OnTouchListener, View.OnClickListener,
-        OnAttachingFileListener {
+        OnAttachingFileListener, View.OnLongClickListener {
 
     private static final String TAG = NotesDetailFragment.class.getSimpleName();
 
@@ -114,6 +120,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     SelectedDate mSelectedDate;
     int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
     String mRecurrenceOption, mRecurrenceRule;
+    String recordName;
+    String recordFile = null;
+    long recordLength;
     private OnReminderPickedListener mOnReminderPickedListener;
     private NotesDetailFragment mNotesDetailFragment;
     private NotesActivity mNotesActivity;
@@ -128,6 +137,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private DbHelper dbHelper;
     public Uri attachmentUri;
     private AttachmentAdapter mAttachmentAdapter;
+    private RecordDialog recordDialog;
 
     RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
         @Override
@@ -145,19 +155,17 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
             mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
 
-            Log.i(TAG, "year: " + mReminderYear + " month: " + mReminderMonth + " day: " + mReminderDay);
             mHour = hourOfDay;
             mMinute = minute;
             mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
             mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
 
-            Log.i(TAG, "selected date: " + selectedDate + " hour: " + hourOfDay + " minute: " +
-                minute + " recurrence rule: " + recurrenceRule);
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
 
             dateTime.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
+            reminderIcon.setImageResource(R.drawable.ic_alarm_black_18dp);
 
             noteTmp.setAlarm(calendar.getTimeInMillis());
         }
@@ -222,6 +230,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         }
 
         reminderLayout.setOnClickListener(this);
+        reminderLayout.setOnLongClickListener(this);
         init();
 
         setHasOptionsMenu(true);
@@ -349,7 +358,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         initViewTitle();
         initViewContent();
-        //initViewReminder();
+        initViewReminder();
         initViewAttachments();
         initViewFooter();
     }
@@ -426,6 +435,20 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 attachmentIntent.putParcelableArrayListExtra(Constants.GALLERY_IMAGES, images);
                 attachmentIntent.putExtra(Constants.GALLERY_CLICKED_IMAGE, clickedImage);
                 startActivity(attachmentIntent);
+
+            } else if (Constants.MIME_TYPE_AUDIO.equals(attachment.getMime_type())) {
+                try {
+                    NoteRecordPlayback noteRecordPlayback = new NoteRecordPlayback().newInstance(recordName,
+                            recordFile, recordLength);
+
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager()
+                            .beginTransaction();
+
+                    noteRecordPlayback.show(transaction, "note_record_dialog");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
     }
@@ -451,20 +474,31 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         Log.i(TAG, "noteTmp: " + noteTmp); */
     }
 
+    @Override
+    public boolean onLongClick(View v) {
+        MaterialDialog dialog = new MaterialDialog.Builder(mNotesActivity)
+                .content("Remove reminder?")
+                .positiveText("OK")
+                .negativeText("Cancel")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog materialDialog) {
+                        NotificationController.removeReminder(MySchedulerApp.getInstance(), noteTmp);
+                        noteTmp.setAlarm(null);
+                        dateTime.setText("");
+                    }
+                }).build();
+        dialog.show();
+        return true;
+    }
+
     private void initViewReminder()
     {
-        reminderLayout.setOnClickListener(v -> {
-            RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
-            recurrenceDialog.setCallback(mCallback);
-
-            Pair<Boolean, SublimeOptions> optionsPair = getOptions();
-
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
-            recurrenceDialog.setArguments(bundle);
-
-            recurrenceDialog.show(mNotesActivity.getSupportFragmentManager(),"SUBLIME_PICKER");
-        });
+       String reminderString = initReminder(noteTmp);
+       if (!StringUtils.isEmpty(reminderString)) {
+           reminderIcon.setImageResource(R.drawable.ic_alarm_add_black_18dp);
+           dateTime.setText(reminderString);
+       }
     }
 
     private String initReminder(Note note)
@@ -538,19 +572,19 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 .build();
         attachmentDialog.show();
 
-        android.widget.TextView cameraSelection = (android.widget.TextView) layout.findViewById(R.id.camera);
+        android.widget.TextView cameraSelection = layout.findViewById(R.id.camera);
         cameraSelection.setOnClickListener(new AttachmentOnClickListener());
 
-        android.widget.TextView recordingSelection = (android.widget.TextView) layout.findViewById(R.id.recording);
+        android.widget.TextView recordingSelection = layout.findViewById(R.id.recording);
         recordingSelection.setOnClickListener(new AttachmentOnClickListener());
 
-        android.widget.TextView videoSelection = (android.widget.TextView) layout.findViewById(R.id.video);
+        android.widget.TextView videoSelection = layout.findViewById(R.id.video);
         videoSelection.setOnClickListener(new AttachmentOnClickListener());
 
-        android.widget.TextView filesSelection = (android.widget.TextView) layout.findViewById(R.id.files);
+        android.widget.TextView filesSelection = layout.findViewById(R.id.files);
         filesSelection.setOnClickListener(new AttachmentOnClickListener());
 
-        android.widget.TextView sketchSelection = (android.widget.TextView) layout.findViewById(R.id.sketch);
+        android.widget.TextView sketchSelection = layout.findViewById(R.id.sketch);
         sketchSelection.setOnClickListener(new AttachmentOnClickListener());
     }
 
@@ -676,7 +710,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Override
     public void onNoteSaved(Note noteSaved) {
 
-        EventBus.getDefault().postSticky(new NoteEvent(noteSaved));
+        //EventBus.getDefault().postSticky(new NoteEvent(noteSaved));
+        if (noteTmp.getAlarm() != null) {
+            NotificationController.showReminderMessage(noteTmp.getAlarm());
+        }
         note = new Note(noteSaved);
 
         if (goBack)
@@ -772,6 +809,29 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         startActivityForResult(videoIntent, TAKE_VIDEO);
     }
 
+    private void takeRecord() {
+        recordDialog = RecordDialog.newInstance("Record Note Audio");
+        recordDialog.setMessage("Press to record");
+        recordDialog.show(getActivity().getFragmentManager(), "note");
+        recordDialog.setPositiveButton("Save", new RecordDialog.ClickListener() {
+            @Override
+            public void OnClickListener(String name, String path, long length) {
+                recordName = name;
+                recordFile = path;
+                recordLength = length;
+
+                Attachment attachment = new Attachment(Uri.fromFile(new File(recordFile)),
+                        Constants.MIME_TYPE_AUDIO);
+                Log.i(TAG, "record file: " + recordFile);
+                attachment.setLength(recordLength);
+                addAttachment(attachment);
+                mAttachmentAdapter.notifyDataSetChanged();
+                mGridView.autoresize();
+            }
+        });
+
+    }
+
     public class AttachmentOnClickListener implements View.OnClickListener
     {
         @Override
@@ -783,7 +843,9 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                     attachmentDialog.dismiss();
                     break;
                 case R.id.recording:
-                    startActivity(new Intent(getContext(), RecordActivity.class));
+                    takeRecord();
+                    attachmentDialog.dismiss();
+
                     break;
                 case R.id.video:
                     takeVideo();

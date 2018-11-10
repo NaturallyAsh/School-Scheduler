@@ -40,6 +40,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
         Note note = params[0];
         purgeRemovedAttachments(note);
         boolean reminderMustBeSet = DateHelper.isFuture(note.getAlarm());
+        Log.i(TAG, "note alarm: " + note.getAlarm());
         if (reminderMustBeSet) {
             note.setReminderFired(false);
         }

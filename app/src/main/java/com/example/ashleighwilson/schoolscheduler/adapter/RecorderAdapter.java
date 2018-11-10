@@ -2,7 +2,6 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.SnoozeActivity;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
@@ -30,18 +31,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     private void createNotification(Context mContext, Note note) {
 
-        String title = "";
+        String title;
         if (note.getTitle() != null) {
             title = note.getTitle();
         } else {
             title = "Note Alert!";
         }
-        String text = "";
-        if (note.getAlarm() != null) {
-            text = note.getAlarm();
-        } else {
-            text = "Check notes!";
-        }
+        String text = "Check Notes";
 
         Intent snoozeIntent = new Intent(mContext, SnoozeActivity.class);
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);
@@ -59,7 +55,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext, "channel_id")
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_important_black_18dp)
                 .setContentTitle(title)
                 .setContentText(text).setSound(alarmSound)

@@ -88,7 +88,10 @@
         <activity android:name=".SnoozeActivity" />
         <activity android:name=".GalleryActivity" />
 
-        <receiver android:name=".data.NotificationReceiver"/>
+        <receiver
+            android:name=".data.NotificationReceiver" />
+        <receiver
+            android:name=".data.AlarmReceiver" />
     </application>
 
 </manifest>
