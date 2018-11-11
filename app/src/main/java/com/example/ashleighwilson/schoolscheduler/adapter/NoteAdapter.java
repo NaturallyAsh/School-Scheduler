@@ -75,7 +75,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         holder.title.setText(currentNote.getTitle());
         holder.content.setText(currentNote.getContent());
         holder.alarmIcon.setVisibility(currentNote.getAlarm() != null ? View.VISIBLE : View.INVISIBLE);
-        //holder.date.setText(currentNote.getAlarm());
         String modText = DateHelper.prettyTime(currentNote.getLastModification());
         holder.date.setText("Updated: " + "" + modText);
         holder.attachmentIcon.setVisibility(currentNote.getAttachmentsList().size() > 0

@@ -2,8 +2,8 @@ package com.example.ashleighwilson.schoolscheduler;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,11 +20,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +42,6 @@ import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.InterceptorLinearLayout;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
-import com.example.ashleighwilson.schoolscheduler.notes.NoteLoadedEvent;
 import com.example.ashleighwilson.schoolscheduler.utils.AnimationsHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -147,7 +148,6 @@ public class NoteListFragment extends Fragment
 
         recyclerView.setHasFixedSize(true);
         listAdapter = new NoteAdapter(getContext(), selectedNotes);
-        //listAdapter = new NoteAdapter(getContext());
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
@@ -287,6 +287,10 @@ public class NoteListFragment extends Fragment
                     editNote2(new Note());
                     break;
                 case R.id.fab_note_photo:
+                    Intent intent = notesActivity.getIntent();
+                    intent.setAction(Constants.ACTION_FAB_TAKE_PHOTO);
+                    notesActivity.setIntent(intent);
+                    editNote2(new Note());
                     break;
                 case R.id.fab_note_sketch:
                     takeSketch(null);
@@ -298,6 +302,21 @@ public class NoteListFragment extends Fragment
             fabNoteMenu.toggle(true);
         }
     };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_nav, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     void editNote2(Note note)
     {

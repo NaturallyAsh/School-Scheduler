@@ -1,8 +1,12 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +16,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -24,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.ViewStub;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,6 +145,15 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     public Uri attachmentUri;
     private AttachmentAdapter mAttachmentAdapter;
     private RecordDialog recordDialog;
+    private boolean mHasChanged = false;
+
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            mHasChanged = true;
+            return false;
+        }
+    };
 
     RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
         @Override
@@ -188,7 +204,39 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Override
     public void onStop() {
         super.onStop();
+        Log.i(TAG, "stop");
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        activityPausing = false;
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        Log.i(TAG, "pause");
+        activityPausing = true;
+
+        /*if (!goBack)
+        {
+            saveNote(this);
+        }*/
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager input = (InputMethodManager) activity
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        //check if no view has focus
+        View currentFocusedView = activity.getCurrentFocus();
+        if (currentFocusedView != null) {
+            input.hideSoftInputFromWindow(currentFocusedView.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     @Override
@@ -199,6 +247,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         return rootView;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
@@ -208,7 +257,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         dbHelper = DbHelper.getInstance();
 
         mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-        mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
+        //mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
 
         if (savedInstanceState != null) {
             noteTmp = savedInstanceState.getParcelable("noteTmp");
@@ -231,6 +280,8 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         reminderLayout.setOnClickListener(this);
         reminderLayout.setOnLongClickListener(this);
+        title.setOnTouchListener(mTouchListener);
+        detailContent.setOnTouchListener(mTouchListener);
         init();
 
         setHasOptionsMenu(true);
@@ -249,25 +300,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             outState.putParcelable("attachmentUri", attachmentUri);
         }
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        activityPausing = false;
-    }
-
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        activityPausing = true;
-
-        /*if (!goBack)
-        {
-            saveNote(this);
-        }*/
     }
 
     private void init()
@@ -521,9 +553,20 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         detailContent.setText(noteTmp.getContent());
     }
 
-    private void navigateUp()
-    {
-        saveAndExit(this);
+    private void showUnchangedDialog(DialogInterface.OnClickListener disgardClickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Discard your changes and quit editing?");
+        builder.setPositiveButton("Discard", disgardClickListener);
+        builder.setNegativeButton("Keep Editing", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                if (dialog != null)
+                    dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -539,7 +582,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         switch (item.getItemId())
         {
             case R.id.action_save:
-
+                saveAndExit(this::onNoteSaved);
                 break;
             case R.id.menu_attachment:
                 showAttachmentsPopup();
@@ -554,8 +597,21 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 break;
             case R.id.menu_untrash:
                 break;
-            default:
-                Log.i(TAG, "Invalid menu option selected");
+            case android.R.id.home:
+                if (!mHasChanged) {
+                    goHome();
+                    return true;
+                }
+                DialogInterface.OnClickListener disgardClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        //NavUtils.navigateUpFromSameTask(mNotesActivity);
+                        goHome();
+                    }
+                };
+
+                showUnchangedDialog(disgardClickListener);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -725,6 +781,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         if (mNotesActivity != null && mNotesActivity.getSupportFragmentManager() != null)
         {
             mNotesActivity.getSupportFragmentManager().popBackStack();
+            hideKeyboard(mNotesActivity);
         }
         return true;
     }

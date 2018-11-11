@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_completed"
+        android:title="@string/menu_completed"
+        android:icon="@drawable/check_black_18dp"/>
+
+    <item
+        android:id="@+id/menu_edit"
+        android:title="@string/menu_edit"
+        android:icon="@drawable/edit_black_18dp"/>
+
+</menu>

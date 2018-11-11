@@ -41,7 +41,7 @@ public class NotesActivity extends AppCompatActivity
         toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("Notes");
         //EventBus.getDefault().register(this);
 
@@ -207,7 +207,7 @@ public class NotesActivity extends AppCompatActivity
         {
             ((NotesDetailFragment) f).goBack = true;
             //getFragmentManagerInstance().popBackStack();
-            ((NotesDetailFragment) f).saveAndExit((NotesDetailFragment) f);
+            //((NotesDetailFragment) f).saveAndExit((NotesDetailFragment) f);
             return;
         }
         f = checkFragmentInstance(R.id.fragment_note_container, NoteListFragment.class);
