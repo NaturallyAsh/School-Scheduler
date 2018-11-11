@@ -105,7 +105,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 47;
+    private static final int DATABASE_VERSION = 48;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -531,6 +531,25 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
                 null, null, null);
+    }
+
+    public AgendaModel getAgendaAt(int position) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToPosition(position)) {
+            AgendaModel model = new AgendaModel();
+            model.setmId(cursor.getInt(0));
+            model.setClassName(cursor.getString(1));
+            model.setAgendaTitle(cursor.getString(2));
+            model.setDueDate(cursor.getString(3));
+            model.setmColor(cursor.getInt(4));
+
+            cursor.close();
+            return model;
+        }
+        return null;
     }
 
     public long deleteAgenda(int id)

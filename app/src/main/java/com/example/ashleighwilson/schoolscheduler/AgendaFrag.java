@@ -94,19 +94,6 @@ public class AgendaFrag extends Fragment
 
         agendaDbList();
 
-        /*agendaAdapter.setAgendaMenuClickListener(new AgendaAdapter.AgendaMenuClickListener() {
-            @Override
-            public void MenuClicked(View view) {
-                iconMenu = PowerMenuUtils.getIconPowerMenu(mContext, onIconMenuItemClickListener);
-                if (iconMenu.isShowing())
-                {
-                    iconMenu.dismiss();
-                }
-                iconMenu.showAsDropDown(view, -375, 0);
-            }
-        });*/
-
-
         FloatingClicked();
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |

@@ -1,6 +1,8 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
@@ -11,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AgendaModel
+public class AgendaModel implements Parcelable
 {
     private static final String TAG = AgendaModel.class.getSimpleName();
 
@@ -38,6 +40,14 @@ public class AgendaModel
 
     public AgendaModel() {
 
+    }
+
+    public AgendaModel(Parcel in) {
+        mId = in.readInt();
+        mClassName = in.readString();
+        mAgendaTitle = in.readString();
+        mColor = in.readInt();
+        mDueDate = in.readString();
     }
 
     public int getmId()
@@ -88,7 +98,8 @@ public class AgendaModel
     public void setDueDate(String date)
     {
         this.mDueDate = date;
-        setmInterval();
+        if (date != null)
+            setmInterval();
     }
 
     public boolean ismBefore() {
@@ -113,7 +124,6 @@ public class AgendaModel
     public void setmInterval()
     {
         String strThatDay = mDueDate;
-        //Log.i(TAG, "date: " + mDueDate);
 
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
@@ -139,34 +149,29 @@ public class AgendaModel
         mInterval = days;
     }
 
-    public ArrayList<AgendaModel> getAllList()
-    {
-        return allList;
-    }
-
-    public void setAllList(ArrayList<AgendaModel> list)
-    {
-        this.allList = list;
-    }
-
-    public void addAgendaList(AgendaModel model)
-    {
-        this.allList.add(model);
-    }
-
-    public AgendaModel getListById(int id)
-    {
-        ArrayList<AgendaModel> list = getAllList();
-        if (list != null)
-        {
-            for (int i = 0; i < list.size(); i++)
-            {
-                if (list.get(i).getmId() == id)
-                {
-                    return list.get(i);
+    public static final Parcelable.Creator<AgendaModel> CREATOR = new
+            Parcelable.Creator<AgendaModel>() {
+                @Override
+                public AgendaModel createFromParcel(Parcel in) {
+                    return new AgendaModel(in);
                 }
-            }
-        }
-        return null;
+                @Override
+                public AgendaModel[] newArray(int size) {
+                    return new AgendaModel[size];
+                }
+            };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int i) {
+        dest.writeInt(mId);
+        dest.writeString(mClassName);
+        dest.writeString(mAgendaTitle);
+        dest.writeInt(mColor);
+        dest.writeString(mDueDate);
     }
 }

@@ -87,6 +87,7 @@
         </activity>
         <activity android:name=".SnoozeActivity" />
         <activity android:name=".GalleryActivity" />
+        <activity android:name=".SettingsActivity" />
 
         <receiver
             android:name=".data.NotificationReceiver" />

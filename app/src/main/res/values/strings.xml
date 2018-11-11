@@ -118,5 +118,6 @@
     <string name="finished_string">Finished</string>
     <string name="not_completed_string">Not Completed</string>
     <string name="not_completed">Not Completed</string>
+    <string name="menu_nav_settings">Settings</string>
 
 </resources>

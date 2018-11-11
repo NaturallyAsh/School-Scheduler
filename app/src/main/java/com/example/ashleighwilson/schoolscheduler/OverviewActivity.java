@@ -252,6 +252,10 @@ public class OverviewActivity extends AppCompatActivity
                 Intent notesIntent = new Intent(this, NotesActivity.class);
                 startActivity(notesIntent);
                 break;
+            case R.id.nav_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                break;
             case R.id.logout:
                 session.logoutUser();
         }

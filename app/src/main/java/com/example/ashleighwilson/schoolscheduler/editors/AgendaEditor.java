@@ -25,15 +25,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
-import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -51,8 +50,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private Date date;
     private static final String COLOR_DIALOG = "color dialog";
     private static final String DATE_DIALOG = "date dialog";
+    private static final String ARG_ITEM = "agenda_arg";
     static private int agendaColor;
     NotificationController controller;
+    private AgendaModel model;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -85,6 +86,19 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         mAssignmentTitle.setOnTouchListener(mTouchListener);
         mClassName.setOnItemSelectedListener(this);
         mNotification.setOnCheckedChangeListener(this);
+
+        Bundle intent = getIntent().getExtras();
+        if (intent != null) {
+            String title = intent.getString(AgendaAdapter.ARG_TITLE);
+            String name = intent.getString(AgendaAdapter.ARG_CLASSNAME);
+            String due = intent.getString(AgendaAdapter.ARG_DATE);
+            int color = intent.getInt(AgendaAdapter.ARG_COLOR);
+
+            mAssignmentTitle.setText(title);
+            label = name;
+            mDueDate.setText(due);
+            viewColor.setBackgroundColor(color);
+        }
 
         loadSpinnerData();
 
@@ -176,13 +190,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         {
             if (which == BUTTON_POSITIVE)
             {
-                Calendar c = Calendar.getInstance();
-                //c.set(Calendar.YEAR, START_YEAR);
-                //c.set(Calendar.YEAR, END_YEAR);
-                //c.set(Calendar.MONTH, START_MONTH);
-                //c.set(Calendar.MONTH, END_MONTH);
-                //c.set(Calendar.DAY_OF_MONTH, START_DAY);
-                //c.set(Calendar.DAY_OF_MONTH, END_DAY);
                 date = new Date(extras.getLong(SimpleDateDialog.DATE));
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
@@ -204,11 +211,11 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         model.setDueDate(dueDate);
         model.setmColor(agendaColor);
         dbHelper.addAgenda(model);
-        Log.i(TAG, "spinner label: " + label);
-        Log.i(TAG, "date: " + date);
 
-        controller.notificationTest3(titleString, dueDate);
-        //controller.notificationTest2(titleString, dueDate);
+        if (mNotification.isChecked()) {
+            controller.notificationTest3(titleString, dueDate);
+
+        }
         Toast.makeText(this, "Agenda saved", Toast.LENGTH_SHORT).show();
     }
 
