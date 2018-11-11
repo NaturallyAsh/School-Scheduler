@@ -115,5 +115,8 @@
     <string name="note_thumbnail">note thumbnail</string>
     <string name="menu_completed">Completed</string>
     <string name="menu_edit">Edit</string>
+    <string name="finished_string">Finished</string>
+    <string name="not_completed_string">Not Completed</string>
+    <string name="not_completed">Not Completed</string>
 
 </resources>

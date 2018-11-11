@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,6 +45,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     public static final String EXTRA_CLASSNAME = "CLASS_NAME";
     public static final String EXTRA_COLOR = "COLOR";
     public static final String EXTRA_DATE = "DATE";
+    private boolean flag = false;
 
 
     public AgendaAdapter(Context context, ArrayList<AgendaModel> models)
@@ -80,7 +82,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             @Override
             public void onClick(View v) {
 
-                showPopUp(v, holder.dueDate);
+                showPopUp(v, holder.agendaTitle, holder.dueDate);
             }
         });
     }
@@ -107,25 +109,42 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         }
     }
 
-    private void showPopUp(View view, TextView textView) {
-        PopupMenu  popupMenu = new PopupMenu(mContext, view);
+    private void showPopUp(View view, TextView title, TextView due) {
 
-        popupMenu.inflate(R.menu.menu_agenda_popup);
+        TextView orgTitle = title;
+        TextView orgDue = due;
+
+        PopupMenu  popupMenu = new PopupMenu(mContext, view);
+        popupMenu.getMenu();
+
+        if (!due.getText().toString().equals(R.string.finished_string)) {
+            popupMenu.inflate(R.menu.menu_agenda_popup);
+        } else {
+            popupMenu.inflate(R.menu.menu_agenda_popup2);
+        }
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_completed:
-                        Toast.makeText(mContext, "context completed clicked", Toast.LENGTH_SHORT).show();
-                        textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        orgTitle.setPaintFlags(orgTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        orgDue.setText(R.string.finished_string);
+                        //item.setTitle(R.string.not_completed_string);
                         return true;
-
                     case R.id.menu_edit:
-                        Toast.makeText(mContext, "context edit clicked", Toast.LENGTH_SHORT).show();
+                        item.setTitle("something");
+                        return true;
+                    case R.id.menu_not_complete:
                         return true;
                 }
                 return false;
+                /*Menu menu = popupMenu.getMenu();
+                item = menu.findItem(R.id.menu_completed);
+                item.setTitle("Finished");
+
+                return true;*/
             }
+
         });
         Object menuHelper;
         Class[] argTypes;
