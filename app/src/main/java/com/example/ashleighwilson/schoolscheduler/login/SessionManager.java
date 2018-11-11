@@ -18,6 +18,7 @@ public class SessionManager
     private static final String IS_LOGIN = "IsLoggedIn";
     public static final String KEY_PASS = "password";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_DATE = "date";
 
     public SessionManager (Context context)
     {
@@ -32,6 +33,15 @@ public class SessionManager
         editor.putString(KEY_EMAIL, email);
         editor.putString(KEY_PASS, pass);
         editor.commit();
+    }
+
+    public void setDatePref(String date) {
+        editor.putString(KEY_DATE, date);
+        editor.commit();
+    }
+
+    public String getDatePref() {
+        return pref.getString(KEY_DATE, null);
     }
 
     public void checkLogin()

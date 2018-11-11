@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
+import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.powermenu.MenuListAdapter;
 import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
@@ -45,14 +47,16 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     public static final String EXTRA_CLASSNAME = "CLASS_NAME";
     public static final String EXTRA_COLOR = "COLOR";
     public static final String EXTRA_DATE = "DATE";
-    private boolean flag = false;
-
+    private SessionManager manager;
+    private String newDate;
+    private String newDate2;
 
     public AgendaAdapter(Context context, ArrayList<AgendaModel> models)
     {
         this.mContext = context;
         this.agendaData = models;
         this.dbHelper = DbHelper.getInstance();
+        manager = new SessionManager(mContext);
 
         setAgendaData(models);
     }
@@ -111,13 +115,19 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
 
     private void showPopUp(View view, TextView title, TextView due) {
 
-        TextView orgTitle = title;
-        TextView orgDue = due;
-
         PopupMenu  popupMenu = new PopupMenu(mContext, view);
-        popupMenu.getMenu();
+        popupMenu.getMenu().clear();
 
-        if (!due.getText().toString().equals(R.string.finished_string)) {
+        String origDue = due.getText().toString();
+        Log.i(TAG, "due tv: " + due.getText().toString());
+
+        if (!origDue.equals("Finished")) {
+            manager.setDatePref(origDue);
+        }
+        newDate = manager.getDatePref();
+        Log.i(TAG, "new date sp: " + newDate);
+
+        if (!due.getText().toString().equals("Finished")) {
             popupMenu.inflate(R.menu.menu_agenda_popup);
         } else {
             popupMenu.inflate(R.menu.menu_agenda_popup2);
@@ -127,14 +137,15 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_completed:
-                        orgTitle.setPaintFlags(orgTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                        orgDue.setText(R.string.finished_string);
+                        title.setPaintFlags(title.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                        due.setText(R.string.finished_string);
                         //item.setTitle(R.string.not_completed_string);
                         return true;
                     case R.id.menu_edit:
-                        item.setTitle("something");
                         return true;
                     case R.id.menu_not_complete:
+                        title.setPaintFlags(title.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                        due.setText(newDate);
                         return true;
                 }
                 return false;
