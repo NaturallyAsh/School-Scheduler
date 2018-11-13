@@ -20,22 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
-import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 import com.github.clans.fab.FloatingActionMenu;
 
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 
 
@@ -45,14 +37,12 @@ public class AgendaFrag extends Fragment
 
     FloatingActionMenu fabAll;
     com.github.clans.fab.FloatingActionButton agendaFab;
-    private Button popupBt;
     private TextView emptyView;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private DbHelper dbHelper;
     private AgendaAdapter agendaAdapter;
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
-    private PowerMenu iconMenu;
     private Context mContext = MySchedulerApp.getInstance();
 
     public AgendaFrag() {
@@ -175,24 +165,6 @@ public class AgendaFrag extends Fragment
             agendaAdapter.notifyDataSetChanged();
         }
     }
-
-    private OnMenuItemClickListener<PowerMenuItem> onIconMenuItemClickListener = new OnMenuItemClickListener<PowerMenuItem>() {
-        @Override
-        public void onItemClick(int position, PowerMenuItem item) {
-            switch (position)
-            {
-                case 0:
-                    Toast.makeText(mContext, "completed clicked", Toast.LENGTH_SHORT).show();
-                    iconMenu.setSelectedPosition(position);
-
-                    break;
-                case 1:
-                    Toast.makeText(mContext, "edit clicked", Toast.LENGTH_SHORT).show();
-                    iconMenu.setSelectedPosition(position);
-            }
-            iconMenu.dismiss();
-        }
-    };
 
     private void FloatingClicked()
     {

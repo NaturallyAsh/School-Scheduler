@@ -583,6 +583,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 showAttachmentsPopup();
                 break;
             case R.id.menu_share:
+                shareNote();
                 break;
             case R.id.menu_checklist_on:
                 break;
@@ -797,6 +798,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return true;
+    }
+
+    private void shareNote() {
+        Note shareNote = new Note(noteTmp);
+        shareNote.setTitle(getNoteTitle());
+        shareNote.setContent(getNoteContent());
+        mNotesActivity.shareNote(shareNote);
     }
 
     private void takeSketch(Attachment attachment)

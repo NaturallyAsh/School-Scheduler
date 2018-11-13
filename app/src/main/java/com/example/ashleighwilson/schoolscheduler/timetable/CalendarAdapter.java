@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.content.Context;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 public class CalendarAdapter extends BaseAdapter
 {
+    private static final String TAG = CalendarAdapter.class.getSimpleName();
+
     static final int FIRST_DAY_OF_WEEK =0;
     Context context;
     Calendar cal;
@@ -72,6 +75,21 @@ public class CalendarAdapter extends BaseAdapter
 
     public int getMonth(){
         return cal.get(Calendar.MONTH);
+    }
+
+    public Event getCalDate() {
+        /*Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.DAY_OF_WEEK, currentDay.getDay());
+        calendar.set(Calendar.MONTH, currentDay.getMonth());
+        calendar.set(Calendar.YEAR, currentDay.getYear());
+
+        calendar.getTimeInMillis();
+        if (currentDay != null) {
+            return calendar;
+        }
+        return null;*/
+        return currentDay;
     }
 
     @Override

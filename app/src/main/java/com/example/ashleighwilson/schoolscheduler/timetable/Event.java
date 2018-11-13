@@ -38,10 +38,6 @@ public class Event implements Serializable
     transient BaseAdapter adapter;
     int currentDay;
     public List<WeekViewEvent> events = null;
-    public List<WeekViewEvent> dbEvents = new ArrayList<>();
-    Context mContext = MySchedulerApp.getInstance();
-    DbHelper dbHelper = DbHelper.getInstance();
-
 
     public Event(Context context,int day, int year, int month){
         this.day = day;
@@ -93,6 +89,10 @@ public class Event implements Serializable
 
     public void setCurrentDay(int currentDay){
         this.currentDay = currentDay;
+    }
+
+    public int getCurrentDay() {
+        return currentDay;
     }
 
     public int getStartDay(){
@@ -188,49 +188,5 @@ public class Event implements Serializable
         } else {
             events.add(event);
         }
-    }
-
-    public void addEventDay2(WeekViewEvent events)
-    {
-        if (dbEvents != null)
-            dbEvents.clear();
-        Cursor cursor = dbHelper.fetchEvents();
-
-        while (cursor.moveToNext())
-        {
-            long id = cursor.getLong(0);
-            String name = cursor.getString(1);
-            String location = cursor.getString(2);
-            Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(cursor.getLong(3));
-            Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(cursor.getLong(4));
-            int color = cursor.getInt(5);
-
-            events = new WeekViewEvent(id, name, location, start, end, color);
-            dbEvents.add(events);
-        }
-
-        if (dbEvents != null)
-        {
-            if ((dbEvents.size() < 1))
-            {
-                for (WeekViewEvent e : dbEvents)
-                {
-                    if (e.getId() == events.getId())
-                    {
-                        dbEvents.remove(e);
-                        break;
-                    }
-                }
-                dbEvents.add(events);
-            }
-        }
-        else
-        {
-            if (dbEvents != null)
-                dbEvents.add(events);
-        }
-        dbHelper.close();
     }
 }

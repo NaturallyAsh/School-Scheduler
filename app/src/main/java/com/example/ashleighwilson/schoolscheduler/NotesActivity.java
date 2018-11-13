@@ -13,8 +13,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import eltos.simpledialogfragment.SimpleDialog;
 
@@ -227,6 +231,43 @@ public class NotesActivity extends AppCompatActivity
 
         //getFragmentManagerInstance().popBackStack();
         super.onBackPressed();
+    }
+
+    public void shareNote(Note note) {
+        String title = note.getTitle();
+        String content = note.getContent();
+
+        Intent shareIntent = new Intent();
+        if (note.getAttachmentsList().size() == 0) {
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+
+        } else if (note.getAttachmentsList().size() == 1) {
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType(note.getAttachmentsList().get(0).getMime_type());
+            shareIntent.putExtra(Intent.EXTRA_STREAM, note.getAttachmentsList().get(0).getUri());
+
+        } else if (note.getAttachmentsList().size() > 1) {
+            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+            ArrayList<Uri> uris = new ArrayList<>();
+            HashMap<String, Boolean> mimeTypes = new HashMap<>();
+            for (Attachment attachment : note.getAttachmentsList()) {
+                uris.add(attachment.getUri());
+                mimeTypes.put(attachment.getMime_type(), true);
+            }
+            if (mimeTypes.size() > 1) {
+                shareIntent.setType("*/*");
+
+            } else {
+                shareIntent.setType((String) mimeTypes.keySet().toArray()[0]);
+            }
+
+            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+        }
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, content);
+
+        startActivity(Intent.createChooser(shareIntent, "Share with"));
     }
 
     public void animateTransition(FragmentTransaction transaction, int direction)

@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
+import com.example.ashleighwilson.schoolscheduler.timetable.CalendarAdapter;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventRect;
@@ -47,6 +48,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,12 +72,14 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private RecyclerView eventList;
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
-    TextView monthView, weekView, dayView;
+    TextView monthView, weekView, dayView, todayTV;
     private TextView emptyView;
+    private CalendarAdapter calendarAdapter;
     Toolbar toolbar;
     WeekViewEvent weekViewEvent;
     Calendar weekViewTime;
     OnFragmentInteractionListener listener;
+    private List<WeekViewEvent> events;
 
     public void onAttachToParent(Fragment fragment)
     {
@@ -128,10 +132,12 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         calendar.setOnMonthChangeListener(this);
 
-        //ViewCompat.setNestedScrollingEnabled(eventList, true);
+        todayTV = rootView.findViewById(R.id.calendar_day_tv);
 
         eventList = (RecyclerView) rootView.findViewById(R.id.event_RV);
         eventList.setLayoutManager(new LinearLayoutManager(getContext()));
+        eventAdapter = new EventAdapter(getContext(), events, this);
+        eventList.setAdapter(eventAdapter);
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) rootView.findViewById(R.id.weekView);
@@ -151,7 +157,12 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         mWeekView.setEmptyViewClickListener(this);
 
-        //mWeekView.setAddEventClickListener(this);
+        /*Calendar cal = Calendar.getInstance();
+        cal.getTimeInMillis();
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()); */
+
+        //todayTV.setText(formatter.format(cal.getTime()));
+        todayTV.setText(R.string.today_string);
 
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
@@ -253,13 +264,30 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         if (view != null)
         {
             view.setBackgroundResource(R.drawable.normal_day);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(event.getYear(), event.getMonth(), event.getDay());
+
+            Calendar tomCal = Calendar.getInstance();
+            tomCal.add(Calendar.DAY_OF_WEEK, 1);
+            Date today = calendar.getTime();
+            Date notToday = tomCal.getTime();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy");
+            String dateString = sdf.format(calendar.getTime());
+
+            if (notToday.compareTo(today) < 1) {
+                todayTV.setText(dateString);
+            } else {
+                todayTV.setText(R.string.today_string);
+            }
         }
         buildEventList(event);
     }
 
     private void buildEventList(Event eventObj)
     {
-        List<WeekViewEvent> events = eventObj.events;
+        events = eventObj.events;
 
         if (events == null || events.size() == 0)
         {
@@ -284,6 +312,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                 eventAdapter.setData(events);
             }
         }
+
     }
 
     @Override
@@ -401,6 +430,17 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.getEvents();
         calendar.refreshCalendar();
         Log.i(TAG, "updateView()!");
+        if (events == null || events.size() == 0) {
+            eventList.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            eventList.setAdapter(eventAdapter);
+            eventAdapter.notifyDataSetChanged();
+
+        } else {
+            eventList.setVisibility(View.VISIBLE);
+            emptyView.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

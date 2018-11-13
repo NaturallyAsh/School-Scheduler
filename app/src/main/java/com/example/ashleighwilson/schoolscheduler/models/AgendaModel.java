@@ -114,7 +114,6 @@ public class AgendaModel implements Parcelable
     public void setmNotification(boolean notification)
     {
         this.mNotification = notification;
-        //controller.scheduleNotification();
     }
 
     public long getmInterval() {

@@ -23,7 +23,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     {
         this.mContext = context;
         this.eventList = new ArrayList<>();
-        events.addAll(events);
+        if (events != null) {
+            events.addAll(events);
+        }
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
     }

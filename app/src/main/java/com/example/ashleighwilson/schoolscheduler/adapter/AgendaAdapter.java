@@ -26,11 +26,6 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
-import com.example.ashleighwilson.schoolscheduler.powermenu.MenuListAdapter;
-import com.example.ashleighwilson.schoolscheduler.powermenu.OnMenuItemClickListener;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenu;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuItem;
-import com.example.ashleighwilson.schoolscheduler.powermenu.PowerMenuUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -42,8 +37,6 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
 
     private Context mContext;
     private List<AgendaModel> agendaData;
-    private PowerMenu iconMenu;
-    private OnMenuItemClickListener listener;
     private DbHelper dbHelper;
     AgendaMenuClickListener menuClickListener;
     public static final String ARG_TITLE = "TITLE";
