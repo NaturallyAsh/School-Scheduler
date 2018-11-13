@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.dialog.PlaybackFragment;
+import com.example.ashleighwilson.schoolscheduler.views.PlaybackFragment;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 

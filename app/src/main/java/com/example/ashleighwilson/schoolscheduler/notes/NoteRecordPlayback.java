@@ -17,7 +17,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
-import com.example.ashleighwilson.schoolscheduler.dialog.PlaybackFragment;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.IOException;

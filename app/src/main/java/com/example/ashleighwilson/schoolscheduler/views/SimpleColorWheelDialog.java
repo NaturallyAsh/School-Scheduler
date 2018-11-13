@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.dialog;
+package com.example.ashleighwilson.schoolscheduler.views;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;

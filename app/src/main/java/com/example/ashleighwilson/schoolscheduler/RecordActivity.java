@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.RecorderAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.dialog.RecordDialog;
+import com.example.ashleighwilson.schoolscheduler.views.RecordDialog;
 
 import java.util.ArrayList;
 

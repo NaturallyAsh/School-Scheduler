@@ -2,9 +2,6 @@ package com.example.ashleighwilson.schoolscheduler.notes;
 
 import android.support.v4.app.FragmentActivity;
 
-import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
-import com.example.ashleighwilson.schoolscheduler.dialog.SimpleTimeDialog;
-
 public class ReminderPickers
 {
     private static final String TAG = ReminderPickers.class.getSimpleName();

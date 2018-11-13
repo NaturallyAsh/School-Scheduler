@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,6 +82,8 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         holder.className.setText(currentAgenda.getClassName());
         holder.dueDate.setText(currentAgenda.getDueDate());
         holder.dueDate.setTag(holder);
+        holder.alarmIcon.setVisibility(currentAgenda.ismNotification() ? View.VISIBLE : View.INVISIBLE);
+        Log.i(TAG, "isNotification: " + currentAgenda.ismNotification());
         holder.color.setBackgroundColor(currentAgenda.getmColor());
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
 
@@ -101,7 +104,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         TextView color;
         Button popMenu;
         TextView countdownDate;
-        View cardView;
+        ImageView alarmIcon;
 
         public ViewHolder(final View itemView)
         {
@@ -112,7 +115,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             color = itemView.findViewById(R.id.agenda_color_item);
             popMenu = itemView.findViewById(R.id.agenda_popup_bt);
             countdownDate = itemView.findViewById(R.id.countdown_date);
-            cardView = itemView.findViewById(R.id.cardView);
+            alarmIcon = itemView.findViewById(R.id.notification_icon);
         }
     }
 
@@ -140,7 +143,6 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
                     case R.id.menu_completed:
                         title.setPaintFlags(title.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
                         due.setText(R.string.finished_string);
-                        //item.setTitle(R.string.not_completed_string);
                         return true;
                     case R.id.menu_edit:
                         Intent intent = new Intent(mContext, AgendaEditor.class);
@@ -212,9 +214,5 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         dbHelper.deleteAgenda(agendaData.get(position).getmId());
         agendaData.remove(position);
         notifyItemRemoved(position);
-    }
-
-    private void passData(String title, String name, String due, int color) {
-
     }
 }

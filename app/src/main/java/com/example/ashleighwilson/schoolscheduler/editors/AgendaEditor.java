@@ -28,8 +28,8 @@ import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
-import com.example.ashleighwilson.schoolscheduler.dialog.SimpleColorDialog;
-import com.example.ashleighwilson.schoolscheduler.dialog.SimpleDateDialog;
+import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
+import com.example.ashleighwilson.schoolscheduler.views.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 
 import java.text.SimpleDateFormat;
@@ -53,7 +53,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String ARG_ITEM = "agenda_arg";
     static private int agendaColor;
     NotificationController controller;
+    private AgendaAdapter agendaAdapter;
     private AgendaModel model;
+    private ArrayAdapter<String> dataAdapter;
+    private List<String> labels;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -87,6 +90,9 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         mClassName.setOnItemSelectedListener(this);
         mNotification.setOnCheckedChangeListener(this);
 
+        loadSpinnerData();
+
+
         Bundle intent = getIntent().getExtras();
         if (intent != null) {
             String title = intent.getString(AgendaAdapter.ARG_TITLE);
@@ -95,12 +101,11 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             int color = intent.getInt(AgendaAdapter.ARG_COLOR);
 
             mAssignmentTitle.setText(title);
-            label = name;
             mDueDate.setText(due);
             viewColor.setBackgroundColor(color);
+            mClassName.setSelection(labels.indexOf(name));
         }
 
-        loadSpinnerData();
 
         Button colorSelector = findViewById(R.id.agenda_create_color);
         agendaColor = getMatColor("200");
@@ -130,9 +135,9 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
     private void loadSpinnerData()
     {
-        List<String> labels = dbHelper.getAllLabels();
+        labels = dbHelper.getAllLabels();
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+        dataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, labels);
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -155,8 +160,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         AgendaModel model = new AgendaModel();
-        //model.setmNotification(mNotification.isChecked());
-        //mNotification.setChecked(model.ismNotification());
+
         if(isChecked)
         {
             mNotification.setChecked(true);

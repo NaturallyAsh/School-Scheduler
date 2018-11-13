@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.dialog;
+package com.example.ashleighwilson.schoolscheduler.views;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
-import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.IOException;
