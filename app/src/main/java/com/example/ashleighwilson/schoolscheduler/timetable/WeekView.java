@@ -300,11 +300,15 @@ public class WeekView extends View {
             // If the tap was on in an empty space, then trigger the callback.
             if (mEmptyViewClickListener != null && e.getX() > mHeaderColumnWidth && e.getY() > (mHeaderHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
-                //Calendar selectedTime = Calendar.getInstance();
-                //selectedTime.getTime();
-                if (selectedTime != null)
+
+                playSoundEffect(SoundEffectConstants.CLICK);
+
+                if (mEmptyViewClickListener != null) {
+                    mEmptyViewClickListener.onEmptyViewClicked((Calendar) selectedTime.clone());
+                }
+
+                /*if (selectedTime != null)
                 {
-                    playSoundEffect(SoundEffectConstants.CLICK);
                     //mEmptyViewClickListener.onEmptyViewClicked(selectedTime);
                     selectedTime.add(Calendar.MINUTE, -(mNewEventLengthInMinutes / 2));
                     //Fix selected time if before the minimum hour
@@ -327,7 +331,7 @@ public class WeekView extends View {
                     }
                     mEmptyViewClickListener.onEmptyViewClicked(selectedTime);
 
-                }
+                } */
             }
 
             return super.onSingleTapConfirmed(e);
@@ -756,8 +760,8 @@ public class WeekView extends View {
         }
 
         // If the new mCurrentOrigin.y is invalid, make it valid.
-        if (mCurrentOrigin.y < getHeight() - mHourHeight * 14 - mHeaderHeight - mHeaderRowPadding * 2 - mHeaderMarginBottom - mTimeTextHeight/2)
-            mCurrentOrigin.y = getHeight() - mHourHeight * 14 - mHeaderHeight - mHeaderRowPadding * 2 - mHeaderMarginBottom - mTimeTextHeight/2;
+        if (mCurrentOrigin.y < getHeight() - mHourHeight * (mMaxTime - mMinTime) - mHeaderHeight - mHeaderRowPadding * 2 - mHeaderMarginBottom - mTimeTextHeight / 2)
+            mCurrentOrigin.y = getHeight() - mHourHeight * (mMaxTime - mMinTime) - mHeaderHeight - mHeaderRowPadding * 2 - mHeaderMarginBottom - mTimeTextHeight / 2;
 
         // Don't put an "else if" because it will trigger a glitch when completely zoomed out and
         // scrolling vertically.
@@ -947,7 +951,7 @@ public class WeekView extends View {
                         - mHeaderRowPadding * 2 - mTimeTextHeight/2 - mHeaderMarginBottom;
                 int hour = (int)(pixelsFromZero / mHourHeight);
                 int minute = (int) (60 * (pixelsFromZero - hour * mHourHeight) / mHourHeight);
-                day.add(Calendar.HOUR_OF_DAY, hour);
+                day.add(Calendar.HOUR_OF_DAY, hour + mMinTime);
                 day.set(Calendar.MINUTE, minute);
                 return day;
             }

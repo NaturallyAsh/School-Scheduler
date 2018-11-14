@@ -485,8 +485,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     @Override
     public void onEmptyViewLongPress(Calendar time) {
-        //addNewEvent();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Add new event?");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
@@ -502,7 +501,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         });
 
         AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        alertDialog.show();*/
     }
 
     @Override
