@@ -92,7 +92,7 @@ public class WeekViewBase extends WeekViewFragment
 
         List<WeekViewEvent> events = new ArrayList<>();
 
-        Calendar startTime = Calendar.getInstance();
+        /*Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, 3);
         startTime.set(Calendar.MINUTE, 0);
         startTime.set(Calendar.MONTH, newMonth - 1);
@@ -123,7 +123,7 @@ public class WeekViewBase extends WeekViewFragment
         event.setLocation(event.getLocation());
         events.add(event);
 
-        WeekViewUtil.masterEvents.put("" + event.getId(), event);
+        WeekViewUtil.masterEvents.put("" + event.getId(), event); */
 
         Cursor cursor = dbHelper.fetchEvents();
 
@@ -146,7 +146,7 @@ public class WeekViewBase extends WeekViewFragment
             end.set(Calendar.MONTH, newMonth -1);
             int color = cursor.getInt(5);
 
-            WeekViewEvent dbEvent = new WeekViewEvent(id, name, start, end);
+            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
             dbEvent.setColor(color);
             dbEvent.setLocation(location);
 
@@ -165,32 +165,5 @@ public class WeekViewBase extends WeekViewFragment
 
         //listener.refreshData(events);
         return events;
-    }
-
-    public void eventDatabaseList()
-    {
-        //calendarEvent.clear();
-        Cursor cursor = dbHelper.fetchEvents();
-
-        while (cursor.moveToNext())
-        {
-            long id = cursor.getLong(0);
-            String name = cursor.getString(1);
-            String location = cursor.getString(2);
-            Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(cursor.getLong(3));
-            Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(cursor.getLong(4));
-            int color = cursor.getInt(5);
-
-            dbEvent = new WeekViewEvent(id, name, start, end);
-             dbEvent.setColor(color);
-             dbEvent.setLocation(location);
-
-            //events.add(dbEvent);
-
-            //WeekViewUtil.masterEvents.put("" + event.getId(), event);
-
-        }
     }
 }

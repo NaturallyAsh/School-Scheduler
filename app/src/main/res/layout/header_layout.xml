@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:padding="10dp"
         android:text="@string/action_month_view"
-        android:textColor="@color/black"/>
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/week_view"
@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:padding="10dp"
         android:text="@string/action_week_view"
-        android:textColor="@color/black"/>
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/day_view"
@@ -34,5 +34,5 @@
         android:layout_weight="1"
         android:padding="10dp"
         android:text="@string/action_day_view"
-        android:textColor="@color/black"/>
+        android:textColor="@color/white"/>
 </LinearLayout>

@@ -2525,7 +2525,7 @@ public class WeekView extends View {
         }
 
         int verticalOffset = 0;
-        if (hour > mMaxTime)
+        /*if (hour > mMaxTime)
             verticalOffset = mHourHeight * (mMaxTime - mMinTime);
         else if (hour > mMinTime)
             verticalOffset = (int) (mHourHeight * hour);
@@ -2535,7 +2535,17 @@ public class WeekView extends View {
             verticalOffset = (int)(mHourHeight * (mMaxTime - mMinTime) - getHeight() + mHeaderHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom);
 
         mCurrentOrigin.y = -verticalOffset;
+        invalidate();*/
+        if (hour > mMinTime && hour < mMaxTime) {
+            verticalOffset = (int) (mHourHeight * (hour - mMinTime));
+        }
+        if (verticalOffset > mHourHeight * (mMaxTime - mMinTime) - getHeight() + mHeaderHeight + mHeaderMarginBottom) {
+            verticalOffset = (int) (mHourHeight * (mMaxTime - mMinTime) - getHeight() + mHeaderHeight + mHeaderMarginBottom);
+        }
+        mCurrentOrigin.y = -verticalOffset;
         invalidate();
+        mScroller.forceFinished(true);
+
     }
 
     /**

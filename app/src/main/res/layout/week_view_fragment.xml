@@ -73,14 +73,24 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <TextView
-        android:id="@+id/empty_calendar_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
         android:gravity="center"
-        android:visibility="gone"
-        android:text="@string/no_events_string"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/empty_calendar_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/no_events_string"/>
+
+    </LinearLayout>
+
 
     <com.example.ashleighwilson.schoolscheduler.timetable.WeekView
         android:id="@+id/weekView"
@@ -95,7 +105,8 @@
         app:headerRowPadding="12dp"
         app:columnGap="8dp"
         app:noOfVisibleDays="3"
-
+        app:minTime="7"
+        app:maxTime="24"
         app:autoLimitTime="false"
         app:headerRowBackgroundColor="@color/white"
         app:newEventTimeResolutionInMinutes="15"

@@ -18,6 +18,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     private final List<WeekViewEvent> eventList;
     private final View.OnClickListener onClickListener;
     LayoutInflater inflater;
+    WeekViewEvent event;
 
     public EventAdapter(Context context, List<WeekViewEvent> events, View.OnClickListener listener)
     {
@@ -39,7 +40,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
-        WeekViewEvent event = eventList.get(position);
+        event = eventList.get(position);
         if (event != null)
         {
             holder.eventTitle.setText(event.getName());
@@ -81,5 +82,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         this.eventList.clear();
         this.eventList.addAll(events);
         notifyDataSetChanged();
+    }
+
+    public void dismissEvent(int position) {
+
+        //eventList.remove(event.);
+        notifyItemRemoved(position);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -77,6 +78,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         init();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init(){
         cal = Calendar.getInstance();
 

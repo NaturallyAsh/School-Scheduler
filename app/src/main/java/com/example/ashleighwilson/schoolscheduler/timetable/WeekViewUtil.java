@@ -15,24 +15,6 @@ public class WeekViewUtil {
     public static HashMap<String, WeekViewEvent> masterEvents = new HashMap();
     public static HashMap<String, List<WeekViewEvent>> monthMasterEvents = new HashMap();
 
-    public static HashMap<String, List<WeekViewEvent>> getMonthMasterHashMap()
-    {
-        return monthMasterEvents;
-    }
-
-    public static HashMap<String, WeekViewEvent> getMasterHashMap()
-    {
-        return masterEvents;
-    }
-
-    public static Bundle getHashEvents(Bundle args)
-    {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("hashMap", monthMasterEvents);
-
-        return bundle;
-    }
-
     /////////////////////////////////////////////////////////////////
     //
     //      Helper methods.

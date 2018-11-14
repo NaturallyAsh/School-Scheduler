@@ -23,6 +23,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -180,6 +182,46 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 //            calendar.setVisibility(View.GONE);
             mWeekView.setVisibility(View.VISIBLE);
         }
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.DOWN |
+                ItemTouchHelper.UP, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                int from = viewHolder.getAdapterPosition();
+                int to = target.getAdapterPosition();
+
+                Collections.swap(events, from, to);
+                eventAdapter.notifyItemMoved(from, to);
+
+                return true;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition();
+                if (direction == ItemTouchHelper.LEFT)
+                {
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+                    builder.setMessage("Are you sure to delete?");
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
+                            if (eventAdapter.getItemCount() == 0)
+                                updateView();
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            eventAdapter.notifyItemRemoved(position + 1);
+                            eventAdapter.notifyItemRangeChanged(position, eventAdapter.getItemCount());
+                        }
+                    }).show();
+                }
+            }
+        });
+
+        helper.attachToRecyclerView(eventList);
 
         return rootView;
     }
@@ -417,12 +459,10 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
        {
            if (calendar.mAdapter.currentDay != null)
            {
-               buildEventList(calendar.mAdapter.currentDay);
+               //buildEventList(calendar.mAdapter.currentDay);
            }
        }
     }
-
-
 
     public void updateView()
     {
@@ -500,11 +540,22 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     }
 
-    protected String getEventTitle(Calendar time, Calendar endTime)
+    public String getEventName(String name, Calendar startTime, Calendar endTime) {
+
+        String start = dateFormatter(startTime);
+        String end = dateFormatter(endTime);
+
+        String eventMsg = name + "\n" + start + " - " + end;
+
+        return eventMsg;
+    }
+
+    private String dateFormatter(Calendar time)
     {
-        //return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
-        return String.format("Event of %02d:%02d %s/%d :: %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH),
-            endTime.get(Calendar.HOUR_OF_DAY), endTime.get(Calendar.MINUTE), endTime.get(Calendar.MONTH)+1, endTime.get(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
     }
 
     public WeekView getWeekView()

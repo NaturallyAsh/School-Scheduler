@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleDateDialog;
@@ -287,31 +288,19 @@ public class TimeTableEditor extends AppCompatActivity implements
         String roomString = mRoomEditText.getText().toString().trim();
 
         Calendar startTime = originalStartTime;
-        //Calendar startTime = Calendar.getInstance();
-        //startTime.setTimeInMillis(System.currentTimeMillis());
-        //startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
-        //startTime.set(Calendar.MINUTE, START_MINUTE);
+
         if (startTime == null)
         {
             startTime.setTimeInMillis(System.currentTimeMillis());
-            //startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
-            //startTime.set(Calendar.MINUTE, START_MINUTE);
-            //startTime.set(Calendar.MONTH, START_MONTH);
-            //startTime.set(Calendar.YEAR, START_YEAR);
-            //startTime.set(START_YEAR, START_MONTH, START_DAY, START_HOUR, START_MINUTE);
         }
 
 
         Calendar endTime = (Calendar) startTime.clone();
-        //Calendar endTime = Calendar.getInstance();
         endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
-        //endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
-        //endTime.set(Calendar.MINUTE, END_MINUTE);
-        //endTime.set(Calendar.MONTH, END_MONTH);
-        //endTime.set(END_YEAR, END_MONTH, END_DAY, END_HOUR, END_MINUTE);
         
         WeekViewEvent createdEvent;
-        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
+        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(nameString,
+                startTime, endTime), startTime, endTime);
         createdEvent.setColor(subColor);
         createdEvent.setLocation(roomString);
 
@@ -344,7 +333,6 @@ public class TimeTableEditor extends AppCompatActivity implements
         }
 
         WeekViewEvent model = new WeekViewEvent();
-        //model.setId(WeekViewUtil.eventId);
         model.setName(nameString);
         model.setLocation(roomString);
         model.setStartTime(startTime);
@@ -352,8 +340,6 @@ public class TimeTableEditor extends AppCompatActivity implements
         model.setColor(subColor);
 
         dbHelper.addTimetable(model);
-        Log.i(TAG, "model: " + model);
-
 
         eventListByMonth.add(createdEvent);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
@@ -364,6 +350,24 @@ public class TimeTableEditor extends AppCompatActivity implements
         setResult(RESULT_OK);
         finish();
 
+    }
+
+    public String getEventName(String name, Calendar startTime, Calendar endTime) {
+
+        String start = timeFormatter(startTime);
+        String end = timeFormatter(endTime);
+
+        String eventMsg = name + "\n" + start + " - " + end;
+
+        return eventMsg;
+    }
+
+    private String timeFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
     }
 
     @Override
@@ -381,7 +385,6 @@ public class TimeTableEditor extends AppCompatActivity implements
             endTime.setTimeInMillis(originalStartTime.getTimeInMillis() + (1000 * 60 * 60 *2));
             setStartEndTime(originalStartTime, endTime);
 
-            Log.i(TAG, "onResume start time:" + dateFormatter(originalStartTime) + "onResume end time: " + dateFormatter(endTime));
         }
     }
 
