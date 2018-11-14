@@ -288,6 +288,8 @@ public class TimeTableEditor extends AppCompatActivity implements
         String roomString = mRoomEditText.getText().toString().trim();
 
         Calendar startTime = originalStartTime;
+        startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
+        startTime.set(Calendar.MINUTE, START_MINUTE);
 
         if (startTime == null)
         {
@@ -296,7 +298,9 @@ public class TimeTableEditor extends AppCompatActivity implements
 
 
         Calendar endTime = (Calendar) startTime.clone();
-        endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
+        //endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
+        endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
+        endTime.set(Calendar.MINUTE, END_MINUTE);
         
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(nameString,
