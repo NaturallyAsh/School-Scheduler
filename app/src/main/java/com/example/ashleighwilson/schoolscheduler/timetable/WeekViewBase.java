@@ -24,7 +24,7 @@ public class WeekViewBase extends WeekViewFragment
     public final static String ARG_EVENT_ID = "arg_event_id";
     Context mContext = MySchedulerApp.getInstance();
     DbHelper dbHelper = DbHelper.getInstance();
-    WeekViewEvent dbEvent;
+    WeekViewEvent loadedEvent;
 
     public static WeekViewBase newInstance(long event_id)
     {
@@ -78,6 +78,7 @@ public class WeekViewBase extends WeekViewFragment
 
     @Override
     public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
+        Log.i(TAG, "onMonthLoad");
 
         monthKey = "" + (newMonth - 1) + "-" + newYear;
         eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
@@ -162,6 +163,7 @@ public class WeekViewBase extends WeekViewFragment
 
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+
 
         //listener.refreshData(events);
         return events;

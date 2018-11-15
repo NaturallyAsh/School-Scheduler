@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
+    private static final String TAG = EventAdapter.class.getSimpleName();
+
     private final Context mContext;
     private final List<WeekViewEvent> eventList;
     private final View.OnClickListener onClickListener;
@@ -26,7 +29,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         this.eventList = new ArrayList<>();
         if (events != null) {
             events.addAll(events);
+            Log.i(TAG, "events: " + events);
         }
+        Log.i(TAG, "events adapter events not calling: " + events);
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
     }

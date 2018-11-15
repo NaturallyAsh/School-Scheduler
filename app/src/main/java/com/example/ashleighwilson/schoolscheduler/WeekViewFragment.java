@@ -48,6 +48,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.WeekView;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -116,6 +117,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                              Bundle savedInstanceState)
 
     {
+        Log.i(TAG, "onCreateView");
+
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         rootView = inflater.inflate(R.layout.week_view_fragment, container, false);
@@ -385,6 +388,14 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         mWeekView.notifyDatasetChanged();
     }
 
+    public void addLoadedEvents(WeekViewEvent loadedEvent) {
+        events = new ArrayList<>();
+        events.add(loadedEvent);
+
+        eventAdapter.notifyDataSetChanged();
+        Log.i(TAG, "loaded event: " + loadedEvent);
+    }
+
     @Override
     public void onDetach()
     {
@@ -471,6 +482,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.refreshCalendar();
         Log.i(TAG, "updateView()!");
         if (events == null || events.size() == 0) {
+            Log.i(TAG, "events showing null: " + events);
             eventList.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
             eventList.setAdapter(eventAdapter);
@@ -479,29 +491,15 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         } else {
             eventList.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.GONE);
+            //eventAdapter = new EventAdapter(getContext(), events, this);
+            //eventList.setAdapter(eventAdapter);
         }
 
     }
 
     @Override
     public void onEmptyViewLongPress(Calendar time) {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Add new event?");
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                showEventDetailsScreen(null, time);
-            }
-        });
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
 
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();*/
     }
 
     @Override
