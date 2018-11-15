@@ -120,5 +120,6 @@
     <string name="not_completed">Not Completed</string>
     <string name="menu_nav_settings">Settings</string>
     <string name="today_string">Today</string>
+    <string name="school_scheduler_string">School Scheduler</string>
 
 </resources>

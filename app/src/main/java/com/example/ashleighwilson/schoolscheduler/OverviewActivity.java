@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,17 +29,25 @@ import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
+import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
+import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import butterknife.BindView;
 
 public class OverviewActivity extends AppCompatActivity
 {
     private static final String TAG = OverviewActivity.class.getSimpleName();
 
+    private static final int IMG_FILES = 1;
     static final int STORAGE_PERMS = 175;
     private NavigationView mNavigationView;
     private DrawerLayout drawer;
@@ -53,7 +63,9 @@ public class OverviewActivity extends AppCompatActivity
     public static String POSITION = "position";
     TabLayout tabLayout;
     ViewPager viewPager;
-
+    View navHeaderView;
+    private ImageView headerIMV;
+    private TextView headerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +86,16 @@ public class OverviewActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT > 22)
             checkPermission();
-        /*
+
         HashMap<String, String> user = session.getUserDetails();
 
         String email = user.get(SessionManager.KEY_EMAIL);
         String password = user.get(SessionManager.KEY_PASS);
 
-        set text from these somewhere..
+        //set text from these somewhere..
 
-        Add logout button somewhere...
-         */
+        //Add logout button somewhere...
+
         if (Build.VERSION.SDK_INT > 22)
         {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMS);
@@ -108,6 +120,12 @@ public class OverviewActivity extends AppCompatActivity
 
         mNavigationView = findViewById(R.id.nav_view);
         setupDrawerContent(mNavigationView);
+
+        navHeaderView = mNavigationView.inflateHeaderView(R.layout.nav_header_main_nav);
+        headerIMV = navHeaderView.findViewById(R.id.header_imageView);
+        headerTV = navHeaderView.findViewById(R.id.header_tv);
+
+        headerTV.setText(email);
 
         setImage();
 
@@ -165,6 +183,46 @@ public class OverviewActivity extends AppCompatActivity
                 page.setScaleY(normalizedPosition / 2 + 0.5f);
             }
         });
+
+        headerTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getImageFiles();
+            }
+        });
+    }
+
+    private void getImageFiles() {
+        Intent filesIntent;
+        filesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        filesIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        filesIntent.setType("*/*");
+        startActivityForResult(filesIntent, IMG_FILES);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case IMG_FILES:
+                    manageImageFiles(intent);
+                    break;
+            }
+        }
+    }
+
+    private void manageImageFiles(Intent intent) {
+        List<Uri> uris = new ArrayList<>();
+        if (intent.getClipData() != null) {
+            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+                uris.add(intent.getClipData().getItemAt(i).getUri());
+            }
+        } else {
+            uris.add(intent.getData());
+        }
+        for (Uri uri : uris) {
+            String name = Storage.getNameFromUri(this, uri);
+        }
     }
 
     private void setImage()

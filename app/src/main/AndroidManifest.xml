@@ -86,7 +86,14 @@
                 android:value=".OverviewActivity"/>
         </activity>
         <activity android:name=".SnoozeActivity" />
-        <activity android:name=".GalleryActivity" />
+        <activity
+            android:name=".GalleryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".OverviewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
         <activity android:name=".SettingsActivity" />
 
         <receiver

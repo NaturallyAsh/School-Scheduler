@@ -3,8 +3,11 @@ package com.example.ashleighwilson.schoolscheduler;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +25,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import it.feio.android.simplegallery.models.GalleryPagerAdapter;
+import com.example.ashleighwilson.schoolscheduler.notes.GalleryPagerAdapter;
 import it.feio.android.simplegallery.views.GalleryViewPager;
 
 public class GalleryActivity extends AppCompatActivity
@@ -49,6 +52,8 @@ public class GalleryActivity extends AppCompatActivity
     InterceptorFrameLayout galleryRootView;
     @BindView(R.id.fullscreen_content)
     GalleryViewPager mViewPager;
+    @BindView(R.id.main_toolbar)
+    Toolbar toolbar;
 
     private List<Attachment> images;
 
@@ -80,10 +85,8 @@ public class GalleryActivity extends AppCompatActivity
 
     private void initViews() {
         // Show the Up button in the action bar.
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         galleryRootView.setOnViewTouchedListener(screenTouches);
 
@@ -139,7 +142,7 @@ public class GalleryActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
             case R.id.menu_gallery_share:
                 shareMedia();
                 break;
@@ -150,6 +153,18 @@ public class GalleryActivity extends AppCompatActivity
                 Log.e(TAG, "Wrong element choosen: " + item.getItemId());
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.getBackStackEntryCount() > 0)
+        {
+            manager.popBackStack();
+        }
+        else
+            super.onBackPressed();
     }
 
 

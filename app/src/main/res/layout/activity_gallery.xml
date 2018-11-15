@@ -8,10 +8,12 @@
     android:background="#000000"
     tools:context=".GalleryActivity">
 
+    <include layout="@layout/toolbar_main"/>
+
     <it.feio.android.simplegallery.views.GalleryViewPager
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 
 </com.example.ashleighwilson.schoolscheduler.notes.InterceptorFrameLayout>

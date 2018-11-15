@@ -442,7 +442,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
                 noteTmp.setTitle(getNoteTitle());
                 noteTmp.setContent(getNoteContent());
-                String title1 = noteTmp.getTitle();
+
+                String title1;
+                if (noteTmp.getTitle() != null) {
+                    title1 = noteTmp.getTitle();
+                } else {
+                    title1 = "";
+                }
 
                 int clickedImage = 0;
                 ArrayList<Attachment> images = new ArrayList<>();
@@ -905,13 +911,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 case R.id.recording:
                     takeRecord();
                     attachmentDialog.dismiss();
-
                     break;
                 case R.id.video:
                     takeVideo();
                     attachmentDialog.dismiss();
                     break;
                 case R.id.files:
+                    startGetContentAction();
+                    attachmentDialog.dismiss();
                     break;
                 case R.id.sketch:
                     takeSketch(null);
@@ -919,6 +926,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                     break;
             }
         }
+    }
+
+    public void startGetContentAction() {
+        Intent filesIntent;
+        filesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        filesIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        filesIntent.setType("*/*");
+        startActivityForResult(filesIntent, FILES);
     }
 
     public Pair<Boolean, SublimeOptions> getOptions()
