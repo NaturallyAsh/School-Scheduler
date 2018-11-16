@@ -19,6 +19,7 @@ public class SessionManager
     public static final String KEY_PASS = "password";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_DATE = "date";
+    public static final String KEY_IMAGE = "image";
 
     public SessionManager (Context context)
     {
@@ -44,6 +45,15 @@ public class SessionManager
         return pref.getString(KEY_DATE, null);
     }
 
+    public void setProfileImage(String image) {
+        editor.putString(KEY_IMAGE, image);
+        editor.commit();
+    }
+
+    public String getProfileImage() {
+        return pref.getString(KEY_IMAGE, null);
+    }
+
     public void checkLogin()
     {
         if (!this.isLoggedIn())
@@ -64,7 +74,6 @@ public class SessionManager
         HashMap<String, String> user = new HashMap<>();
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
         user.put(KEY_PASS, pref.getString(KEY_PASS, null));
-
 
         return user;
     }

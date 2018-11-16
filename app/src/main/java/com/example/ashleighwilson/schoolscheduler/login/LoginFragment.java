@@ -1,7 +1,9 @@
 package com.example.ashleighwilson.schoolscheduler.login;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ public class LoginFragment extends Fragment implements OnLoginListener
     String stringEmail;
     String stringPassword;
     LoginAlertDialog alert = new LoginAlertDialog();
+    SharedPreferences preferences;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -45,6 +48,8 @@ public class LoginFragment extends Fragment implements OnLoginListener
 
         session = new SessionManager(getActivity());
 
+        preferences = rootView.getContext().getSharedPreferences("SchoolScheduler", Context.MODE_PRIVATE);
+
         email = rootView.findViewById(R.id.login_email);
         password = rootView.findViewById(R.id.login_password);
 
@@ -58,9 +63,19 @@ public class LoginFragment extends Fragment implements OnLoginListener
 
         if (stringEmail.length() > 0 && password.length() > 0)
         {
-            if (stringEmail.equals(stringEmail) && stringPassword.equals(stringPassword))
+            String email = null;
+            String pass = null;
+
+            if (preferences.contains(SessionManager.KEY_EMAIL)) {
+                email = preferences.getString(SessionManager.KEY_EMAIL, "");
+            }
+            if (preferences.contains(SessionManager.KEY_PASS)) {
+                pass = preferences.getString(SessionManager.KEY_PASS, "");
+            }
+
+            if (stringEmail.equals(email) && stringPassword.equals(pass))
             {
-                session.createLoginSession(stringEmail, stringPassword);
+                session.createLoginSession(email, pass);
 
                 Intent intent = new Intent(getActivity(), OverviewActivity.class);
                 startActivity(intent);

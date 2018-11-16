@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -32,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
@@ -42,6 +45,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class OverviewActivity extends AppCompatActivity
 {
@@ -64,7 +70,7 @@ public class OverviewActivity extends AppCompatActivity
     TabLayout tabLayout;
     ViewPager viewPager;
     View navHeaderView;
-    private ImageView headerIMV;
+    private CircleImageView headerIMV;
     private TextView headerTV;
 
     @Override
@@ -91,6 +97,7 @@ public class OverviewActivity extends AppCompatActivity
 
         String email = user.get(SessionManager.KEY_EMAIL);
         String password = user.get(SessionManager.KEY_PASS);
+        String profileImage = session.getProfileImage();
 
         //set text from these somewhere..
 
@@ -126,6 +133,10 @@ public class OverviewActivity extends AppCompatActivity
         headerTV = navHeaderView.findViewById(R.id.header_tv);
 
         headerTV.setText(email);
+        if (profileImage != null) {
+            headerIMV.setImageURI(Uri.parse(profileImage));
+        }
+        Log.i(TAG, "profile image: " + profileImage);
 
         setImage();
 
@@ -184,7 +195,7 @@ public class OverviewActivity extends AppCompatActivity
             }
         });
 
-        headerTV.setOnClickListener(new View.OnClickListener() {
+        headerIMV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getImageFiles();
@@ -194,7 +205,7 @@ public class OverviewActivity extends AppCompatActivity
 
     private void getImageFiles() {
         Intent filesIntent;
-        filesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        filesIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         filesIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         filesIntent.setType("*/*");
         startActivityForResult(filesIntent, IMG_FILES);
@@ -205,23 +216,22 @@ public class OverviewActivity extends AppCompatActivity
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case IMG_FILES:
-                    manageImageFiles(intent);
+                    Uri selectedImage = intent.getData();
+
+                    this.grantUriPermission(this.getPackageName(), selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    this.getContentResolver().takePersistableUriPermission(selectedImage, takeFlags);
+
+                    session.setProfileImage(String.valueOf(selectedImage));
+
+                    Glide.with(getApplicationContext())
+                            .load(selectedImage)
+                            .apply(new RequestOptions().centerCrop())
+                            //.transition(withCrossFade())
+                            .into(headerIMV);
+
                     break;
             }
-        }
-    }
-
-    private void manageImageFiles(Intent intent) {
-        List<Uri> uris = new ArrayList<>();
-        if (intent.getClipData() != null) {
-            for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
-                uris.add(intent.getClipData().getItemAt(i).getUri());
-            }
-        } else {
-            uris.add(intent.getData());
-        }
-        for (Uri uri : uris) {
-            String name = Storage.getNameFromUri(this, uri);
         }
     }
 
