@@ -82,7 +82,7 @@ public class LoginFragment extends Fragment implements OnLoginListener
             }
             else
             {
-                alert.showAlertDialog(getContext(), "Login failed..", "Username/Password" +
+                alert.showAlertDialog(getContext(), "Login failed..", "Username/Password " +
                         "is incorrect", false);
             }
         }

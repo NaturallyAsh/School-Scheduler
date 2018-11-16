@@ -212,25 +212,28 @@ public class OverviewActivity extends AppCompatActivity
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case IMG_FILES:
-                    Uri selectedImage = intent.getData();
+            if (requestCode == 1 && intent != null) {
+                switch (requestCode) {
+                    case IMG_FILES:
+                        Uri selectedImage = intent.getData();
 
-                    this.grantUriPermission(this.getPackageName(), selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                    this.getContentResolver().takePersistableUriPermission(selectedImage, takeFlags);
+                        this.grantUriPermission(this.getPackageName(), selectedImage, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                        this.getContentResolver().takePersistableUriPermission(selectedImage, takeFlags);
 
-                    session.setProfileImage(String.valueOf(selectedImage));
+                        session.setProfileImage(String.valueOf(selectedImage));
 
-                    Glide.with(getApplicationContext())
-                            .load(selectedImage)
-                            .apply(new RequestOptions().centerCrop())
-                            //.transition(withCrossFade())
-                            .into(headerIMV);
+                        Glide.with(getApplicationContext())
+                                .load(selectedImage)
+                                .apply(new RequestOptions().centerCrop())
+                                //.transition(withCrossFade())
+                                .into(headerIMV);
+                        headerIMV.invalidate();
 
-                    break;
+                        break;
+                }
             }
         }
     }
