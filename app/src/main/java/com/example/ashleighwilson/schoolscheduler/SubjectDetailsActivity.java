@@ -24,6 +24,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     private TextView teacherTV;
     private static final String EXTRA_ID = "id";
     Context mContext;
+    CollapsingToolbarLayout cT;
 
 
     @Override
@@ -37,7 +38,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
         model = getIntent().getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
 
-        CollapsingToolbarLayout cT = findViewById(R.id.detail_collapsing_toolbar);
+        cT = findViewById(R.id.detail_collapsing_toolbar);
 
         cT.setTitle(model.getmTitle());
         cT.setBackgroundColor(model.getmColor());
@@ -51,7 +52,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SubjectsEditorActivity.class);
                 intent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -59,9 +60,17 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_overview, menu);
         return true;
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (data != null) {
+                model = data.getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
+                cT.setBackgroundColor(model.getmColor());
+            }
+        }
+    }
 
 }

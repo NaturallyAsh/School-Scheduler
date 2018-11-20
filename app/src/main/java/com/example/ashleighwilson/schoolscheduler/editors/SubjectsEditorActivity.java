@@ -1,6 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.editors;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -210,7 +212,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String startString = mStartTime.getText().toString().trim();
         String endString = mEndTime.getText().toString().trim();
 
-
+        model.setId(itemModel.getId());
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
@@ -228,6 +230,10 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         {
             Toast.makeText(this, "Subject saved", Toast.LENGTH_SHORT).show();
         }
+        int resultCode = 1;
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
+        setResult(resultCode, resultIntent);
 
     }
 

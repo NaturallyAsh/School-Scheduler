@@ -281,12 +281,14 @@ public class DbHelper extends SQLiteOpenHelper
         mOnDatabaseChangedListener = listener;
     }
 
-    public long addClass(SubjectsModel model)
+    public SubjectsModel addClass(SubjectsModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        db.beginTransaction();
+
         ContentValues values = new ContentValues();
-        //values.put(SchoolEntry._ID, model.getId());
+        values.put(SchoolEntry._ID, model.getId());
         values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
         values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
@@ -294,10 +296,11 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
 
-        long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
-        db.close();
+        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.setTransactionSuccessful();
+        db.endTransaction();
 
-        return res;
+        return model;
     }
 
     public Cursor getAltSub()

@@ -200,22 +200,6 @@ public class SubjectsFrag extends DialogFragment
         }
     }
 
-    public void OnAddSubjectSubmit(String title, String teacher, String room) {
-        SubjectsModel model = new SubjectsModel();
-
-        model.setmTitle(title);
-        model.setmTeacher(teacher);
-        model.setmRoom(room);
-
-        dbHelper.addClass(model);
-
-
-        //recyclerSubAdapter.setData(subMod);
-
-        //recyclerSubAdapter.notifyDataSetChanged();
-
-    }
-
     private void showDialog() {
         SubjectsEditor addSubjectDialog = new SubjectsEditor();
         addSubjectDialog.setTargetFragment(this, 0);
