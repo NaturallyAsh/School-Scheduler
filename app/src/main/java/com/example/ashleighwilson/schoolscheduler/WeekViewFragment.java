@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
+import com.example.ashleighwilson.schoolscheduler.login.LoginAlertDialog;
 import com.example.ashleighwilson.schoolscheduler.timetable.CalendarAdapter;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
@@ -162,11 +163,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         mWeekView.setEmptyViewClickListener(this);
 
-        /*Calendar cal = Calendar.getInstance();
-        cal.getTimeInMillis();
-        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()); */
-
-        //todayTV.setText(formatter.format(cal.getTime()));
         todayTV.setText(R.string.today_string);
 
         // Set up a date time interpreter to interpret how the date and time will be formatted in
@@ -315,13 +311,21 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
             Calendar tomCal = Calendar.getInstance();
             tomCal.add(Calendar.DAY_OF_WEEK, 1);
+            Log.i(TAG, "tom cal: " + tomCal.get(Calendar.DAY_OF_WEEK));
+
+
+            Calendar yesCal = Calendar.getInstance();
+            yesCal.add(Calendar.DAY_OF_WEEK, -1);
+            Log.i(TAG, "yes cal: " + yesCal.get(Calendar.DAY_OF_WEEK));
+
             Date today = calendar.getTime();
             Date notToday = tomCal.getTime();
+            Date yesterday = yesCal.getTime();
 
             SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy");
             String dateString = sdf.format(calendar.getTime());
 
-            if (notToday.compareTo(today) < 1) {
+            if (notToday.compareTo(today) < 1 || today.compareTo(yesterday) < 1) {
                 todayTV.setText(dateString);
             } else {
                 todayTV.setText(R.string.today_string);

@@ -96,6 +96,15 @@
         </activity>
         <activity android:name=".SettingsActivity" />
 
+        <activity
+            android:name=".SubjectDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".OverviewActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".OverviewActivity"/>
+
+        </activity>
         <receiver
             android:name=".data.NotificationReceiver" />
         <receiver

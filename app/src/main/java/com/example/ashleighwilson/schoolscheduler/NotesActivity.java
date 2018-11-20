@@ -145,12 +145,12 @@ public class NotesActivity extends AppCompatActivity
         super.onNewIntent(intent);
         setIntent(intent);
         handleIntents();
-        Log.i(TAG, "onNewIntent");
+        //Log.i(TAG, "onNewIntent");
     }
 
     private void handleIntents()
     {
-        Log.i(TAG, "handling intents");
+        //Log.i(TAG, "handling intents");
         Intent i = getIntent();
         if (i.getAction() == null)
             return;

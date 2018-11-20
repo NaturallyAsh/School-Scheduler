@@ -346,26 +346,25 @@ public class DbHelper extends SQLiteOpenHelper
         return modelArrayList;
     }
 
-    public int updateSubject(int id, String title, String teacher, String room, int color, String start, String end)
+    public SubjectsModel getSubAt(int position)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        int numOfRowsUpdated = -1;
-        try {
-            ContentValues values = new ContentValues();
-            values.put(SchoolEntry.COLUMN_TITLE, title);
-            values.put(SchoolEntry.COLUMN_TEACHER, teacher);
-            values.put(SchoolEntry.COLUMN_ROOM, room);
-            values.put(SchoolEntry.COLUMN_COLOR, color);
-            values.put(SchoolEntry.COLUMN_STARTTIME, start);
-            values.put(SchoolEntry.COLUMN_ENDTIME, end);
+        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
+                null, null, null);
 
-            numOfRowsUpdated = db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID + " = ?",
-                    new String[]{String.valueOf(id)});
-        }catch (SQLException e) {
-            e.printStackTrace();
+        if (cursor.moveToPosition(position)) {
+            SubjectsModel model = new SubjectsModel();
+            model.setId(cursor.getInt(0));
+            model.setmTitle(cursor.getString(1));
+            model.setmTeacher(cursor.getString(2));
+            model.setmRoom(cursor.getString(3));
+            model.setmColor(cursor.getInt(4));
+            model.setmStartTime(cursor.getString(5));
+            model.setmEndTime(cursor.getString(6));
+            cursor.close();
+            return model;
         }
-
-        return numOfRowsUpdated;
+        return null;
     }
 
     public void removeSubject(SubjectsModel model)

@@ -14,6 +14,10 @@
             android:id="@+id/nav_notes"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/nav_notes" />
+        <item
+            android:id="@+id/nav_recordings"
+            android:icon="@drawable/ic_mic_black_24dp"
+            android:title="@string/recordings_nav_string"/>
 
     </group>
 

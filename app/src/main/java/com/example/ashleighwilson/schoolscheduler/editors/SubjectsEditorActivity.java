@@ -42,12 +42,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     private TextView viewColor;
     TextView mStartTime;
     TextView mEndTime;
+    private static final String EXTRA_ID = "id";
     final static private String COLOR_DIALOG = "colorDialog";
     private static final String START_TIME_DIALOG = "SimpleTimeStartDialog";
     private static final String END_TIME_DIALOG = "SimpleTimeEndDialog";
     static private int subColor;
     DbHelper dbHelper;
-
+    private SubjectsModel itemModel;
     String editTitle = "";
     public ArrayList<SubjectsModel> model;
 
@@ -69,6 +70,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         dbHelper = DbHelper.getInstance();
         //model = dbHelper.getAllSubjects();
@@ -125,21 +127,10 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         });
 
 
-
-        Bundle intent = getIntent().getExtras();
-        if (intent != null)
+        itemModel = getIntent().getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
+        if (itemModel != null)
         {
-            //int ID = intent.getIntExtra(RecyclerSubAdapter.EXTRA_ID, NO_ID);
-            String bTitle = intent.getString(RecyclerSubAdapter.EXTRA_TITLE);
-            String bTeacher = intent.getString(RecyclerSubAdapter.EXTRA_TEACHER);
-            String bRoom = intent.getString(RecyclerSubAdapter.EXTRA_ROOM);
-            int bColor = intent.getInt(RecyclerSubAdapter.EXTRA_COLOR);
-            String bStart = intent.getString(RecyclerSubAdapter.EXTRA_START);
-            String bEnd = intent.getString(RecyclerSubAdapter.EXTRA_END);
-
-            //if ((ID != NO_ID) && (!bTitle.equals(NO_TITLE) && (!bTeacher.equals(NO_TEACHER)
-              //  && (!bRoom.equals(NO_ROOM)))))
-            if (bTitle.equals(editTitle))
+            if (itemModel.getmTitle().equals(editTitle))
             {
                 setTitle("Add Subject");
                 invalidateOptionsMenu();
@@ -147,12 +138,12 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             else
             {
                 setTitle("Edit Subject");
-                mTitleEditText.setText(bTitle);
-                mTeacherEditText.setText(bTeacher);
-                mRoomEditText.setText(bRoom);
-                viewColor.setBackgroundColor(bColor);
-                mStartTime.setText(bStart);
-                mEndTime.setText(bEnd);
+                mTitleEditText.setText(itemModel.getmTitle());
+                mTeacherEditText.setText(itemModel.getmTeacher());
+                mRoomEditText.setText(itemModel.getmRoom());
+                viewColor.setBackgroundColor(itemModel.getmColor());
+                mStartTime.setText(itemModel.getmStartTime());
+                mEndTime.setText(itemModel.getmEndTime());
             }
         }
     }
@@ -268,14 +259,16 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             case android.R.id.home:
                 if (!mSubjectHasChanged)
                 {
-                    NavUtils.navigateUpFromSameTask(SubjectsEditorActivity.this);
+                    //NavUtils.getParentActivityIntent(SubjectsEditorActivity.this);
+                    onBackPressed();
                     return true;
                 }
 
                 DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        NavUtils.navigateUpFromSameTask(SubjectsEditorActivity.this);
+                        //NavUtils.getParentActivityIntent(SubjectsEditorActivity.this);
+                        onBackPressed();
                     }
                 };
 

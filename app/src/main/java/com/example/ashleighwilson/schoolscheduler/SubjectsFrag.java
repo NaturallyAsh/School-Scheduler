@@ -147,7 +147,7 @@ public class SubjectsFrag extends DialogFragment
                         public void onClick(DialogInterface dialog, int i) {
                             recyclerSubAdapter.notifyItemRemoved(position + 1);
                             recyclerSubAdapter.notifyItemRangeChanged(position, recyclerSubAdapter.getItemCount());
-
+                            recyclerSubAdapter.notifyItemChanged(position);
                         }
                     }).show();
                 }

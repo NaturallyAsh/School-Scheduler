@@ -1,6 +1,14 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
-public class SubjectsModel
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SubjectsModel implements Parcelable
 {
     private String mTitle;
     private String mTeacher;
@@ -23,6 +31,16 @@ public class SubjectsModel
 
     public SubjectsModel() {
 
+    }
+
+    public SubjectsModel(Parcel in) {
+        id = in.readInt();
+        mTitle = in.readString();
+        mTeacher = in.readString();
+        mRoom = in.readString();
+        mColor = in.readInt();
+        mStartTime = in.readString();
+        mEndTime = in.readString();
     }
 
     public int getId() {return id;}
@@ -87,6 +105,34 @@ public class SubjectsModel
     public void setmEndTime(String endTime)
     {
         this.mEndTime = endTime;
+    }
+
+    public static final Parcelable.Creator<SubjectsModel> CREATOR = new
+            Parcelable.Creator<SubjectsModel>() {
+                @Override
+                public SubjectsModel createFromParcel(Parcel in) {
+                    return new SubjectsModel(in);
+                }
+                @Override
+                public SubjectsModel[] newArray(int size) {
+                    return new SubjectsModel[size];
+                }
+            };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int i) {
+        dest.writeInt(id);
+        dest.writeString(mTitle);
+        dest.writeString(mTeacher);
+        dest.writeString(mRoom);
+        dest.writeInt(mColor);
+        dest.writeString(mStartTime);
+        dest.writeString(mEndTime);
     }
 
 }

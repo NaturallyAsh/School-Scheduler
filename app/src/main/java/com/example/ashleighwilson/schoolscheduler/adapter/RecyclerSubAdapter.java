@@ -7,16 +7,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.ashleighwilson.schoolscheduler.SubjectDetailsActivity;
 
 public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.ViewHolder>
 {
@@ -41,8 +41,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         this.context = context;
         this.subMod = subList;
         this.dbHelper = DbHelper.getInstance();
-
-        setData(subList);
+        setClickListener(clickListener);
+        //setData(subList);
     }
 
     @NonNull
@@ -67,43 +67,38 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.endTime.setText(currentSubject.getmEndTime());
 
 
-        holder.edit.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, SubjectsEditorActivity.class);
+                Intent intent = new Intent(context, SubjectDetailsActivity.class);
+                intent.putExtra(EXTRA_ID, getSubItem(holder.getAdapterPosition()));
+                context.startActivity(intent);
 
-                passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom(),
-                        currentSubject.getmColor(), currentSubject.getmStartTime(), currentSubject.getmEndTime());
+                //passData(currentSubject.getmTitle(), currentSubject.getmTeacher(), currentSubject.getmRoom(),
+                  //      currentSubject.getmColor(), currentSubject.getmStartTime(), currentSubject.getmEndTime());
             }
         });
-
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class ViewHolder extends RecyclerView.ViewHolder
     {
         TextView titleView;
         TextView teacher;
         TextView room;
-        Button edit;
         TextView color;
         TextView startTime;
         TextView endTime;
+        View itemView;
 
         public ViewHolder(final View itemView) {
             super(itemView);
+            this.itemView = itemView;
             titleView = itemView.findViewById(R.id.subject_subject);
             teacher = itemView.findViewById(R.id.subject_teacher_text);
             room = itemView.findViewById(R.id.room_item);
-            edit = itemView.findViewById(R.id.edit_button);
             color = itemView.findViewById(R.id.color_item);
             startTime = itemView.findViewById(R.id.start_time_item);
             endTime = itemView.findViewById(R.id.end_time_item);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (clickListener != null)
-                clickListener.itemClicked(getAdapterPosition());
         }
     }
 
@@ -135,6 +130,10 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         void itemClicked(int position);
     }
 
+    public SubjectsModel getSubItem(int position) {
+        return dbHelper.getSubAt(position);
+    }
+
     public void setData(List<SubjectsModel> data) {
         subMod = data;
         notifyDataSetChanged();
@@ -144,7 +143,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
     private void passData(String title, String teacher, String room, int color, String start, String end)
     {
-        Intent intent = new Intent(context, SubjectsEditorActivity.class);
+        Intent intent = new Intent(context, SubjectDetailsActivity.class);
         //intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_TEACHER, teacher);
