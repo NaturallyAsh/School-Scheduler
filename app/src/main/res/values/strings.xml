@@ -125,5 +125,6 @@
     <string name="events_string">Events</string>
     <string name="overview_string">Overview</string>
     <string name="assignments_string">Assignments</string>
+    <string name="no_assignments_string">No Assignments</string>
 
 </resources>

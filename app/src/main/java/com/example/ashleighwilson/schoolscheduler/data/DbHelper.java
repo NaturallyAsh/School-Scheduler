@@ -78,7 +78,8 @@ public class DbHelper extends SQLiteOpenHelper
 
     String[] spinnerColumns = new String[] {
             SpinnerEntry._ID,
-            SpinnerEntry.COLUMN_SUBJECT
+            SpinnerEntry.COLUMN_SUBJECT,
+            SpinnerEntry.COLUMN_SUB_ID
     };
 
     String[] agendaColumns = new String[] {
@@ -222,12 +223,14 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String TABLE_NAME = "subject_spinner";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_SUBJECT = "name";
+        public final static String COLUMN_SUB_ID = "sub_id";
     }
 
     String SQL_CREATE_SPINNER_TABLE = "CREATE TABLE " + SpinnerEntry.TABLE_NAME +
             " ("
             + SpinnerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + SpinnerEntry.COLUMN_SUBJECT + " TEXT);";
+            + SpinnerEntry.COLUMN_SUBJECT + " TEXT, "
+            + SpinnerEntry.COLUMN_SUB_ID + " INTEGER);";
 
     public static final class AgendaEntry implements BaseColumns
     {
@@ -465,6 +468,19 @@ public class DbHelper extends SQLiteOpenHelper
         return labels;
     }
 
+    public void getAssignmentByLabelAt(SubjectsModel model) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
+                AgendaEntry.COLUMN_NAME + " = " + model.getmTitle();
+
+        List<String> list = new ArrayList<>();
+        int index = 0;
+        for (int i = 0; i < list.size(); i++) {
+            index++;
+        }
+
+    }
+
     public long addAgenda(AgendaModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -486,6 +502,32 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
                 null, null, null);
+    }
+
+    public List<AgendaModel> getAllAgendas()
+    {
+        List<AgendaModel> list = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int i = 0;
+                AgendaModel model = new AgendaModel();
+                model.setmId(cursor.getInt(i++));
+                model.setClassName(cursor.getString(i++));
+                model.setAgendaTitle(cursor.getString(i++));
+                model.setDueDate(cursor.getString(i++));
+                model.setmColor(cursor.getInt(i++));
+
+                list.add(model);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        //db.close();
+        return list;
     }
 
     public AgendaModel getAgendaAt(int position) {
