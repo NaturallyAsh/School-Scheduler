@@ -62,22 +62,32 @@
 
         </LinearLayout>
 
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="2dp"
+            android:background="@color/DarkGray"
+            android:layout_gravity="bottom"/>
+
     </android.support.design.widget.CollapsingToolbarLayout>
+
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/event_RV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </android.support.v7.widget.RecyclerView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="bottom">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/event_RV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="500dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/empty_calendar_view"
@@ -87,9 +97,10 @@
             android:textSize="20sp"
             android:gravity="center"
             android:visibility="gone"
-            android:text="@string/no_events_string"/>
+            android:text="@string/no_events_string"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_gravity="center"/>
 
-    </LinearLayout>
 
 
     <com.example.ashleighwilson.schoolscheduler.timetable.WeekView

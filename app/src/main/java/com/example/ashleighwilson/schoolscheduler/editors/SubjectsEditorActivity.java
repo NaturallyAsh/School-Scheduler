@@ -212,7 +212,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String startString = mStartTime.getText().toString().trim();
         String endString = mEndTime.getText().toString().trim();
 
-        model.setId(itemModel.getId());
+        model.setId(model.getId());
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
@@ -221,7 +221,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmEndTime(endString);
 
         dbHelper.addClass(model);
-        dbHelper.addToSpinner(titleString);
+        dbHelper.addToSpinner(titleString, model);
         if (dbHelper == null)
         {
             Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();

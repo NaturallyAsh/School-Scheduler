@@ -7,20 +7,22 @@
     android:id="@+id/main_root">
 
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"
-        android:scrollbars="vertical"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp"
+            android:scrollbars="vertical" />
 
+
+    </android.support.v4.widget.NestedScrollView>
 
     <TextView
         android:id="@+id/empty_subject_view"
@@ -29,8 +31,6 @@
         android:gravity="center"
         android:visibility="invisible"
         android:text="@string/no_subjects"/>
-
-   </LinearLayout>
 
     <include layout="@layout/fab_subjects" />
 

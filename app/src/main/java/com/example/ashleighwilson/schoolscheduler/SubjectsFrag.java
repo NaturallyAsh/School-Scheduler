@@ -62,7 +62,7 @@ public class SubjectsFrag extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View view = inflater.inflate(R.layout.fragment_subjects, container, false);
+         View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
         setHasOptionsMenu(true);
         Log.i(TAG, "onCreateView!");

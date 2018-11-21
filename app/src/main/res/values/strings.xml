@@ -122,5 +122,8 @@
     <string name="today_string">Today</string>
     <string name="school_scheduler_string">School Scheduler</string>
     <string name="recordings_nav_string">Recordings</string>
+    <string name="events_string">Events</string>
+    <string name="overview_string">Overview</string>
+    <string name="assignments_string">Assignments</string>
 
 </resources>

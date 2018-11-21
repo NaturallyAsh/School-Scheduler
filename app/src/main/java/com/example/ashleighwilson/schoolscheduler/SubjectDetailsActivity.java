@@ -69,6 +69,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
             if (data != null) {
                 model = data.getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
                 cT.setBackgroundColor(model.getmColor());
+                cT.setTitle(model.getmTitle());
             }
         }
     }
