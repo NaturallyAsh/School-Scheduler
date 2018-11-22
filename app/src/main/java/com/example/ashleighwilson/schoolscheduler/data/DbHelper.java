@@ -78,8 +78,7 @@ public class DbHelper extends SQLiteOpenHelper
 
     String[] spinnerColumns = new String[] {
             SpinnerEntry._ID,
-            SpinnerEntry.COLUMN_SUBJECT,
-            SpinnerEntry.COLUMN_SUB_ID
+            SpinnerEntry.COLUMN_SUBJECT
     };
 
     String[] agendaColumns = new String[] {
@@ -105,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 51;
+    private static final int DATABASE_VERSION = 57;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -223,14 +222,12 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String TABLE_NAME = "subject_spinner";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_SUBJECT = "name";
-        public final static String COLUMN_SUB_ID = "sub_id";
     }
 
     String SQL_CREATE_SPINNER_TABLE = "CREATE TABLE " + SpinnerEntry.TABLE_NAME +
             " ("
             + SpinnerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + SpinnerEntry.COLUMN_SUBJECT + " TEXT, "
-            + SpinnerEntry.COLUMN_SUB_ID + " INTEGER);";
+            + SpinnerEntry.COLUMN_SUBJECT + " TEXT);";
 
     public static final class AgendaEntry implements BaseColumns
     {
@@ -309,6 +306,44 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
                 null, null, null);
+    }
+
+    public int getSubjectCount()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {SchoolEntry._ID};
+
+        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, projection, null, null,
+                null, null, null);
+
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
+    public ArrayList<SubjectsModel> getAllSubjects()
+    {
+        ArrayList<SubjectsModel> modelArrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                SubjectsModel model = new SubjectsModel();
+                model.setId(Integer.parseInt(cursor.getString(0)));
+                model.setmTitle(cursor.getString(1));
+                model.setmTeacher(cursor.getString(2));
+                model.setmRoom(cursor.getString(3));
+                model.setmColor(Integer.parseInt(cursor.getString(4)));
+                model.setmStartTime(cursor.getString(5));
+                model.setmEndTime(cursor.getString(6));
+                modelArrayList.add(model);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return modelArrayList;
     }
 
     public SubjectsModel getSubAt(int position)
@@ -433,18 +468,15 @@ public class DbHelper extends SQLiteOpenHelper
                 null, null, null);
     }
 
-    public void addToSpinner(String label, SubjectsModel model)
+    public void addToSpinner(String label)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
         ContentValues values = new ContentValues();
-        //values.put(SpinnerEntry.COLUMN_SUBJECT_ID, model.getId());
         values.put(SpinnerEntry.COLUMN_SUBJECT, label);
         //values.put(SpinnerEntry.COLUMN_COLOR, model.getmColor());
 
-        db.insertWithOnConflict(SpinnerEntry.TABLE_NAME, SpinnerEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        db.insert(SpinnerEntry.TABLE_NAME, null, values);
+        db.close();
     }
 
     public List<String> getAllLabels()
@@ -466,19 +498,6 @@ public class DbHelper extends SQLiteOpenHelper
         db.close();
 
         return labels;
-    }
-
-    public void getAssignmentByLabelAt(SubjectsModel model) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
-                AgendaEntry.COLUMN_NAME + " = " + model.getmTitle();
-
-        List<String> list = new ArrayList<>();
-        int index = 0;
-        for (int i = 0; i < list.size(); i++) {
-            index++;
-        }
-
     }
 
     public long addAgenda(AgendaModel model)

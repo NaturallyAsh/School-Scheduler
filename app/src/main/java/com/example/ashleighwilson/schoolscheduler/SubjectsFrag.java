@@ -80,12 +80,9 @@ public class SubjectsFrag extends DialogFragment
 
         FloatingClicked();
 
-
-
         dbHelper = DbHelper.getInstance();
 
         //dataSub = dbHelper.getAllSubjects();
-
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -95,21 +92,6 @@ public class SubjectsFrag extends DialogFragment
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 || dy < 0 && fabAll.isShown())
-                    fabAll.hideMenu(true);
-            }
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    fabAll.showMenu(true);
-                }
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-        }); */
 
         subjectDatabaseList();
 
@@ -138,9 +120,9 @@ public class SubjectsFrag extends DialogFragment
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
                             recyclerSubAdapter.dismissItem(viewHolder.getAdapterPosition());
-                            if (recyclerSubAdapter.getItemCount() == 0)
+                            if (recyclerSubAdapter.getItemCount() == 0) {
                                 updateUI();
-
+                            }
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
@@ -184,6 +166,7 @@ public class SubjectsFrag extends DialogFragment
     }
 
     private void updateUI() {
+        Log.i(TAG, "updateUI");
         if (recyclerSubAdapter.getItemCount() == 0)
         {
             recyclerView.setVisibility(View.GONE);
@@ -196,6 +179,7 @@ public class SubjectsFrag extends DialogFragment
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.GONE);
             recyclerView.setAdapter(recyclerSubAdapter);
+            //recyclerSubAdapter.setData(subMod);
             recyclerSubAdapter.notifyDataSetChanged();
         }
     }

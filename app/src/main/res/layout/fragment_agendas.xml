@@ -8,21 +8,17 @@
     <FrameLayout
         android:id="@+id/agenda_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/agenda_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="30dp"/>
+    </FrameLayout>
 
-    </android.support.v4.widget.NestedScrollView>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/agenda_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="30dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

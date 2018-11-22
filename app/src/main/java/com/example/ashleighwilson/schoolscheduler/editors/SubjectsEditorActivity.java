@@ -66,6 +66,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editor_subjects);
 
@@ -79,6 +80,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
         Button colorSelector = findViewById(R.id.sub_create_button);
         viewColor = findViewById(R.id.sub_view_color);
+
 
         subColor = getMatColor("200");
         viewColor.setBackgroundColor(subColor);
@@ -144,6 +146,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 mTeacherEditText.setText(itemModel.getmTeacher());
                 mRoomEditText.setText(itemModel.getmRoom());
                 viewColor.setBackgroundColor(itemModel.getmColor());
+                Log.i(TAG, "color: " + itemModel.getmColor());
                 mStartTime.setText(itemModel.getmStartTime());
                 mEndTime.setText(itemModel.getmEndTime());
             }
@@ -212,7 +215,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String startString = mStartTime.getText().toString().trim();
         String endString = mEndTime.getText().toString().trim();
 
-        model.setId(model.getId());
+        if (itemModel != null) {
+            model.setId(itemModel.getId());
+        }
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
@@ -221,7 +226,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmEndTime(endString);
 
         dbHelper.addClass(model);
-        dbHelper.addToSpinner(titleString, model);
+        dbHelper.addToSpinner(titleString);
         if (dbHelper == null)
         {
             Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();

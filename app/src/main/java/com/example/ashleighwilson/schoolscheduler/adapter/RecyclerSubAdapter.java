@@ -42,8 +42,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         this.context = context;
         this.subMod = subList;
         this.dbHelper = DbHelper.getInstance();
-        setClickListener(clickListener);
-        //setData(subList);
+        //setClickListener(clickListener);
+        setData(subList);
     }
 
     @NonNull
@@ -134,7 +134,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     }
 
     public void setData(List<SubjectsModel> data) {
-        subMod = data;
+        this.subMod = data;
+        Log.i(TAG, "data size: " + data.size());
         notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, data.size());
