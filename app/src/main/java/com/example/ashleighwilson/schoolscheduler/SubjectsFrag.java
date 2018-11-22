@@ -179,7 +179,7 @@ public class SubjectsFrag extends DialogFragment
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.GONE);
             recyclerView.setAdapter(recyclerSubAdapter);
-            //recyclerSubAdapter.setData(subMod);
+            recyclerSubAdapter.setData(subMod);
             recyclerSubAdapter.notifyDataSetChanged();
         }
     }

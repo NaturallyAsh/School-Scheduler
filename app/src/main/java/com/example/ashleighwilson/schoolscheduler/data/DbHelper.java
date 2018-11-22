@@ -104,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 57;
+    private static final int DATABASE_VERSION = 58;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -278,11 +278,9 @@ public class DbHelper extends SQLiteOpenHelper
         mOnDatabaseChangedListener = listener;
     }
 
-    public SubjectsModel addClass(SubjectsModel model)
+    public long addClass(SubjectsModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        db.beginTransaction();
 
         ContentValues values = new ContentValues();
         values.put(SchoolEntry._ID, model.getId());
@@ -293,11 +291,11 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
 
-        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        //long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
+        long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
 
-        return model;
+        return res;
     }
 
     public Cursor getAltSub()
