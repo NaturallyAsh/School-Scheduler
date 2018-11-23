@@ -71,6 +71,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
         cT.setTitle(subModel.getmTitle());
         cT.setBackgroundColor(subModel.getmColor());
+        Log.i(TAG, "color: " + subModel.getmColor());
 
         teacherTV = findViewById(R.id.detail_teacherTV);
         teacherTV.setText(subModel.getmTeacher());
@@ -88,6 +89,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     }
 
     public void loadAssignments() {
+        updateUI();
         boolean nameExists = false;
         for (AgendaModel agendaModel1 : agendaModelList) {
             if (subModel.getmTitle().equals(agendaModel1.getClassName())) {
@@ -133,6 +135,12 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        //loadAssignments();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_overview, menu);
         return true;
@@ -143,6 +151,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
             if (data != null) {
                 subModel = data.getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
                 cT.setBackgroundColor(subModel.getmColor());
+                Log.i(TAG, "on result color: " + subModel.getmColor());
                 cT.setTitle(subModel.getmTitle());
             }
         }

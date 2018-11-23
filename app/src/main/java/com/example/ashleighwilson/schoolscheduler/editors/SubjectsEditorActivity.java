@@ -221,7 +221,11 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmTitle(titleString);
         model.setmTeacher(teacherString);
         model.setmRoom(roomString);
-        model.setmColor(subColor);
+        if (itemModel != null) {
+            model.setmColor(itemModel.getmColor());
+        } else {
+            model.setmColor(subColor);
+        }
         model.setmStartTime(startString);
         model.setmEndTime(endString);
 
@@ -238,6 +242,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         int resultCode = 1;
         Intent resultIntent = new Intent();
         resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
+        Log.i(TAG, "result intent color: " + subColor);
         setResult(resultCode, resultIntent);
 
     }
