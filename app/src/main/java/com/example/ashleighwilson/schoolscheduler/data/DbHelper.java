@@ -1,25 +1,19 @@
 package com.example.ashleighwilson.schoolscheduler.data;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
-import com.example.ashleighwilson.schoolscheduler.models.TimeTableModel;
 import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
-import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
@@ -283,6 +277,29 @@ public class DbHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        //values.put(SchoolEntry._ID, model.getId());
+        values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
+        values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
+        values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
+        values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
+        values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
+        values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
+
+        long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
+        //long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        //long res = db.insertOrThrow(SchoolEntry.TABLE_NAME, null, values);
+
+        db.close();
+
+        return res;
+    }
+
+    public SubjectsModel updateSub(SubjectsModel model) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+
+        ContentValues values = new ContentValues();
         values.put(SchoolEntry._ID, model.getId());
         values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
@@ -291,11 +308,34 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
 
-        //long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
-        long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
+        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+        //db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID, null);
+        db.setTransactionSuccessful();
+        db.endTransaction();
 
-        return res;
+        return model;
+    }
+
+    public SubjectsModel addClass2(SubjectsModel model)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+
+        ContentValues values = new ContentValues();
+        //values.put(SchoolEntry._ID, model.getId());
+        values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
+        values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
+        values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
+        values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
+        values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
+        values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
+
+        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+        return model;
     }
 
     public Cursor getAltSub()

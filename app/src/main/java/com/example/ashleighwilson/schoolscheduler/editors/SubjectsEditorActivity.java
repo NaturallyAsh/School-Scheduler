@@ -229,6 +229,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmStartTime(startString);
         model.setmEndTime(endString);
 
+
         dbHelper.addClass(model);
         dbHelper.addToSpinner(titleString);
         if (dbHelper == null)

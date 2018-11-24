@@ -133,8 +133,13 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         return dbHelper.getSubAt(position);
     }
 
+    public List<SubjectsModel> getSubjects() {
+        return this.subMod;
+    }
+
     public void setData(List<SubjectsModel> data) {
         this.subMod = data;
+        Log.i(TAG, "data size: " + data.size());
         notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, data.size());

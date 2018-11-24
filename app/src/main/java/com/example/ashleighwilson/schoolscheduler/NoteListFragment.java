@@ -323,7 +323,7 @@ public class NoteListFragment extends Fragment
         if (note.getID() == null) {
             Log.i(TAG, "adding new note");
         } else {
-            Log.i(TAG, "editing note with id: " + note.get_id());
+            Log.i(TAG, "editing note with id: " + note.getID());
         }
         notesActivity.switchToDetail(note);
     }
