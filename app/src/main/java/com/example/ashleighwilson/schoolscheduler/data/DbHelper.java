@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
@@ -277,7 +278,9 @@ public class DbHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        //values.put(SchoolEntry._ID, model.getId());
+        if (model.getId() != 0) {
+            values.put(SchoolEntry._ID, model.getId());
+        }
         values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
         values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
         values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
