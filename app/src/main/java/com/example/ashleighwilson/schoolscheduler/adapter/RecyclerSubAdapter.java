@@ -139,7 +139,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
     public void setData(List<SubjectsModel> data) {
         this.subMod = data;
-        Log.i(TAG, "data size: " + data.size());
+        //Log.i(TAG, "data size: " + data.size());
         notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, data.size());
@@ -162,6 +162,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public void dismissItem(int position)
     {
         dbHelper.deleteSubject(subMod.get(position).getId());
+        dbHelper.deleteLabel(subMod.get(position).getmTitle());
         subMod.remove(position);
         notifyItemRemoved(position);
     }

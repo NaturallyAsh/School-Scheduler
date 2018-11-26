@@ -21,7 +21,7 @@ public class DetailAssignmentAdapter extends RecyclerView.Adapter<DetailAssignme
     private List<AgendaModel> agendaData;
     private DbHelper dbHelper;
 
-    public DetailAssignmentAdapter(Context context, ArrayList<AgendaModel> models) {
+    public DetailAssignmentAdapter(Context context, List<AgendaModel> models) {
         this.mContext = context;
         this.agendaData = models;
         this.dbHelper = DbHelper.getInstance();

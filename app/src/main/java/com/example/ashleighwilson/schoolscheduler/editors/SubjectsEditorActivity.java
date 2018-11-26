@@ -146,7 +146,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 mTeacherEditText.setText(itemModel.getmTeacher());
                 mRoomEditText.setText(itemModel.getmRoom());
                 viewColor.setBackgroundColor(itemModel.getmColor());
-                Log.i(TAG, "color: " + itemModel.getmColor());
+                //Log.i(TAG, "color: " + itemModel.getmColor());
                 mStartTime.setText(itemModel.getmStartTime());
                 mEndTime.setText(itemModel.getmEndTime());
             }
@@ -231,7 +231,12 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
 
         dbHelper.addClass(model);
-        dbHelper.addToSpinner(titleString);
+        if (dbHelper.hasLabel(titleString)) {
+            Log.i(TAG, "db already has label: " + titleString);
+        } else {
+            dbHelper.addToSpinner(titleString);
+            Log.i(TAG, "label added: " + titleString);
+        }
         if (dbHelper == null)
         {
             Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();
@@ -243,7 +248,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         int resultCode = 1;
         Intent resultIntent = new Intent();
         resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
-        Log.i(TAG, "result intent color: " + subColor);
+        //Log.i(TAG, "result intent color: " + subColor);
         setResult(resultCode, resultIntent);
 
     }

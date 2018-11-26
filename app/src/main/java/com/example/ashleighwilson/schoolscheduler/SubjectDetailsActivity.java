@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +35,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     private List<AgendaModel> agendaModelList;
     private TextView teacherTV, emptyTV;
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
+    private List<AgendaModel> agendaTestList = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager manager;
     private DetailAssignmentAdapter adapter;
@@ -62,6 +64,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         agendaModelList = dbHelper.getAllAgendas();
 
         adapter = new DetailAssignmentAdapter(this, agendaList);
+        //adapter = new DetailAssignmentAdapter(this, agendaTestList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
 
@@ -71,7 +74,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
         cT.setTitle(subModel.getmTitle());
         cT.setBackgroundColor(subModel.getmColor());
-        Log.i(TAG, "color: " + subModel.getmColor());
+        //Log.i(TAG, "color: " + subModel.getmColor());
 
         teacherTV = findViewById(R.id.detail_teacherTV);
         teacherTV.setText(subModel.getmTeacher());
@@ -100,7 +103,40 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         Log.i(TAG, "name exists: " + nameExists);
         if (nameExists) {
             agendaList.clear();
-            Cursor cursor = dbHelper.getAgenda();
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String[] projection = {
+                    DbHelper.AgendaEntry._ID,
+                    DbHelper.AgendaEntry.COLUMN_TITLE,
+                    DbHelper.AgendaEntry.COLUMN_NAME,
+                    DbHelper.AgendaEntry.COLUMN_DUEDATE,
+                    DbHelper.AgendaEntry.COLUMN_COLOR
+            };
+
+            String selection = DbHelper.AgendaEntry.COLUMN_NAME + " =?";
+            String[] selectionArgs = {subModel.getmTitle()};
+
+            Cursor cursor = db.query(
+                    DbHelper.AgendaEntry.TABLE_NAME,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    null
+            );
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String title = cursor.getString(2);
+                String dueDate = cursor.getString(3);
+                int color = cursor.getInt(4);
+
+                AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
+
+                agendaList.add(model);
+            }
+
+            /*Cursor cursor = dbHelper.getAgenda();
             while (cursor.moveToNext())
             {
                 int id = cursor.getInt(0);
@@ -112,7 +148,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
 
                 agendaList.add(model);
-            }
+            }*/
             updateUI();
         }
     }
@@ -151,7 +187,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
             if (data != null) {
                 subModel = data.getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
                 cT.setBackgroundColor(subModel.getmColor());
-                Log.i(TAG, "on result color: " + subModel.getmColor());
+                //Log.i(TAG, "on result color: " + subModel.getmColor());
                 cT.setTitle(subModel.getmTitle());
             }
         }

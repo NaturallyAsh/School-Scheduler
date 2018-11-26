@@ -99,7 +99,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 58;
+    private static final int DATABASE_VERSION = 59;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -288,57 +288,12 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
 
-        long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
-        //long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        //long res = db.insertOrThrow(SchoolEntry.TABLE_NAME, null, values);
+        //long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
+        long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
         db.close();
 
         return res;
-    }
-
-    public SubjectsModel updateSub(SubjectsModel model) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.beginTransaction();
-
-        ContentValues values = new ContentValues();
-        values.put(SchoolEntry._ID, model.getId());
-        values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
-        values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
-        values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
-        values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
-        values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
-        values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
-
-        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
-        //db.update(SchoolEntry.TABLE_NAME, values, SchoolEntry._ID, null);
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
-        return model;
-    }
-
-    public SubjectsModel addClass2(SubjectsModel model)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.beginTransaction();
-
-        ContentValues values = new ContentValues();
-        //values.put(SchoolEntry._ID, model.getId());
-        values.put(SchoolEntry.COLUMN_TITLE, model.getmTitle());
-        values.put(SchoolEntry.COLUMN_TEACHER, model.getmTeacher());
-        values.put(SchoolEntry.COLUMN_ROOM, model.getmRoom());
-        values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
-        values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
-        values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
-
-        db.insertWithOnConflict(SchoolEntry.TABLE_NAME, SchoolEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
-        return model;
     }
 
     public Cursor getAltSub()
@@ -360,31 +315,6 @@ public class DbHelper extends SQLiteOpenHelper
         int count = cursor.getCount();
         cursor.close();
         return count;
-    }
-
-    public ArrayList<SubjectsModel> getAllSubjects()
-    {
-        ArrayList<SubjectsModel> modelArrayList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(SchoolEntry.TABLE_NAME, allColumns, null, null,
-                null, null, null);
-
-        if (cursor.moveToFirst())
-        {
-            do {
-                SubjectsModel model = new SubjectsModel();
-                model.setId(Integer.parseInt(cursor.getString(0)));
-                model.setmTitle(cursor.getString(1));
-                model.setmTeacher(cursor.getString(2));
-                model.setmRoom(cursor.getString(3));
-                model.setmColor(Integer.parseInt(cursor.getString(4)));
-                model.setmStartTime(cursor.getString(5));
-                model.setmEndTime(cursor.getString(6));
-                modelArrayList.add(model);
-            }while (cursor.moveToNext());
-        }
-        cursor.close();
-        return modelArrayList;
     }
 
     public SubjectsModel getSubAt(int position)
@@ -520,6 +450,38 @@ public class DbHelper extends SQLiteOpenHelper
         db.close();
     }
 
+    public long deleteLabel(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Log.i(TAG, "deleting label with name: " + name);
+        return db.delete(SpinnerEntry.TABLE_NAME, SpinnerEntry._ID + " =?",
+                new String[]{name});
+    }
+
+    public boolean hasLabel(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selectQuery = "SELECT * FROM " + SpinnerEntry.TABLE_NAME + " WHERE " +
+                SpinnerEntry.COLUMN_SUBJECT + " = ?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{name});
+
+        /*boolean hasName = false;
+        if (cursor.moveToFirst()) {
+            hasName = true;
+            int count = 0;
+            while (cursor.moveToNext()) {
+                count++;
+            }
+        }
+        cursor.close();
+        db.close();
+        return hasName;*/
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+
+    }
+
     public List<String> getAllLabels()
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -549,6 +511,9 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
+        if(model.getClassName() != null) {
+            //if (model.getClassName())
+        }
 
         long id = db.insert(AgendaEntry.TABLE_NAME, null, values);
         db.close();
@@ -562,6 +527,54 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
                 null, null, null);
+    }
+
+    public Cursor getAgendaByName(SubjectsModel model) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Log.i(TAG, "get by id: " + model.getId());
+
+        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
+                AgendaEntry._ID + " = " + model.getId();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                AgendaModel agendaModel = new AgendaModel(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return cursor;
+    }
+
+    public List<AgendaModel> getAgendaById(SubjectsModel model) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<AgendaModel> agendaModelList = new ArrayList<>();
+        Log.i(TAG, "get by id: " + model.getId());
+
+        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
+                AgendaEntry._ID + " = " + model.getId();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                AgendaModel agendaModel = new AgendaModel(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getInt(4));
+                agendaModelList.add(agendaModel);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return agendaModelList;
     }
 
     public List<AgendaModel> getAllAgendas()
