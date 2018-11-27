@@ -54,4 +54,10 @@
     <dimen name="attachment_dialog_text_size">16sp</dimen>
     <dimen name="attachment_dialog_drawable_padding">12dp</dimen>
     <dimen name="attachment_dialog_items_padding">12dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
 </resources>

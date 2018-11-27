@@ -33,7 +33,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public DbHelper dbHelper;
     public SubjectsModel model;
     private static final int UNSELECTED = -1;
-    private int selectedItem = UNSELECTED;
+    public int selectedItem = UNSELECTED;
     private RecyclerView recyclerView;
     public static final String EXTRA_ID = "ID";
     public static final String EXTRA_TITLE = "TITLE";
@@ -84,6 +84,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
                 Intent intent = new Intent(context, SubjectDetailsActivity.class);
                 intent.putExtra(EXTRA_ID, getSubItem(holder.getAdapterPosition()));
                 context.startActivity(intent);
+
+                holder.layout.collapse();
             }
         });
     }

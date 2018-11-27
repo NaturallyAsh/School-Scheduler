@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.ashleighwilson.schoolscheduler">
 
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
-    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
 
     <application
         android:name=".MySchedulerApp"
@@ -34,81 +34,86 @@
         <activity
             android:name=".GradesActivity"
             android:label="Grades"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity
             android:name=".NotesActivity"
             android:label="Notes"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity
             android:name=".editors.SubjectsEditorActivity"
             android:label="Add Subject"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity
             android:name=".RecordActivity"
             android:label="Recordings"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity
             android:name=".editors.TimeTableEditor"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
-
         <activity android:name=".LoginActivity" />
         <activity
             android:name=".editors.AgendaEditor"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity android:name=".SnoozeActivity" />
         <activity
             android:name=".GalleryActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".OverviewActivity"/>
+                android:value=".OverviewActivity" />
         </activity>
         <activity android:name=".SettingsActivity" />
-
         <activity
             android:name=".SubjectDetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".OverviewActivity">
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".OverviewActivity"/>
-
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity" />
         </activity>
-        <receiver
-            android:name=".data.NotificationReceiver" />
-        <receiver
-            android:name=".data.AlarmReceiver" />
+
+        <receiver android:name=".data.NotificationReceiver" />
+        <receiver android:name=".data.AlarmReceiver" />
+        <receiver android:name=".AppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

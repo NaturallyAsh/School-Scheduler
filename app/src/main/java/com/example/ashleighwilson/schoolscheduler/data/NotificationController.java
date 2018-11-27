@@ -111,10 +111,11 @@ public class NotificationController
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
             notifyEvent.putExtra("title", title);
             final int id = (int) System.currentTimeMillis();
-            //notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent, 0);
+            notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
+            //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
+              //      PendingIntent.FLAG_CANCEL_CURRENT);
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            //PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, intent, flags);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
             alrmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeToNotify, AlarmManager.INTERVAL_DAY, pendingIntent);
 
 

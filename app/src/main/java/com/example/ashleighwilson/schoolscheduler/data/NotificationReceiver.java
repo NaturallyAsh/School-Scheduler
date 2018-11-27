@@ -12,6 +12,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
+import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 
@@ -31,7 +32,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "channel_id")
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_important_black_18dp)
                 .setContentTitle(name)
                 .setContentText("due!").setSound(alarmSound)

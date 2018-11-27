@@ -26,6 +26,7 @@ public interface ConstantsBase
     String ACTION_POSTPONE = "action_postpone";
     String ACTION_SHORTCUT = "action_shortcut";
     String ACTION_WIDGET = "action_widget";
+    String ACTION_WIDGET_RECORD = "action_widget_record";
     String ACTION_WIDGET_TAKE_PHOTO = "action_widget_take_photo";
     String ACTION_WIDGET_SHOW_LIST = "action_widget_show_list";
     String ACTION_SHORTCUT_WIDGET = "action_shortcut_widget";

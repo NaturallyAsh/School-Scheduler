@@ -335,6 +335,18 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             }
         }
 
+        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET)) {
+            noteTmp = new Note();
+        }
+
+        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET_TAKE_PHOTO)) {
+            takePhoto();
+        }
+
+        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET_RECORD)) {
+            takeRecord();
+        }
+
         if (IntentChecker.checkAction(intent, Constants.ACTION_FAB_TAKE_PHOTO)) {
             takePhoto();
         }
@@ -833,6 +845,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         sketchFragment.setArguments(b);
         transaction.replace(R.id.fragment_note_container, sketchFragment, mNotesActivity.FRAGMENT_SKETCH_TAG)
                 .addToBackStack(mNotesActivity.FRAGMENT_NOTE_DETAIL_TAG).commit();
+    }
+
+    private void takeIntentRecord() {
+        File f = Storage.createNewAttachmentFile(mNotesActivity, Constants.MIME_TYPE_AUDIO);
+        if (f == null) {
+            return;
+        }
+
     }
 
     private void takePhoto()
