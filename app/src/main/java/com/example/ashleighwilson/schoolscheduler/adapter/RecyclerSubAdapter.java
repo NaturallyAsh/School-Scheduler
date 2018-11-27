@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
@@ -19,6 +21,8 @@ import java.util.List;
 
 import com.example.ashleighwilson.schoolscheduler.SubjectDetailsActivity;
 
+import net.cachapa.expandablelayout.ExpandableLayout;
+
 public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.ViewHolder>
 {
     private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
@@ -28,7 +32,9 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     Context context;
     public DbHelper dbHelper;
     public SubjectsModel model;
-
+    private static final int UNSELECTED = -1;
+    private int selectedItem = UNSELECTED;
+    private RecyclerView recyclerView;
     public static final String EXTRA_ID = "ID";
     public static final String EXTRA_TITLE = "TITLE";
     public static final String EXTRA_TEACHER = "TEACHER";
@@ -37,12 +43,13 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     public static final String EXTRA_START = "START";
     public static final String EXTRA_END = "END";
 
-    public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subList)
+    public RecyclerSubAdapter(Context context, ArrayList<SubjectsModel> subList, RecyclerView recyclerView)
     {
         this.context = context;
         this.subMod = subList;
         this.dbHelper = DbHelper.getInstance();
         //setClickListener(clickListener);
+        this.recyclerView = recyclerView;
         setData(subList);
     }
 
@@ -67,19 +74,21 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.startTime.setText(currentSubject.getmStartTime());
         holder.endTime.setText(currentSubject.getmEndTime());
 
+        boolean isSelected = position == selectedItem;
+        holder.container.setSelected(isSelected);
+        holder.layout.setExpanded(isSelected, false);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 Intent intent = new Intent(context, SubjectDetailsActivity.class);
                 intent.putExtra(EXTRA_ID, getSubItem(holder.getAdapterPosition()));
                 context.startActivity(intent);
-
             }
         });
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView titleView;
         TextView teacher;
@@ -88,6 +97,8 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         TextView startTime;
         TextView endTime;
         View itemView;
+        LinearLayout container;
+        ExpandableLayout layout;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -98,6 +109,36 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             color = itemView.findViewById(R.id.color_item);
             startTime = itemView.findViewById(R.id.start_time_item);
             endTime = itemView.findViewById(R.id.end_time_item);
+            layout = itemView.findViewById(R.id.expandable_layout);
+            container = itemView.findViewById(R.id.cardContainer);
+            container.setOnClickListener(this);
+
+            layout.setInterpolator(new OvershootInterpolator());
+            layout.setOnExpansionUpdateListener(new ExpandableLayout.OnExpansionUpdateListener() {
+                @Override
+                public void onExpansionUpdate(float expansion, int state) {
+                    if (state == ExpandableLayout.State.EXPANDING) {
+                        recyclerView.smoothScrollToPosition(getAdapterPosition());
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onClick(View v) {
+            ViewHolder viewHolder = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(selectedItem);
+            if (viewHolder != null) {
+                viewHolder.container.setSelected(false);
+                viewHolder.layout.collapse();
+            }
+            int position = getAdapterPosition();
+            if (position == selectedItem) {
+                selectedItem = UNSELECTED;
+            } else {
+                container.setSelected(true);
+                layout.expand();
+                selectedItem = position;
+            }
         }
     }
 

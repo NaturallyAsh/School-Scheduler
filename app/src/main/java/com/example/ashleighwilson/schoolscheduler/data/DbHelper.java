@@ -465,17 +465,6 @@ public class DbHelper extends SQLiteOpenHelper
                 SpinnerEntry.COLUMN_SUBJECT + " = ?";
         Cursor cursor = db.rawQuery(selectQuery, new String[]{name});
 
-        /*boolean hasName = false;
-        if (cursor.moveToFirst()) {
-            hasName = true;
-            int count = 0;
-            while (cursor.moveToNext()) {
-                count++;
-            }
-        }
-        cursor.close();
-        db.close();
-        return hasName;*/
         boolean exists = cursor.moveToFirst();
         cursor.close();
         return exists;
@@ -511,9 +500,6 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
-        if(model.getClassName() != null) {
-            //if (model.getClassName())
-        }
 
         long id = db.insert(AgendaEntry.TABLE_NAME, null, values);
         db.close();
@@ -527,54 +513,6 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
                 null, null, null);
-    }
-
-    public Cursor getAgendaByName(SubjectsModel model) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Log.i(TAG, "get by id: " + model.getId());
-
-        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
-                AgendaEntry._ID + " = " + model.getId();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                AgendaModel agendaModel = new AgendaModel(
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getInt(4));
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return cursor;
-    }
-
-    public List<AgendaModel> getAgendaById(SubjectsModel model) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        List<AgendaModel> agendaModelList = new ArrayList<>();
-        Log.i(TAG, "get by id: " + model.getId());
-
-        String selectQuery = "SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
-                AgendaEntry._ID + " = " + model.getId();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                AgendaModel agendaModel = new AgendaModel(
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getString(3),
-                        cursor.getInt(4));
-                agendaModelList.add(agendaModel);
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return agendaModelList;
     }
 
     public List<AgendaModel> getAllAgendas()

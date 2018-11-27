@@ -87,7 +87,7 @@ public class SubjectsFrag extends DialogFragment
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        recyclerSubAdapter = new RecyclerSubAdapter(getContext(), subMod);
+        recyclerSubAdapter = new RecyclerSubAdapter(getContext(), subMod, recyclerView);
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);

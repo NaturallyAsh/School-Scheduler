@@ -136,8 +136,6 @@ public class OverviewActivity extends AppCompatActivity
         if (profileImage != null) {
             headerIMV.setImageURI(Uri.parse(profileImage));
         }
-        Log.i(TAG, "profile image: " + profileImage);
-
         setImage();
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -244,7 +242,6 @@ public class OverviewActivity extends AppCompatActivity
                 .load(R.drawable.curriculum)
                 //.apply(new RequestOptions().override(600, 100))
                 .into(backdropIV);
-        //Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
     }
 
     private void invalidateFragmentMenus(int position)

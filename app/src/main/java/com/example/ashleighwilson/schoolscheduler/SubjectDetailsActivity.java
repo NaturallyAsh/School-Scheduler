@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.DetailAssignmentAdapter;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
@@ -22,6 +23,7 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     private DetailAssignmentAdapter adapter;
     private DbHelper dbHelper;
     private static final String EXTRA_ID = "id";
+    ExpandableTextView expandableTextView;
     Context mContext;
     CollapsingToolbarLayout cT;
 
@@ -60,15 +63,25 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.detail_events_rv);
         recyclerView.setHasFixedSize(true);
 
-        emptyTV = findViewById(R.id.detail_emptyview);
         agendaModelList = dbHelper.getAllAgendas();
 
+        emptyTV = findViewById(R.id.detail_emptyview);
+
         adapter = new DetailAssignmentAdapter(this, agendaList);
-        //adapter = new DetailAssignmentAdapter(this, agendaTestList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
 
         loadAssignments();
+
+        /*expandableTextView = findViewById(R.id.expand_detail_view)
+                .findViewById(R.id.expand_text_view);
+        expandableTextView.setOnExpandStateChangeListener(new ExpandableTextView.OnExpandStateChangeListener() {
+            @Override
+            public void onExpandStateChanged(TextView textView, boolean isExpanded) {
+                Toast.makeText(getApplicationContext(), isExpanded ? "Expanded" : "Collapsed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        expandableTextView.setText(getString(R.string.dummy_text1));*/
 
         cT = findViewById(R.id.detail_collapsing_toolbar);
 
@@ -135,20 +148,6 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
                 agendaList.add(model);
             }
-
-            /*Cursor cursor = dbHelper.getAgenda();
-            while (cursor.moveToNext())
-            {
-                int id = cursor.getInt(0);
-                String name = cursor.getString(1);
-                String title = cursor.getString(2);
-                String dueDate = cursor.getString(3);
-                int color = cursor.getInt(4);
-
-                AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
-
-                agendaList.add(model);
-            }*/
             updateUI();
         }
     }

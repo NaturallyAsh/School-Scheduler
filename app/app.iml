@@ -138,6 +138,7 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:common:1.1.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.larswerkman:HoloColorPicker-1.4" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.7@jar" level="project" />
+    <orderEntry type="library" name="Gradle: net.cachapa.expandablelayout:expandablelayout-2.9.2" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6@jar" level="project" />
     <orderEntry type="library" name="Gradle: de.hdodenhof:circleimageview-2.2.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7-27.1.1" level="project" />
@@ -194,6 +195,7 @@
     <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test.espresso:espresso-core-3.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.android.databinding:adapters-3.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.ms-square:expandableTextView-0.1.4" level="project" />
     <orderEntry type="library" name="Gradle: com.wdullaer:materialdatetimepicker-3.6.3" level="project" />
     <orderEntry type="library" name="Gradle: org.mnode.ical4j:ical4j:1.0.6@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.12@jar" level="project" />

@@ -70,6 +70,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
     implementation 'com.balysv.materialmenu:material-menu:2.0.0'
+    implementation 'com.ms-square:expandableTextView:0.1.4'
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation group: 'org.apache.commons', name: "commons-lang3", version: '3.7'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
