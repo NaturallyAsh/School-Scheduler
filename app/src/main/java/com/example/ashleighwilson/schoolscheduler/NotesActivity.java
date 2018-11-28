@@ -30,6 +30,7 @@ public class NotesActivity extends AppCompatActivity
     public final String FRAGMENT_NOTE_DETAIL_TAG = "fragment_note_detail";
     public final String FRAGMENT_NOTE_LIST_TAG = "fragment_note_list";
     public final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
+    public final String FRAGMENT_RECORD_TAG = "fragment_record";
     public final int TRANSITION_VERTICAL = 0;
     public final int TRANSITION_HORIZONTAL = 1;
     public Toolbar toolbar;
@@ -46,6 +47,7 @@ public class NotesActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle("Notes");
         //EventBus.getDefault().register(this);
 
@@ -168,6 +170,7 @@ public class NotesActivity extends AppCompatActivity
                 note = new Note();
             }
             switchToDetail(note);
+            Log.i(TAG, "INTENT_NOTE handled");
             return;
         }
 
@@ -180,7 +183,6 @@ public class NotesActivity extends AppCompatActivity
         if (Intent.ACTION_VIEW.equals(i.getAction()))
         {
             switchToList();
-            return;
         }
     }
 

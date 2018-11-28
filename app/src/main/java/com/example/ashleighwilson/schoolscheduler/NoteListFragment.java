@@ -213,6 +213,7 @@ public class NoteListFragment extends Fragment
     {
         super.onActivityCreated(savedInstanceState);
         notesActivity = (NotesActivity) getActivity();
+        notesActivity.getSupportActionBar().setTitle("Notes");
     }
 
     private void initListView()

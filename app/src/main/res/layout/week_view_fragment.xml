@@ -48,7 +48,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="20dp"
                 android:layout_gravity="center"
-                android:src="@drawable/baseline_calendar_today_black_18dp"/>
+                android:src="@drawable/ic_today_blackvector_24dp"/>
 
             <TextView
                 android:id="@+id/calendar_day_tv"

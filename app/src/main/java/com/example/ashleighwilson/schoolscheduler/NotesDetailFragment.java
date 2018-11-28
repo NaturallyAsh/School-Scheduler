@@ -15,6 +15,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -130,6 +131,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private NotesActivity mNotesActivity;
     public boolean goBack = false;
     private boolean activityPausing;
+    private boolean afterSavedReturnsToList = true;
     private Attachment sketchEdited;
     private Note note;
     private Note noteTmp;
@@ -251,8 +253,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         mNotesActivity = (NotesActivity) getActivity();
         dbHelper = DbHelper.getInstance();
 
-        mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         //mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
+        ((NotesActivity) getActivity()).getSupportActionBar().setTitle("");
+
 
         if (savedInstanceState != null) {
             noteTmp = savedInstanceState.getParcelable("noteTmp");
@@ -335,15 +339,20 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
             }
         }
 
-        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET)) {
-            noteTmp = new Note();
-        }
+        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET, Constants.ACTION_WIDGET_TAKE_PHOTO)) {
+            afterSavedReturnsToList = true;
 
-        if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET_TAKE_PHOTO)) {
-            takePhoto();
+            if (intent.hasExtra(Constants.INTENT_WIDGET)) {
+                noteTmp = new Note();
+            }
+
+            if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET_TAKE_PHOTO)) {
+                takePhoto();
+            }
         }
 
         if (IntentChecker.checkAction(intent, Constants.ACTION_WIDGET_RECORD)) {
+            afterSavedReturnsToList = true;
             takeRecord();
         }
 
@@ -353,6 +362,8 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         if(IntentChecker.checkAction(intent, Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE, Constants.INTENT_GOOGLE_NOW)
                 && intent.getType() != null) {
+
+            afterSavedReturnsToList = false;
 
             if (noteTmp == null)
                 noteTmp = new Note();
@@ -845,14 +856,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         sketchFragment.setArguments(b);
         transaction.replace(R.id.fragment_note_container, sketchFragment, mNotesActivity.FRAGMENT_SKETCH_TAG)
                 .addToBackStack(mNotesActivity.FRAGMENT_NOTE_DETAIL_TAG).commit();
-    }
-
-    private void takeIntentRecord() {
-        File f = Storage.createNewAttachmentFile(mNotesActivity, Constants.MIME_TYPE_AUDIO);
-        if (f == null) {
-            return;
-        }
-
     }
 
     private void takePhoto()

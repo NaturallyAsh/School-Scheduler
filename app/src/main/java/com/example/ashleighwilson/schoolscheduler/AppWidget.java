@@ -25,14 +25,14 @@ public class AppWidget extends AppWidgetProvider
                 Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Intent intentAdd = new Intent(context, NotesActivity.class);
-        intentCamera.setAction(Constants.ACTION_WIDGET);
-        intentCamera.putExtra(Constants.INTENT_WIDGET, widgetId);
+        intentAdd.setAction(Constants.ACTION_WIDGET);
+        intentAdd.putExtra(Constants.INTENT_WIDGET, widgetId);
         @SuppressLint("WrongConstant") PendingIntent pendingAddIntent = PendingIntent.getActivity(context, widgetId, intentAdd,
                 Intent.FLAG_ACTIVITY_NEW_TASK);
 
         Intent intentRecord = new Intent(context, NotesActivity.class);
-        intentCamera.setAction(Constants.ACTION_WIDGET_RECORD);
-        intentCamera.putExtra(Constants.INTENT_WIDGET, widgetId);
+        intentRecord.setAction(Constants.ACTION_WIDGET_RECORD);
+        intentRecord.putExtra(Constants.INTENT_WIDGET, widgetId);
         @SuppressLint("WrongConstant") PendingIntent pendingRecordIntent = PendingIntent.getActivity(context, widgetId, intentRecord,
                 Intent.FLAG_ACTIVITY_NEW_TASK);
 

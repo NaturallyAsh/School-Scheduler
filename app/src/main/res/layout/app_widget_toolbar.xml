@@ -4,7 +4,7 @@
     android:id="@+id/appwidget_toolbar"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimaryDark">
 
     <ImageView
     android:id="@+id/widget_camera"
@@ -12,7 +12,7 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:background="@drawable/icon_selector"
-    android:src="@drawable/ic_photo_camera_white_18dp"
+    android:src="@drawable/ic_add_a_photo_whitevector_24dp"
     android:padding="10dp"/>
 
     <ImageView
@@ -20,7 +20,7 @@
     android:layout_width="0dp"
     android:layout_weight="1"
     android:layout_height="match_parent"
-    android:src="@drawable/ic_add_circle_white_18dp"
+    android:src="@drawable/ic_add_circle_whitevector_24dp"
     android:background="@drawable/icon_selector"
     android:padding="10dp"/>
 
@@ -30,7 +30,7 @@
     android:layout_weight="1"
     android:layout_height="match_parent"
     android:background="@drawable/icon_selector"
-    android:src="@drawable/ic_mic_white_18dp"
+    android:src="@drawable/ic_mic_whitevector_24dp"
     android:padding="10dp"/>
 
 </LinearLayout>

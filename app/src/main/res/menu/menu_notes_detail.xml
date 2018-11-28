@@ -5,19 +5,19 @@
     <item
         android:id="@+id/action_save"
         android:title="@string/save_string"
-        android:icon="@drawable/ic_done"
+        android:icon="@drawable/ic_done_whitevector_24dp"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/menu_attachment"
-        android:icon="@drawable/ic_attachment_white_24dp"
+        android:icon="@drawable/ic_attachment_whitevector_24dp"
         android:orderInCategory="100"
         android:title="@string/attachment_string"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share_whitevector_24dp"
         android:orderInCategory="200"
         android:title="@string/share_string"
         app:showAsAction="ifRoom"/>
@@ -28,7 +28,7 @@
         android:orderInCategory="300"
         android:title="@string/enable_checklist_string"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_checklist_off"
@@ -36,14 +36,14 @@
         android:orderInCategory="400"
         android:title="@string/disable_checklist_string"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_trash"
         android:orderInCategory="500"
         android:title="@string/trash_string"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_untrash"
@@ -51,6 +51,6 @@
         android:orderInCategory="600"
         android:title="@string/restore_trash_string"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
 </menu>
