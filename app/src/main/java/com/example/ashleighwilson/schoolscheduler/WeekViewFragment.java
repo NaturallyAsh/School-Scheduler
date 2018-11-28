@@ -100,6 +100,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate!");
+        setHasOptionsMenu(true);
         setRetainInstance(true);
 
         onAttachToParent(getParentFragment());
@@ -168,7 +169,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
-        setHasOptionsMenu(true);
 
         if (mWeekViewType == TYPE_MONTH_VIEW) {
             //calendarViewLayout.setVisibility(View.VISIBLE);

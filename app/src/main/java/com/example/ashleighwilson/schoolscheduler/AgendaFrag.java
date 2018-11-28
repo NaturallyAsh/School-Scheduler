@@ -44,6 +44,7 @@ public class AgendaFrag extends Fragment
     private AgendaAdapter agendaAdapter;
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
     private Context mContext = MySchedulerApp.getInstance();
+    private OverviewActivity mOverviewActivity;
 
     public AgendaFrag() {
         // Required empty public constructor
@@ -54,6 +55,7 @@ public class AgendaFrag extends Fragment
     {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate!");
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -62,8 +64,6 @@ public class AgendaFrag extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_agendas, container, false);
         Log.i(TAG, "onCreateView!");
-
-        setHasOptionsMenu(true);
 
         agendaFab = view.findViewById(R.id.fab_agenda);
         fabAll = view.findViewById(R.id.fab_all_agenda);
@@ -127,6 +127,13 @@ public class AgendaFrag extends Fragment
         helper.attachToRecyclerView(recyclerView);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mOverviewActivity = (OverviewActivity) getActivity();
+        //mOverviewActivity.getSupportActionBar();
     }
 
     public void agendaDbList()

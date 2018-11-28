@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -79,6 +80,10 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         Log.i(TAG, "isNotification: " + currentAgenda.ismNotification());
         holder.color.setBackgroundColor(currentAgenda.getmColor());
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
+        if (currentAgenda.getmInterval() == 0) {
+            holder.countdownDate.setText("OVERDUE!");
+            holder.countdownDate.setTextColor(Color.RED);
+        }
 
         holder.popMenu.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,6 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/AppTheme.Card.Margins"
+    card_view:cardElevation="4dp"
+    card_view:cardCornerRadius="3dp"
+    android:clipToPadding="false"
     android:id="@+id/cardView">
 
     <LinearLayout
@@ -35,7 +38,6 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:orientation="vertical"
-        android:layout_below="@id/subject_header"
         android:padding="8dp"
         android:elevation="8dp">
 

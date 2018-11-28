@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.DetailAssignmentAdapter;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
@@ -23,6 +22,7 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.example.ashleighwilson.schoolscheduler.views.SimpleDividerItemDecoration;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_sub_detail);
 
         final Toolbar toolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
@@ -70,6 +70,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         adapter = new DetailAssignmentAdapter(this, agendaList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
         loadAssignments();
 
@@ -108,9 +109,11 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         updateUI();
         boolean nameExists = false;
         for (AgendaModel agendaModel1 : agendaModelList) {
-            if (subModel.getmTitle().equals(agendaModel1.getClassName())) {
-                nameExists = true;
-                break;
+            if (subModel != null) {
+                if (subModel.getmTitle().equals(agendaModel1.getClassName())) {
+                    nameExists = true;
+                    break;
+                }
             }
         }
         Log.i(TAG, "name exists: " + nameExists);

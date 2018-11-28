@@ -9,6 +9,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -206,15 +207,25 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
     private void onSave()
     {
+        Log.i(TAG, "onSave called");
         AgendaModel model = new AgendaModel();
         String titleString = mAssignmentTitle.getText().toString().trim();
         String dueDate = mDueDate.getText().toString().trim();
 
-        model.setClassName(label);
-        model.setAgendaTitle(titleString);
-        model.setDueDate(dueDate);
-        model.setmColor(agendaColor);
-        dbHelper.addAgenda(model);
+        if (titleString.matches("") || dueDate.matches("")) {
+            Toast.makeText(this, "Please enter a title", Toast.LENGTH_SHORT).show();
+            //return;
+        } else {
+            model.setClassName(label);
+            model.setAgendaTitle(titleString);
+            model.setDueDate(dueDate);
+            model.setmColor(agendaColor);
+
+            dbHelper.addAgenda(model);
+            finish();
+        }
+
+
 
         if (mNotification.isChecked()) {
             controller.notificationTest3(titleString, dueDate);
@@ -238,7 +249,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         {
             case R.id.action_save:
                 onSave();
-                finish();
+                //finish();
                 return true;
             case R.id.action_delete:
                 showDeleteConfirmationDialog();

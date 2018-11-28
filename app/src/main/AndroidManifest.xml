@@ -14,7 +14,7 @@
     <application
         android:name=".MySchedulerApp"
         android:allowBackup="true"
-        android:icon="@drawable/ic_app"
+        android:icon="@mipmap/ic_alt_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -102,7 +102,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity" />
         </activity>
-
+        <activity
+            android:name=".AgendaDetailActivity"
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
         <receiver android:name=".data.NotificationReceiver" />
         <receiver android:name=".data.AlarmReceiver" />
         <receiver android:name=".AppWidget">
