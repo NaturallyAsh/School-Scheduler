@@ -93,7 +93,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity" />
         </activity>
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
         <activity
             android:name=".SubjectDetailsActivity"
             android:parentActivityName=".OverviewActivity"

@@ -195,6 +195,7 @@
     <orderEntry type="library" name="Gradle: joda-time:joda-time:2.9.1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test.espresso:espresso-core-3.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.android.databinding:adapters-3.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.ms-square:expandableTextView-0.1.4" level="project" />
     <orderEntry type="library" name="Gradle: com.wdullaer:materialdatetimepicker-3.6.3" level="project" />
     <orderEntry type="library" name="Gradle: org.mnode.ical4j:ical4j:1.0.6@jar" level="project" />

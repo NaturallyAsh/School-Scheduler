@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="checked_behavior">
+        <item>Keep position</item>
+        <item>Move to the end of the list</item>
+        <item>Move to the end of unchecked items</item>
+    </string-array>
+
+    <string-array name="checked_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+</resources>

@@ -91,7 +91,8 @@ public class DbHelper extends SQLiteOpenHelper
             NoteEntry.KEY_TITLE,
             NoteEntry.KEY_CONTENT,
             NoteEntry.KEY_REMINDER,
-            NoteEntry.KEY_RECURRENCE_RULE
+            NoteEntry.KEY_RECURRENCE_RULE,
+            NoteEntry.KEY_CHECKLIST
     };
 
     private static final String TAG = DbHelper.class.getSimpleName();
@@ -99,7 +100,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 59;
+    private static final int DATABASE_VERSION = 60;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -176,6 +177,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String KEY_CONTENT = "content";
         public final static String KEY_REMINDER = "alarm";
         public final static String KEY_RECURRENCE_RULE = "recurrence_rule";
+        public final static String KEY_CHECKLIST = "checklist";
     }
 
     String SQL_CREATE_NOTES_TABLE = "CREATE TABLE " + NoteEntry.TABLE_NAME +
@@ -186,7 +188,8 @@ public class DbHelper extends SQLiteOpenHelper
             + NoteEntry.KEY_TITLE + " TEXT, "
             + NoteEntry.KEY_CONTENT + " TEXT, "
             + NoteEntry.KEY_REMINDER + " TEXT, "
-            + NoteEntry.KEY_RECURRENCE_RULE + " TEXT);";
+            + NoteEntry.KEY_RECURRENCE_RULE + " TEXT, "
+            + NoteEntry.KEY_CHECKLIST + " TEXT);";
 
     public static final class AttachEntry implements BaseColumns
     {
@@ -585,6 +588,8 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(NoteEntry.KEY_CONTENT, note.getContent());
         values.put(NoteEntry.KEY_REMINDER, note.getAlarm());
         values.put(NoteEntry.KEY_RECURRENCE_RULE, note.getRecurrenceRule());
+        boolean checklist = note.isChecklist() != null ? note.isChecklist() : false;
+        values.put(NoteEntry.KEY_CHECKLIST, checklist);
 
         db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry.KEY_ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 
@@ -627,6 +632,7 @@ public class DbHelper extends SQLiteOpenHelper
                 note.setContent(cursor.getString(4));
                 note.setAlarm(cursor.getString(5));
                 note.setRecurrenceRule(cursor.getString(6));
+                //note.setChecklist("1".equals(cursor.getString(7)));
 
                 note.setAttachmentsList(getNoteAttachment(note));
 
@@ -666,6 +672,7 @@ public class DbHelper extends SQLiteOpenHelper
                 note.setContent(cursor.getString(i++));
                 note.setAlarm(cursor.getString(i++));
                 note.setRecurrenceRule(cursor.getString(i++));
+                //note.setChecklist("1".equals(cursor.getString(i++)));
                 list.add(note);
 
                 note.setAttachmentsList(getNoteAttachment(note));
@@ -719,6 +726,12 @@ public class DbHelper extends SQLiteOpenHelper
 
         result = result && deletedNotes == 1;
         return result;
+    }
+
+    public List<Note> getChecklists() {
+        String whereCondition = " WHERE " + NoteEntry.KEY_CHECKLIST + " = 1";
+
+        return null;
     }
 
 

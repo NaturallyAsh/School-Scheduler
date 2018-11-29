@@ -230,6 +230,7 @@ public class NoteListFragment extends Fragment
             String content = cursor.getString(4);
             String alarm = cursor.getString(5);
             String rule = cursor.getString(6);
+            //Integer checklist = (cursor.getInt(7));
 
             Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
@@ -240,7 +241,7 @@ public class NoteListFragment extends Fragment
 
         updateUI();
 
-        NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
+        //NoteLoaderTask.getInstance().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "getEveryNote");
 
     }
 

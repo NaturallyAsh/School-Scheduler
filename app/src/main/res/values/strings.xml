@@ -134,5 +134,15 @@
     <string name="add_widget">Add widget</string>
     <string name="assignment_string">Assignment</string>
     <string name="title_string">Title</string>
+    <string name="keep_checked_items_string">Keep checked items</string>
+    <string name="keep_check_marks_string">Keep check marks</string>
+    <string name="checklist_item_hint">New item</string>
 
+    <!--Settings -->
+    <string name="settings">Settings</string>
+    <string name="settings_screen_user">User Settings</string>
+    <string name="settings_screen_general">General Settings</string>
+    <string name="settings_screen_notifications">Notifications Settings</string>
+    <string name="settings_screen_notes">Note Settings</string>
+    <string name="settings_checklist">Checklist Settings</string>
 </resources>

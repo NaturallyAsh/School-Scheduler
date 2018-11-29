@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.ViewStub;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,6 +67,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -72,10 +76,15 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import it.feio.android.checklistview.Settings;
+import it.feio.android.checklistview.exceptions.ViewNotSupportedException;
+import it.feio.android.checklistview.interfaces.CheckListChangedListener;
+import it.feio.android.checklistview.models.ChecklistManager;
+import it.feio.android.checklistview.utils.AlphaManager;
 
 public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         OnReminderPickedListener, View.OnTouchListener, View.OnClickListener,
-        OnAttachingFileListener, View.OnLongClickListener {
+        OnAttachingFileListener, View.OnLongClickListener, CheckListChangedListener {
 
     private static final String TAG = NotesDetailFragment.class.getSimpleName();
 
@@ -143,6 +152,10 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private AttachmentAdapter mAttachmentAdapter;
     private RecordDialog recordDialog;
     private boolean mHasChanged = false;
+    private ChecklistManager mChecklistManager;
+    private View toggleChecklistview;
+    private int contentLineCounter = 1;
+    private SharedPreferences prefs;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -219,10 +232,22 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         Log.i(TAG, "pause");
         activityPausing = true;
 
-        /*if (!goBack)
-        {
-            saveNote(this);
-        }*/
+        if (toggleChecklistview != null) {
+            hideKeyboard(toggleChecklistview);
+            detailContent.clearFocus();
+        }
+    }
+
+    public static void hideKeyboard(View view) {
+        if (view == null) {
+            return;
+        }
+        InputMethodManager im = (InputMethodManager) view.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (!im.isActive()) {
+            return;
+        }
+        im.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -252,6 +277,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
         mNotesActivity = (NotesActivity) getActivity();
         dbHelper = DbHelper.getInstance();
+        prefs = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
 
         //mNotesActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         //mNotesActivity.getToolbar().setNavigationOnClickListener(v -> navigateUp());
@@ -575,6 +601,14 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     private void initViewContent()
     {
         detailContent.setText(noteTmp.getContent());
+
+        toggleChecklistview = detailContent;
+        Log.i(TAG, "note ischecklist?: " + noteTmp.isChecklist());
+        if (noteTmp.isChecklist()) {
+            noteTmp.setChecklist(false);
+            AlphaManager.setAlpha(toggleChecklistview, 0);
+            toggleChecklist();
+        }
     }
 
     private void showUnchangedDialog(DialogInterface.OnClickListener disgardClickListener) {
@@ -601,6 +635,13 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+        menu.findItem(R.id.menu_checklist_on).setVisible(!noteTmp.isChecklist());
+        menu.findItem(R.id.menu_checklist_off).setVisible(noteTmp.isChecklist());
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         switch (item.getItemId())
@@ -615,8 +656,11 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 shareNote();
                 break;
             case R.id.menu_checklist_on:
+                toggleChecklist();
+                Log.i(TAG, "toggle check menu on");
                 break;
             case R.id.menu_checklist_off:
+                toggleChecklist();
                 break;
             case R.id.menu_trash:
                 break;
@@ -781,11 +825,18 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     private String getNoteContent()
     {
-        if (detailContent != null && !TextUtils.isEmpty(detailContent.getText())) {
-            return detailContent.getText().toString();
+        String contentText = "";
+        if (!noteTmp.isChecklist()) {
+            if (detailContent != null && !TextUtils.isEmpty(detailContent.getText())) {
+                contentText = detailContent.getText().toString();
+            }
         } else {
-            return "";
+            if (mChecklistManager != null) {
+                mChecklistManager.keepChecked(true).showCheckMarks(true);
+                contentText = mChecklistManager.getText();
+            }
         }
+        return contentText;
     }
 
     @Override
@@ -921,6 +972,25 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
     }
 
+    @Override
+    public void onCheckListChanged() {
+        scrollContent();
+    }
+
+    private void scrollContent() {
+        if (noteTmp.isChecklist()) {
+            if (mChecklistManager.getCount() > contentLineCounter) {
+                scrollView.scrollBy(0, 60);
+            }
+            contentLineCounter = mChecklistManager.getCount();
+        } else {
+            if (detailContent.getLineCount() > contentLineCounter) {
+                scrollView.scrollBy(0, 60);
+            }
+            contentLineCounter = detailContent.getLineCount();
+        }
+    }
+
     public class AttachmentOnClickListener implements View.OnClickListener
     {
         @Override
@@ -1020,5 +1090,76 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         mAttachmentAdapter = new AttachmentAdapter(mNotesActivity, new ArrayList<>(), mGridView);
         mGridView.invalidateViews();
         mGridView.setAdapter(mAttachmentAdapter);
+    }
+
+    private void toggleChecklist() {
+        if (!noteTmp.isChecklist()) {
+            toggleChecklist2();
+            return;
+        }
+
+        if (mChecklistManager.getCheckedCount() == 0) {
+            toggleChecklist2(true, false);
+            return;
+        }
+
+        LayoutInflater inflater = (LayoutInflater) mNotesActivity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View layout = inflater.inflate(R.layout.dialog_remove_checklist_layout,
+            (ViewGroup) getView().findViewById(R.id.layout_root));
+
+        final CheckBox keepChecked = layout.findViewById(R.id.checklist_keep_checked);
+        final CheckBox keepCheckmarks = layout.findViewById(R.id.checklist_keep_checkmarks);
+        keepChecked.setChecked(prefs.getBoolean(Constants.PREF_KEEP_CHECKED, true));
+        keepCheckmarks.setChecked(prefs.getBoolean(Constants.PREF_KEEP_CHECKMARKS, true));
+
+        new MaterialDialog.Builder(mNotesActivity)
+                .customView(layout, false)
+                .positiveText(R.string.ok)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog materialDialog) {
+                        prefs.edit()
+                                .putBoolean(Constants.PREF_KEEP_CHECKED, keepChecked.isChecked())
+                                .putBoolean(Constants.PREF_KEEP_CHECKMARKS, keepCheckmarks.isChecked())
+                                .apply();
+                        toggleChecklist2();
+                    }
+                }).build().show();
+        //toggleChecklist2();
+    }
+
+    private void toggleChecklist2() {
+        boolean keepChecked = prefs.getBoolean(Constants.PREF_KEEP_CHECKED, true);
+        boolean showChecks = prefs.getBoolean(Constants.PREF_KEEP_CHECKMARKS, true);
+        toggleChecklist2(keepChecked, showChecks);
+    }
+
+    private void toggleChecklist2(final boolean keepChecked, final boolean showChecks) {
+
+        mChecklistManager = mChecklistManager == null ? new ChecklistManager(mNotesActivity) : mChecklistManager;
+        int checkedItemsBehavior = Integer.valueOf(prefs.getString("settings_checked_behavior",
+                String.valueOf(Settings.CHECKED_HOLD)));
+        mChecklistManager
+                .showCheckMarks(showChecks)
+                .newEntryHint(getString(R.string.checklist_item_hint))
+                .keepChecked(keepChecked)
+                .undoBarContainerView(scrollView)
+                .moveCheckedOnBottom(checkedItemsBehavior);
+
+        mChecklistManager.setCheckListChangedListener(mNotesDetailFragment);
+
+        View newView = null;
+        try {
+            newView = mChecklistManager.convert(toggleChecklistview);
+        }catch (ViewNotSupportedException e) {
+            Log.i(TAG, "Error switching checlist view", e);
+        }
+
+        if (newView != null) {
+            mChecklistManager.replaceViews(toggleChecklistview, newView);
+            toggleChecklistview = newView;
+            animate(toggleChecklistview).alpha(1).scaleXBy(0).scaleX(1).scaleYBy(0).scaleY(1);
+            noteTmp.setChecklist(!noteTmp.isChecklist());
+        }
     }
 }

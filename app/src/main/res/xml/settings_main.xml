@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fitsSystemWindows="true">
+
+    <PreferenceScreen
+        android:key="settings_general"
+        android:title="@string/settings_screen_general"/>
+
+    <PreferenceScreen
+        android:key="settings_user"
+        android:title="@string/settings_screen_user"/>
+
+    <PreferenceScreen
+        android:key="settings_note"
+        android:title="@string/settings_screen_notes"/>
+
+    <PreferenceScreen
+        android:key="settings_notifications"
+        android:title="@string/settings_screen_notifications"/>
+
+</PreferenceScreen>
