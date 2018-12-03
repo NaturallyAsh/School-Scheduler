@@ -38,7 +38,6 @@ public class NotificationController
     private AlarmManager alarmManager;
     private ArrayList<PendingIntent> list;
     private AgendaModel model;
-    public static final String CHANNEL_ID = "channel_id";
     public static final int NOTE_ID = 0;
 
     public NotificationController(Context context)
@@ -107,9 +106,10 @@ public class NotificationController
         Calendar curr = Calendar.getInstance();
         if (futureDay.after(curr))
         {
-            long timeToNotify = futureDay.getTimeInMillis() - 1000 * 60 * 5;
+            long timeToNotify = futureDay.getTimeInMillis() - 86500000;
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
             notifyEvent.putExtra("title", title);
+            notifyEvent.putExtra("dueDate", date);
             final int id = (int) System.currentTimeMillis();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
             //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
@@ -119,9 +119,9 @@ public class NotificationController
             alrmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeToNotify, AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, CHANNEL_ID)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
                     .setContentTitle(title)
-                    .setContentText("DUE: " + date).setSound(alarmSound)
+                    .setContentText("Alarm Set: " + date).setSound(alarmSound)
                     .setSmallIcon(R.drawable.notification_important_black_18dp)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);

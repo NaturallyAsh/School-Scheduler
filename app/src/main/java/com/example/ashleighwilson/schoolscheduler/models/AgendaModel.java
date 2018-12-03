@@ -26,6 +26,7 @@ public class AgendaModel implements Parcelable
     private boolean mBefore;
     private long mInterval;
     private boolean mNotification;
+    private Calendar timeToNotify;
     private ArrayList<AgendaModel> allList = new ArrayList<>();
     private NotificationController controller = new NotificationController(mContext);
 
@@ -114,6 +115,14 @@ public class AgendaModel implements Parcelable
     public void setmNotification(boolean notification)
     {
         this.mNotification = notification;
+    }
+
+    public Calendar getTimeToNotify() {
+        return timeToNotify;
+    }
+
+    public void setTimeToNotify(Calendar timeToNotify) {
+        this.timeToNotify = timeToNotify;
     }
 
     public long getmInterval() {

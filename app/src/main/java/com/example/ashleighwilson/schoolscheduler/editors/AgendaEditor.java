@@ -5,12 +5,14 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,15 +27,21 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
+import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
+import com.example.ashleighwilson.schoolscheduler.views.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +51,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String TAG = AgendaEditor.class.getSimpleName();
 
     private EditText mAssignmentTitle;
-    private TextView mDueDate, viewColor;
+    private TextView mDueDate, viewColor, mNotificationTv;
     private Switch mNotification;
     private String label;
     private Spinner mClassName;
@@ -56,8 +64,14 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     NotificationController controller;
     private AgendaAdapter agendaAdapter;
     private AgendaModel model;
+    private AgendaModel itemModel;
     private ArrayAdapter<String> dataAdapter;
     private List<String> labels;
+    private String titleString, dueDate;
+    private SelectedDate mSelectedDate;
+    private int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
+    private String mRecurrenceOption, mRecurrenceRule;
+    private Calendar calendar;
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -65,6 +79,36 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mSubjectHasChanged = true;
             return false;
+        }
+    };
+    private RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
+        @Override
+        public void onCancelled() {
+            if (mCallback != null) {
+                mCallback.onCancelled();
+            }
+        }
+
+        @Override
+        public void onDateTimeRecurrenceSet(SelectedDate selectedDate, int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption, String recurrenceRule) {
+
+            mSelectedDate = selectedDate;
+            mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
+            mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
+            mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
+
+            mHour = hourOfDay;
+            mMinute = minute;
+            mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
+            mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
+
+
+            calendar = Calendar.getInstance();
+            calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
+
+            mNotificationTv.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
+
+            //model.setTimeToNotify(calendar);
         }
     };
 
@@ -86,6 +130,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         mDueDate = findViewById(R.id.agenda_due_date_text);
         viewColor = findViewById(R.id.agenda_view_color);
         mNotification = findViewById(R.id.notification_switch);
+        mNotificationTv = findViewById(R.id.notification_tv);
 
         mAssignmentTitle.setOnTouchListener(mTouchListener);
         mClassName.setOnItemSelectedListener(this);
@@ -93,24 +138,23 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
         loadSpinnerData();
 
-
-        Bundle intent = getIntent().getExtras();
-        if (intent != null) {
-            String title = intent.getString(AgendaAdapter.ARG_TITLE);
-            String name = intent.getString(AgendaAdapter.ARG_CLASSNAME);
-            String due = intent.getString(AgendaAdapter.ARG_DATE);
-            int color = intent.getInt(AgendaAdapter.ARG_COLOR);
-
-            mAssignmentTitle.setText(title);
-            mDueDate.setText(due);
-            viewColor.setBackgroundColor(color);
-            mClassName.setSelection(labels.indexOf(name));
-        }
-
-
         Button colorSelector = findViewById(R.id.agenda_create_color);
         agendaColor = getMatColor("200");
         viewColor.setBackgroundColor(agendaColor);
+
+        itemModel = getIntent().getParcelableExtra(AgendaAdapter.AGENDA_ARG);
+        //Bundle intent = getIntent().getExtras();
+        if (itemModel != null) {
+            /*String title = intent.getString(AgendaAdapter.ARG_TITLE);
+            String name = intent.getString(AgendaAdapter.ARG_CLASSNAME);
+            String due = intent.getString(AgendaAdapter.ARG_DATE);
+            int color = intent.getInt(AgendaAdapter.ARG_COLOR);*/
+
+            mAssignmentTitle.setText(itemModel.getAgendaTitle());
+            mDueDate.setText(itemModel.getDueDate());
+            viewColor.setBackgroundColor(itemModel.getmColor());
+            mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
+        }
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,6 +212,32 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             Log.i(TAG, "switch: " + isChecked);
             model.setmNotification(mNotification.isChecked());
         }
+        RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
+        recurrenceDialog.setCallback(mCallback);
+
+        Pair<Boolean, SublimeOptions> optionsPair = getOptions();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
+        recurrenceDialog.setArguments(bundle);
+
+        recurrenceDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+        recurrenceDialog.show(getSupportFragmentManager(), "sublime");
+
+    }
+
+    public Pair<Boolean, SublimeOptions> getOptions()
+    {
+        SublimeOptions options = new SublimeOptions();
+        int displayOptions = 0;
+
+        displayOptions = SublimeOptions.ACTIVATE_DATE_PICKER + SublimeOptions.ACTIVATE_TIME_PICKER +
+                SublimeOptions.ACTIVATE_RECURRENCE_PICKER;
+
+        options.setDisplayOptions(displayOptions);
+
+        return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);
+
     }
 
     private int getMatColor(String typeColor) {
@@ -208,18 +278,26 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private void onSave()
     {
         Log.i(TAG, "onSave called");
-        AgendaModel model = new AgendaModel();
-        String titleString = mAssignmentTitle.getText().toString().trim();
-        String dueDate = mDueDate.getText().toString().trim();
+        model = new AgendaModel();
+        titleString = mAssignmentTitle.getText().toString().trim();
+        dueDate = mDueDate.getText().toString().trim();
 
         if (titleString.matches("") || dueDate.matches("")) {
             Toast.makeText(this, "Please enter a title", Toast.LENGTH_SHORT).show();
             //return;
         } else {
+            if (itemModel != null) {
+                model.setmId(itemModel.getmId());
+            }
             model.setClassName(label);
             model.setAgendaTitle(titleString);
             model.setDueDate(dueDate);
-            model.setmColor(agendaColor);
+            if (itemModel != null) {
+                model.setmColor(itemModel.getmColor());
+            } else {
+                model.setmColor(agendaColor);
+            }
+            model.setTimeToNotify(calendar);
 
             dbHelper.addAgenda(model);
             finish();

@@ -499,12 +499,15 @@ public class DbHelper extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        if (model.getmId() != 0) {
+            values.put(SchoolEntry._ID, model.getmId());
+        }
         values.put(AgendaEntry.COLUMN_NAME, model.getClassName());
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
 
-        long id = db.insert(AgendaEntry.TABLE_NAME, null, values);
+        long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 
         return id;

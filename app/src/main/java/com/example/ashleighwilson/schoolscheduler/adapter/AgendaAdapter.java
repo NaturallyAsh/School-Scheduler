@@ -40,6 +40,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     private List<AgendaModel> agendaData;
     private DbHelper dbHelper;
     AgendaMenuClickListener menuClickListener;
+    public static final String ARG_ID = "ID";
     public static final String ARG_TITLE = "TITLE";
     public static final String ARG_CLASSNAME = "CLASS_NAME";
     public static final String ARG_COLOR = "COLOR";
@@ -143,11 +144,14 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
                         due.setText(R.string.finished_string);
                         return true;
                     case R.id.menu_edit:
-                        Intent intent = new Intent(mContext, AgendaEditor.class);
+                        /*Intent intent = new Intent(mContext, AgendaEditor.class);
                         intent.putExtra(ARG_TITLE, model.getAgendaTitle());
                         intent.putExtra(ARG_CLASSNAME, model.getClassName());
                         intent.putExtra(ARG_DATE, model.getDueDate());
                         intent.putExtra(ARG_COLOR, model.getmColor());
+                        mContext.startActivity(intent);*/
+                        Intent intent = new Intent(mContext, AgendaEditor.class);
+                        intent.putExtra(AGENDA_ARG, model);
                         mContext.startActivity(intent);
                         return true;
                     case R.id.menu_not_complete:
