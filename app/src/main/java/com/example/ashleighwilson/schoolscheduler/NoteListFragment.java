@@ -234,6 +234,8 @@ public class NoteListFragment extends Fragment
 
             Note note = new Note(id, creation, lastMod, title, content, alarm, rule);
             note.setAttachmentsList(dbHelper.getNoteAttachment(note));
+            note.setChecklist("1".equals(cursor.getString(7)));
+
 
             selectedNotes.add(note);
 

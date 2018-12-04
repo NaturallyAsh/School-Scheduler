@@ -593,6 +593,7 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(NoteEntry.KEY_RECURRENCE_RULE, note.getRecurrenceRule());
         boolean checklist = note.isChecklist() != null ? note.isChecklist() : false;
         values.put(NoteEntry.KEY_CHECKLIST, checklist);
+        Log.i(TAG, "checklist: " + checklist);
 
         db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry.KEY_ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 
