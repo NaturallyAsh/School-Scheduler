@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler;
+package com.example.ashleighwilson.schoolscheduler.widget;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.example.ashleighwilson.schoolscheduler.NotesActivity;
+import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 
 /**

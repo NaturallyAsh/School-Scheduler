@@ -2,6 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.views;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +49,6 @@ public class RecurrenceDialog extends DialogFragment
             mMinute = minute;
             mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
             mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
-
-            //Log.i(TAG, "selected date: " + selectedDate + " hour: " + hourOfDay + " minute: " +
-              //      minute + " recurrence rule: " + recurrenceRule);
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);

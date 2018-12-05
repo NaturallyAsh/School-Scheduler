@@ -81,7 +81,10 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_NAME,
             AgendaEntry.COLUMN_TITLE,
             AgendaEntry.COLUMN_DUEDATE,
-            AgendaEntry.COLUMN_COLOR
+            AgendaEntry.COLUMN_COLOR,
+            AgendaEntry.COLUMN_NOTIFICATION,
+            AgendaEntry.COLUMN_RECURRENCE_OPTION,
+            AgendaEntry.COLUMN_RECURRENCE_RULE
     };
 
     String[] noteColumns = new String[] {
@@ -100,7 +103,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 60;
+    private static final int DATABASE_VERSION = 64;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -235,6 +238,9 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_DUEDATE = "date";
         public final static String COLUMN_COLOR = "color";
+        public final static String COLUMN_NOTIFICATION = "notification";
+        public final static String COLUMN_RECURRENCE_OPTION = "recurrence_option";
+        public final static String COLUMN_RECURRENCE_RULE = "recurrence_rule";
     }
 
     String SQL_CREATE_AGENDA_TABLE = "CREATE TABLE " + AgendaEntry.TABLE_NAME +
@@ -243,7 +249,10 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_NAME + " TEXT, "
             + AgendaEntry.COLUMN_TITLE + " TEXT, "
             + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
-            + AgendaEntry.COLUMN_COLOR + " INTEGER);";
+            + AgendaEntry.COLUMN_COLOR + " INTEGER, "
+            + AgendaEntry.COLUMN_NOTIFICATION + " INTEGER, "
+            + AgendaEntry.COLUMN_RECURRENCE_OPTION + " TEXT, "
+            + AgendaEntry.COLUMN_RECURRENCE_RULE + " TEXT);";
 
 
     @Override
@@ -506,6 +515,9 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
+        values.put(AgendaEntry.COLUMN_NOTIFICATION, model.ismNotification());
+        values.put(AgendaEntry.COLUMN_RECURRENCE_OPTION, model.getmRecurrenceOption());
+        values.put(AgendaEntry.COLUMN_RECURRENCE_RULE, model.getmRecurrenceRule());
 
         long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
@@ -559,6 +571,7 @@ public class DbHelper extends SQLiteOpenHelper
             model.setAgendaTitle(cursor.getString(2));
             model.setDueDate(cursor.getString(3));
             model.setmColor(cursor.getInt(4));
+            model.setmNotification(cursor.getInt(5));
 
             cursor.close();
             return model;
@@ -593,7 +606,6 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(NoteEntry.KEY_RECURRENCE_RULE, note.getRecurrenceRule());
         boolean checklist = note.isChecklist() != null ? note.isChecklist() : false;
         values.put(NoteEntry.KEY_CHECKLIST, checklist);
-        Log.i(TAG, "checklist: " + checklist);
 
         db.insertWithOnConflict(NoteEntry.TABLE_NAME, NoteEntry.KEY_ID, values, SQLiteDatabase.CONFLICT_REPLACE);
 

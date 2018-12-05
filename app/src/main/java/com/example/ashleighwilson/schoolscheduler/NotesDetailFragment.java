@@ -192,6 +192,7 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
 
             dateTime.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
             reminderIcon.setImageResource(R.drawable.ic_alarm_black_18dp);
+            Log.i(TAG, "recurrence: " + mRecurrenceRule);
 
             noteTmp.setAlarm(calendar.getTimeInMillis());
         }
@@ -603,7 +604,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
         detailContent.setText(noteTmp.getContent());
 
         toggleChecklistview = detailContent;
-        Log.i(TAG, "note ischecklist?: " + noteTmp.isChecklist());
         if (noteTmp.isChecklist()) {
             noteTmp.setChecklist(false);
             AlphaManager.setAlpha(toggleChecklistview, 0);
@@ -657,7 +657,6 @@ public class NotesDetailFragment extends Fragment implements OnNoteSaved,
                 break;
             case R.id.menu_checklist_on:
                 toggleChecklist();
-                Log.i(TAG, "toggle check menu on");
                 break;
             case R.id.menu_checklist_off:
                 toggleChecklist();

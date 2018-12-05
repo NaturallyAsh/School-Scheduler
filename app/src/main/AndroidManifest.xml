@@ -120,7 +120,7 @@
         </activity>
         <receiver android:name=".data.NotificationReceiver" />
         <receiver android:name=".data.AlarmReceiver" />
-        <receiver android:name=".AppWidget">
+        <receiver android:name=".widget.AppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

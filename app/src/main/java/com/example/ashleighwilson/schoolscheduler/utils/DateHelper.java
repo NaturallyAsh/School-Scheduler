@@ -90,7 +90,8 @@ public class DateHelper
         try {
             rule.setValue(recurrenceRule);
             DateTime seed = new DateTime(reminder);
-            long startTimestamp = reminder + 60 * 1000;
+            //long startTimestamp = reminder + 60 * 1000;
+            long startTimestamp = reminder;
             if (startTimestamp < currentTime) {
                 startTimestamp = currentTime;
             }

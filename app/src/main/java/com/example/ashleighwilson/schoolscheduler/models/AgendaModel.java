@@ -26,17 +26,20 @@ public class AgendaModel implements Parcelable
     private boolean mBefore;
     private long mInterval;
     private boolean mNotification;
+    private String mRecurrenceOption;
+    private String mRecurrenceRule;
     private Calendar timeToNotify;
     private ArrayList<AgendaModel> allList = new ArrayList<>();
     private NotificationController controller = new NotificationController(mContext);
 
-    public AgendaModel(int id, String name, String title, String date, int color)
+    public AgendaModel(int id, String name, String title, String date, int color, int notification)
     {
         this.mId = id;
         this.mClassName = name;
         this.mAgendaTitle = title;
         this.mColor = color;
         this.mDueDate = date;
+        this.mNotification = notification == 1;
     }
 
     public AgendaModel() {
@@ -49,6 +52,7 @@ public class AgendaModel implements Parcelable
         mAgendaTitle = in.readString();
         mColor = in.readInt();
         mDueDate = in.readString();
+        setmNotification(in.readInt());
     }
 
     public int getmId()
@@ -96,6 +100,22 @@ public class AgendaModel implements Parcelable
         return mDueDate;
     }
 
+    public String getmRecurrenceOption() {
+        return mRecurrenceOption;
+    }
+
+    public void setmRecurrenceOption(String mRecurrence) {
+        this.mRecurrenceOption = mRecurrence;
+    }
+
+    public String getmRecurrenceRule() {
+        return mRecurrenceRule;
+    }
+
+    public void setmRecurrenceRule(String recurrenceRule) {
+        this.mRecurrenceRule = recurrenceRule;
+    }
+
     public void setDueDate(String date)
     {
         this.mDueDate = date;
@@ -115,6 +135,10 @@ public class AgendaModel implements Parcelable
     public void setmNotification(boolean notification)
     {
         this.mNotification = notification;
+    }
+
+    public void setmNotification(int notification) {
+        this.mNotification = notification == 1;
     }
 
     public Calendar getTimeToNotify() {

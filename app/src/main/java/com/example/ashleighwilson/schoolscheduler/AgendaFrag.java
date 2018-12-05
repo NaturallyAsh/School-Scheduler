@@ -147,8 +147,10 @@ public class AgendaFrag extends Fragment
             String title = cursor.getString(2);
             String dueDate = cursor.getString(3);
             int color = cursor.getInt(4);
+            int notification = cursor.getInt(5);
 
-            AgendaModel model = new AgendaModel(id, name, title, dueDate, color);
+            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, notification);
+            model.setmNotification(cursor.getInt(5));
 
             agendaList.add(model);
         }

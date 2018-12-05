@@ -154,6 +154,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
             mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
+            mNotification.setChecked(itemModel.ismNotification());
+            Log.i(TAG, "item notify: " + itemModel.ismNotification());
         }
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
@@ -209,8 +211,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         if(isChecked)
         {
             mNotification.setChecked(true);
-            Log.i(TAG, "switch: " + isChecked);
-            model.setmNotification(mNotification.isChecked());
+            //model.setmNotification(mNotification.isChecked());
         }
         RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
         recurrenceDialog.setCallback(mCallback);
@@ -277,7 +278,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
     private void onSave()
     {
-        Log.i(TAG, "onSave called");
         model = new AgendaModel();
         titleString = mAssignmentTitle.getText().toString().trim();
         dueDate = mDueDate.getText().toString().trim();
@@ -297,18 +297,21 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             } else {
                 model.setmColor(agendaColor);
             }
+            model.setmRecurrenceOption(mRecurrenceOption);
+            model.setmRecurrenceRule(mRecurrenceRule);
+            Log.i(TAG, "recurrence rule:" + mRecurrenceRule);
             model.setTimeToNotify(calendar);
+            if (mNotification.isChecked()) {
+                model.setmNotification(mNotification.isChecked());
+
+                controller.notificationTest3(model);
+                Log.i(TAG, "check notification: " + controller.checkNotification(this));
+            }
 
             dbHelper.addAgenda(model);
             finish();
         }
 
-
-
-        if (mNotification.isChecked()) {
-            controller.notificationTest3(titleString, dueDate);
-
-        }
         Toast.makeText(this, "Agenda saved", Toast.LENGTH_SHORT).show();
     }
 

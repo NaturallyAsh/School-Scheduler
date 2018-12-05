@@ -37,8 +37,9 @@ public class NotificationController
     private Context mContext;
     private AlarmManager alarmManager;
     private ArrayList<PendingIntent> list;
-    private AgendaModel model;
-    public static final int NOTE_ID = 0;
+    private AgendaModel agendaModel;
+    public static final String ARG_ITEM = "agenda_item";
+    public static int id;
 
     public NotificationController(Context context)
     {
@@ -87,13 +88,15 @@ public class NotificationController
         return longCode.intValue();
     }
 
-    public void notificationTest3(String title, String date)
+    public void notificationTest3(AgendaModel model)
     {
-        AgendaModel model = new AgendaModel();
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        String dueDate = date;
+        this.agendaModel = model;
+        //Log.i(TAG, "recurrence: " + agendaModel.getmRecurrence());
+
+        String dueDate = agendaModel.getDueDate();
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
         try {
@@ -106,22 +109,24 @@ public class NotificationController
         Calendar curr = Calendar.getInstance();
         if (futureDay.after(curr))
         {
-            long timeToNotify = futureDay.getTimeInMillis() - 86500000;
+            //long timeToNotify = futureDay.getTimeInMillis() - 86500000;
+            long reminder = futureDay.getTimeInMillis();
+            long timeToNotify = setNextRecurrence(agendaModel.getmRecurrenceOption(),
+                    agendaModel.getmRecurrenceRule(), reminder);
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
-            notifyEvent.putExtra("title", title);
-            notifyEvent.putExtra("dueDate", date);
-            final int id = (int) System.currentTimeMillis();
+            notifyEvent.putExtra(ARG_ITEM, agendaModel);
+            id = (int) System.currentTimeMillis();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
             //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
               //      PendingIntent.FLAG_CANCEL_CURRENT);
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
-            alrmManager.setRepeating(AlarmManager.RTC_WAKEUP, timeToNotify, AlarmManager.INTERVAL_DAY, pendingIntent);
+            alrmManager.set(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
 
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText("Alarm Set: " + date).setSound(alarmSound)
+                    .setContentTitle(agendaModel.getAgendaTitle())
+                    .setContentText("Alarm Set: " + dueDate).setSound(alarmSound)
                     .setSmallIcon(R.drawable.notification_important_black_18dp)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);
@@ -130,6 +135,11 @@ public class NotificationController
             notificationManager.notify(id, notification.build());
 
         }
+    }
+
+    public boolean checkNotification(Context context) {
+        return PendingIntent.getBroadcast(context, id, new Intent(context,
+                NotificationReceiver.class), PendingIntent.FLAG_NO_CREATE) != null;
     }
 
     public static void removeReminder(Context context, Note note) {
@@ -151,5 +161,29 @@ public class NotificationController
                                 reminder), Toast.LENGTH_LONG).show());
             }
         }
+    }
+
+    public long setNextRecurrence(String recurrenceOption, String recurrenceRule, long reminder) {
+        long timeToNotify = 0;
+
+        switch (recurrenceOption) {
+            case "DAILY":
+                timeToNotify = 86500000;
+                Log.i(TAG, "daily set");
+                break;
+            case "WEEKLY":
+                timeToNotify = 86500000 * 7;
+                Log.i(TAG, "weekly set");
+                break;
+            case "CUSTOM":
+                if (recurrenceRule != null || !(recurrenceRule.equals("n/a"))) {
+                    timeToNotify = DateHelper.nextReminderFromRecurrenceRule(reminder,
+                            recurrenceRule);
+                }
+                Log.i(TAG, "custom set");
+                break;
+        }
+        Log.i(TAG, "time to notify: " + timeToNotify);
+        return timeToNotify;
     }
 }
