@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.widget;
+package com.example.ashleighwilson.schoolscheduler;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
