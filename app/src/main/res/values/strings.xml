@@ -145,4 +145,5 @@
     <string name="settings_screen_notifications">Notifications Settings</string>
     <string name="settings_screen_notes">Note Settings</string>
     <string name="settings_checklist">Checklist Settings</string>
+    <string name="days_of_the_week_string">Days of The Week</string>
 </resources>

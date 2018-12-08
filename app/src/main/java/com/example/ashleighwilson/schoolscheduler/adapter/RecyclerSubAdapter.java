@@ -73,6 +73,18 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.color.setBackgroundColor(currentSubject.getmColor());
         holder.startTime.setText(currentSubject.getmStartTime());
         holder.endTime.setText(currentSubject.getmEndTime());
+        if (currentSubject.getmRecurrence_option() != null) {
+            if (!currentSubject.getmRecurrence_option().equals("CUSTOM")) {
+                Log.i(TAG, "option: " + currentSubject.getmRecurrence_option());
+                holder.recurrenceTv.setText(currentSubject.getmRecurrence_option());
+            }
+        } else {
+            if (currentSubject.getmRecurrence_rule() != null) {
+                holder.recurrenceTv.setText(currentSubject.getmRecurrence_rule());
+                Log.i(TAG, "rule: " + currentSubject.getmRecurrence_rule());
+            }
+            holder.recurrenceTv.setText("n/a");
+        }
 
         boolean isSelected = position == selectedItem;
         holder.container.setSelected(isSelected);
@@ -98,6 +110,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         TextView color;
         TextView startTime;
         TextView endTime;
+        TextView recurrenceTv;
         View itemView;
         LinearLayout container;
         ExpandableLayout layout;
@@ -111,6 +124,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             color = itemView.findViewById(R.id.color_item);
             startTime = itemView.findViewById(R.id.start_time_item);
             endTime = itemView.findViewById(R.id.end_time_item);
+            recurrenceTv = itemView.findViewById(R.id.recurrenceTv);
             layout = itemView.findViewById(R.id.expandable_layout);
             container = itemView.findViewById(R.id.cardContainer);
             container.setOnClickListener(this);
@@ -186,20 +200,6 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         notifyItemRangeChanged(0, data.size());
-    }
-
-    private void passData(String title, String teacher, String room, int color, String start, String end)
-    {
-        Intent intent = new Intent(context, SubjectDetailsActivity.class);
-        //intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_TITLE, title);
-        intent.putExtra(EXTRA_TEACHER, teacher);
-        intent.putExtra(EXTRA_ROOM, room);
-        intent.putExtra(EXTRA_COLOR, color);
-        intent.putExtra(EXTRA_START, start);
-        intent.putExtra(EXTRA_END, end);
-
-        context.startActivity(intent);
     }
 
     public void dismissItem(int position)

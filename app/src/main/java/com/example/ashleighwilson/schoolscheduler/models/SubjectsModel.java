@@ -3,11 +3,6 @@ package com.example.ashleighwilson.schoolscheduler.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class SubjectsModel implements Parcelable
 {
     private String mTitle;
@@ -17,8 +12,11 @@ public class SubjectsModel implements Parcelable
     private int mColor;
     private String mStartTime;
     private String mEndTime;
+    private String mRecurrence_rule;
+    private String mRecurrence_option;
 
-    public SubjectsModel(int id, String title, String teacher, String room, int color, String start, String end)
+    public SubjectsModel(int id, String title, String teacher, String room, int color, String start, String end,
+                         String rule, String option)
     {
         this.id = id;
         this.mTitle = title;
@@ -27,6 +25,8 @@ public class SubjectsModel implements Parcelable
         this.mColor = color;
         this.mStartTime = start;
         this.mEndTime = end;
+        this.mRecurrence_rule = rule;
+        this.mRecurrence_option = option;
     }
 
     public SubjectsModel() {
@@ -41,6 +41,8 @@ public class SubjectsModel implements Parcelable
         mColor = in.readInt();
         mStartTime = in.readString();
         mEndTime = in.readString();
+        mRecurrence_rule = in.readString();
+        mRecurrence_option = in.readString();
     }
 
     public int getId() {return id;}
@@ -107,6 +109,19 @@ public class SubjectsModel implements Parcelable
         this.mEndTime = endTime;
     }
 
+    public String getmRecurrence_rule() {
+        return mRecurrence_rule;
+    }
+    public void setmRecurrence_rule(String rule) {
+        this.mRecurrence_rule = rule;
+    }
+    public String getmRecurrence_option() {
+        return mRecurrence_option;
+    }
+    public void setmRecurrence_option(String option) {
+        this.mRecurrence_option = option;
+    }
+
     public static final Parcelable.Creator<SubjectsModel> CREATOR = new
             Parcelable.Creator<SubjectsModel>() {
                 @Override
@@ -133,6 +148,8 @@ public class SubjectsModel implements Parcelable
         dest.writeInt(mColor);
         dest.writeString(mStartTime);
         dest.writeString(mEndTime);
+        dest.writeString(mRecurrence_rule);
+        dest.writeString(mRecurrence_option);
     }
 
 }

@@ -205,5 +205,6 @@ public class AgendaModel implements Parcelable
         dest.writeString(mAgendaTitle);
         dest.writeInt(mColor);
         dest.writeString(mDueDate);
+        dest.writeInt(mNotification ? 1 : 0);
     }
 }

@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.content.Intent;
 
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.github.clans.fab.FloatingActionMenu;
 
 
@@ -156,8 +157,14 @@ public class SubjectsFrag extends DialogFragment
             int color = cursor.getInt(4);
             String start = cursor.getString(5);
             String end = cursor.getString(6);
+            String rule = cursor.getString(7);
+            String option = cursor.getString(8);
+            Log.i(TAG, "rule: " + rule);
 
-            SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end);
+            //String formatRule = DateHelper.formatRecurrence(getContext(), rule);
+
+            SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end,
+                                    rule, option);
 
             subMod.add(model);
         }

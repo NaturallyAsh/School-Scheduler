@@ -51,7 +51,9 @@ public class DbHelper extends SQLiteOpenHelper
             SchoolEntry.COLUMN_ROOM,
             SchoolEntry.COLUMN_COLOR,
             SchoolEntry.COLUMN_STARTTIME,
-            SchoolEntry.COLUMN_ENDTIME
+            SchoolEntry.COLUMN_ENDTIME,
+            SchoolEntry.COLUMN_RECUR_RULE,
+            SchoolEntry.COLUMN_RECUR_OPTION
     };
 
     String[] recordColumns = new String[] {
@@ -103,7 +105,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 64;
+    private static final int DATABASE_VERSION = 65;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -119,6 +121,8 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_COLOR = "color";
         public final static String COLUMN_STARTTIME = "startTime";
         public final static String COLUMN_ENDTIME = "endTime";
+        public final static String COLUMN_RECUR_RULE = "recurrence_rule";
+        public final static String COLUMN_RECUR_OPTION = "recurrence_option";
     }
 
     String SQL_CREATE_SUBJECTS_TABLE = "CREATE TABLE " + SchoolEntry.TABLE_NAME +
@@ -129,7 +133,9 @@ public class DbHelper extends SQLiteOpenHelper
             + SchoolEntry.COLUMN_ROOM + " TEXT, "
             + SchoolEntry.COLUMN_COLOR + " INTEGER, "
             + SchoolEntry.COLUMN_STARTTIME + " TEXT, "
-            +SchoolEntry.COLUMN_ENDTIME + " TEXT);";
+            + SchoolEntry.COLUMN_ENDTIME + " TEXT, "
+            + SchoolEntry.COLUMN_RECUR_RULE + " TEXT, "
+            + SchoolEntry.COLUMN_RECUR_OPTION + " TEXT);";
 
     public static final class RecordEntry implements BaseColumns
     {
@@ -299,6 +305,8 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_COLOR, model.getmColor());
         values.put(SchoolEntry.COLUMN_STARTTIME, model.getmStartTime());
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
+        values.put(SchoolEntry.COLUMN_RECUR_RULE, model.getmRecurrence_rule());
+        values.put(SchoolEntry.COLUMN_RECUR_OPTION, model.getmRecurrence_option());
 
         //long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
         long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -344,6 +352,8 @@ public class DbHelper extends SQLiteOpenHelper
             model.setmColor(cursor.getInt(4));
             model.setmStartTime(cursor.getString(5));
             model.setmEndTime(cursor.getString(6));
+            model.setmRecurrence_rule(cursor.getString(7));
+            model.setmRecurrence_option(cursor.getString(8));
             cursor.close();
             return model;
         }

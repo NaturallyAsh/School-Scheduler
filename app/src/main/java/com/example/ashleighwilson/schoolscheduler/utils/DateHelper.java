@@ -23,8 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class DateHelper
-{
+public class DateHelper{
     private static final String TAG = DateHelper.class.getSimpleName();
 
     public static String dateFormatter(Long time)
@@ -40,7 +39,7 @@ public class DateHelper
         return msg;
     }
 
-    public static String formateRecurrence(Context context, String recurrenceRule)
+    public static String formatRecurrence(Context context, String recurrenceRule)
     {
         if (!TextUtils.isEmpty(recurrenceRule))
         {
@@ -56,7 +55,7 @@ public class DateHelper
 
     public static String getNoteRecurrentReminderText(long reminder, String rule)
     {
-        return formateRecurrence(MySchedulerApp.getInstance(), rule) + " " + "Starting from " +
+        return formatRecurrence(MySchedulerApp.getInstance(), rule) + " " + "Starting from " +
                 dateFormatter(reminder);
     }
 

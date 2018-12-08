@@ -40,13 +40,21 @@ public class RecurrenceDialog extends DialogFragment
                                             int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption,
                                             String recurrenceRule) {
             mSelectedDate = selectedDate;
-            mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
-            mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
-            mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
-
-            //Log.i(TAG, "year: " + mReminderYear + " month: " + mReminderMonth + " day: " + mReminderDay);
-            mHour = hourOfDay;
-            mMinute = minute;
+            if (mReminderYear != 0) {
+                mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
+            }
+            if (mReminderMonth != 0) {
+                mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
+            }
+            if (mReminderDay != 0) {
+                mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
+            }
+            if (mHour != 0) {
+                mHour = hourOfDay;
+            }
+            if (mMinute != 0) {
+                mMinute = minute;
+            }
             mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
             mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
 

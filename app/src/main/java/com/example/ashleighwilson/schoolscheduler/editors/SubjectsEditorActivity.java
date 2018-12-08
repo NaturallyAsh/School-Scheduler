@@ -4,13 +4,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,9 +29,14 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
+import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
+import com.example.ashleighwilson.schoolscheduler.views.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
@@ -42,8 +53,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     private EditText mTeacherEditText;
     private EditText mRoomEditText;
     private TextView viewColor;
+    private TextView daysOfWeek;
     TextView mStartTime;
     TextView mEndTime;
+    private SelectedDate mSelectedDate;
+    private int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
+    private String mRecurrenceOption, mRecurrenceRule;
+    private Calendar calendar;
     private static final String EXTRA_ID = "id";
     final static private String COLOR_DIALOG = "colorDialog";
     private static final String START_TIME_DIALOG = "SimpleTimeStartDialog";
@@ -60,6 +76,44 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mSubjectHasChanged = true;
             return false;
+        }
+    };
+
+    private RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
+        @Override
+        public void onCancelled() {
+            if (mCallback != null) {
+                mCallback.onCancelled();
+            }
+        }
+
+        @Override
+        public void onDateTimeRecurrenceSet(SelectedDate selectedDate, int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption, String recurrenceRule) {
+
+            mSelectedDate = selectedDate;
+            /*mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
+            mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
+            mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
+
+            mHour = hourOfDay;
+            mMinute = minute; */
+            mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
+            mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
+
+
+            calendar = Calendar.getInstance();
+            calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
+
+            //daysOfWeek.setText(applyBoldStyle("Days: ").append(mRecurrenceRule));
+            if (mRecurrenceOption.equals("CUSTOM")) {
+                daysOfWeek.setText(DateHelper.formatRecurrence(getApplicationContext(), mRecurrenceRule));
+            }
+            else {
+                //daysOfWeek.setText("N/A");
+                daysOfWeek.setText(mRecurrenceOption);
+            }
+
+            //model.setTimeToNotify(calendar);
         }
     };
 
@@ -91,6 +145,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         mRoomEditText = findViewById(R.id.subject_room);
         mStartTime = findViewById(R.id.sub_start_time);
         mEndTime = findViewById(R.id.sub_end_time);
+        daysOfWeek = findViewById(R.id.recurrence_editor_tv);
 
         mTitleEditText.setOnTouchListener(mTouchListener);
         mTeacherEditText.setOnTouchListener(mTouchListener);
@@ -130,6 +185,22 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             }
         });
 
+        daysOfWeek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
+                recurrenceDialog.setCallback(mCallback);
+
+                Pair<Boolean, SublimeOptions> optionsPair = getOptions();
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
+                recurrenceDialog.setArguments(bundle);
+
+                recurrenceDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+                recurrenceDialog.show(getSupportFragmentManager(), "sublime");
+            }
+        });
 
         itemModel = getIntent().getParcelableExtra(RecyclerSubAdapter.EXTRA_ID);
         if (itemModel != null)
@@ -228,6 +299,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         }
         model.setmStartTime(startString);
         model.setmEndTime(endString);
+        model.setmRecurrence_rule(mRecurrenceRule);
+        model.setmRecurrence_option(mRecurrenceOption);
 
 
         dbHelper.addClass(model);
@@ -250,6 +323,27 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
         //Log.i(TAG, "result intent color: " + subColor);
         setResult(resultCode, resultIntent);
+
+    }
+
+    private SpannableStringBuilder applyBoldStyle(String text) {
+        SpannableStringBuilder ss = new SpannableStringBuilder(text);
+        ss.setSpan(new StyleSpan(Typeface.BOLD), 0, text.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ss;
+    }
+
+    private Pair<Boolean, SublimeOptions> getOptions()
+    {
+        SublimeOptions options = new SublimeOptions();
+        int displayOptions = 0;
+
+        displayOptions = SublimeOptions.ACTIVATE_RECURRENCE_PICKER;
+
+        options.setPickerToShow(SublimeOptions.Picker.REPEAT_OPTION_PICKER);
+        options.setDisplayOptions(displayOptions);
+
+        return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);
 
     }
 

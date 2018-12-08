@@ -143,6 +143,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/days_of_the_week_string" />
+
+            <LinearLayout
+                style="@style/LinearStyle"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/recurrence_editor_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:layout_marginTop="5dp"
+                    android:hint="set days"
+                    android:drawableBottom="@drawable/line" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="20dp">
 

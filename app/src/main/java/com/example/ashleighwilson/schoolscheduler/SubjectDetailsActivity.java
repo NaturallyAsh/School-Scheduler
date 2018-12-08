@@ -125,7 +125,8 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                     DbHelper.AgendaEntry.COLUMN_TITLE,
                     DbHelper.AgendaEntry.COLUMN_NAME,
                     DbHelper.AgendaEntry.COLUMN_DUEDATE,
-                    DbHelper.AgendaEntry.COLUMN_COLOR
+                    DbHelper.AgendaEntry.COLUMN_COLOR,
+                    DbHelper.AgendaEntry.COLUMN_NOTIFICATION
             };
 
             String selection = DbHelper.AgendaEntry.COLUMN_NAME + " =?";
