@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.ashleighwilson.schoolscheduler.SubjectDetailsActivity;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -80,10 +81,12 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             }
         } else {
             if (currentSubject.getmRecurrence_rule() != null) {
-                holder.recurrenceTv.setText(currentSubject.getmRecurrence_rule());
+                String formattedRule = DateHelper.formatRecurrence(context, currentSubject.getmRecurrence_rule());
+                holder.recurrenceTv.setText(formattedRule);
                 Log.i(TAG, "rule: " + currentSubject.getmRecurrence_rule());
+            } else {
+                holder.recurrenceTv.setText("n/a");
             }
-            holder.recurrenceTv.setText("n/a");
         }
 
         boolean isSelected = position == selectedItem;

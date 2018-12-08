@@ -113,7 +113,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 daysOfWeek.setText(mRecurrenceOption);
             }
 
-            //model.setTimeToNotify(calendar);
         }
     };
 
@@ -220,6 +219,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 //Log.i(TAG, "color: " + itemModel.getmColor());
                 mStartTime.setText(itemModel.getmStartTime());
                 mEndTime.setText(itemModel.getmEndTime());
+                mRecurrenceRule = itemModel.getmRecurrence_rule();
+                if (mRecurrenceRule != null) {
+                    daysOfWeek.setText(DateHelper.formatRecurrence(getApplicationContext(), mRecurrenceRule));
+                } else {
+                    mRecurrenceOption = itemModel.getmRecurrence_option();
+                    daysOfWeek.setText(mRecurrenceOption);
+                }
             }
         }
     }
