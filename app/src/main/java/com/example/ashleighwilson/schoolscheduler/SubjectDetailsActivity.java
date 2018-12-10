@@ -22,6 +22,7 @@ import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.SubjectsEditorActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
+import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleDividerItemDecoration;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
@@ -35,7 +36,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
     private SubjectsModel subModel;
     private AgendaModel agendaModel;
     private List<AgendaModel> agendaModelList;
-    private TextView teacherTV, emptyTV;
+    private TextView teacherTV, emptyTV, weeklyTv;
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
     private List<AgendaModel> agendaTestList = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -88,10 +89,26 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
         cT.setTitle(subModel.getmTitle());
         cT.setBackgroundColor(subModel.getmColor());
-        //Log.i(TAG, "color: " + subModel.getmColor());
 
         teacherTV = findViewById(R.id.detail_teacherTV);
+        weeklyTv = findViewById(R.id.detail_weekly_schedule);
         teacherTV.setText(subModel.getmTeacher());
+        if (subModel.getmRecurrence_option() != null) {
+            if (!subModel.getmRecurrence_option().equals("CUSTOM")) {
+                Log.i(TAG, "option: " + subModel.getmRecurrence_option());
+                weeklyTv.setText(subModel.getmRecurrence_option());
+            }
+        } else {
+            if (subModel.getmRecurrence_rule() != null) {
+                String formattedRule = DateHelper.formatRecurrence(getApplicationContext(), subModel.getmRecurrence_rule());
+                String subRule = formattedRule.substring(10);
+                Log.i(TAG, "sub rule: " + subRule);
+                weeklyTv.setText(subRule);
+                Log.i(TAG, "rule: " + subModel.getmRecurrence_rule());
+            } else {
+                weeklyTv.setText("n/a");
+            }
+        }
 
         FloatingActionButton fab = findViewById(R.id.detail_fab);
         fab.setOnClickListener(new View.OnClickListener() {

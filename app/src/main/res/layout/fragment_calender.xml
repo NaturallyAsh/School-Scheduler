@@ -12,7 +12,6 @@
 
     </FrameLayout>
 
-    <include layout="@layout/fab_calendar"/>
 
 
 </RelativeLayout>

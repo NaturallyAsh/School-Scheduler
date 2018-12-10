@@ -33,10 +33,13 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        agendaModel = intent.getParcelableExtra(NotificationController.ARG_ITEM);
+        String title = intent.getStringExtra(NotificationController.ARG_TITLE);
+        String dueDate = intent.getStringExtra(NotificationController.ARG_DUE_DATE);
+        String option = intent.getStringExtra(NotificationController.ARG_RECUR_OPTION);
+        String rule = intent.getStringExtra(NotificationController.ARG_RECUR_RULE);
 
         //createNotification(context, title, dueDate, id);
-        testRefire(context, agendaModel, id);
+        testRefire(context, title, dueDate, option, rule, id);
     }
 
     private void createNotification(Context context, String title, String dueDate, int id) {
@@ -64,13 +67,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         Log.i(TAG, "notification received");
     }
 
-    private void testRefire(Context context, AgendaModel model, int id) {
+    private void testRefire(Context context, String title, String dueDate, String option,
+                String rule, int id) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         AlarmManager alrmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        this.agendaModel = model;
+        //this.agendaModel = model;
 
-        String date = agendaModel.getDueDate();
+        String date = dueDate;
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
         try {
@@ -84,10 +88,10 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (futureDay.after(curr))
         {
             long reminder = futureDay.getTimeInMillis();
-            long timeToNotify = setNextRecurrence(agendaModel.getmRecurrenceOption(),
-                    agendaModel.getmRecurrenceRule(), reminder);
+            long timeToNotify = setNextRecurrence(option,
+                    rule, reminder);
             Intent notifyEvent = new Intent(context, NotificationReceiver.class);
-            notifyEvent.putExtra("title", agendaModel.getAgendaTitle());
+            notifyEvent.putExtra("title", title);
             notifyEvent.putExtra("dueDate", date);
             notifyEvent.putExtra(NOTIFICATION_ID, id);
             //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
@@ -98,7 +102,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
-                    .setContentTitle(agendaModel.getAgendaTitle())
+                    .setContentTitle(title)
                     .setContentText("Alarm Re-Set: " + date).setSound(alarmSound)
                     .setSmallIcon(R.drawable.notification_important_black_18dp)
                     .setContentIntent(pendingIntent)

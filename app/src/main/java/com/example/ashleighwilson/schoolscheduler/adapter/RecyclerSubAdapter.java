@@ -74,7 +74,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
         holder.color.setBackgroundColor(currentSubject.getmColor());
         holder.startTime.setText(currentSubject.getmStartTime());
         holder.endTime.setText(currentSubject.getmEndTime());
-        if (currentSubject.getmRecurrence_option() != null) {
+        /*if (currentSubject.getmRecurrence_option() != null) {
             if (!currentSubject.getmRecurrence_option().equals("CUSTOM")) {
                 Log.i(TAG, "option: " + currentSubject.getmRecurrence_option());
                 holder.recurrenceTv.setText(currentSubject.getmRecurrence_option());
@@ -87,7 +87,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
             } else {
                 holder.recurrenceTv.setText("n/a");
             }
-        }
+        }*/
 
         boolean isSelected = position == selectedItem;
         holder.container.setSelected(isSelected);

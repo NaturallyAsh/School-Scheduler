@@ -39,6 +39,10 @@ public class NotificationController
     private ArrayList<PendingIntent> list;
     private AgendaModel agendaModel;
     public static final String ARG_ITEM = "agenda_item";
+    public static final String ARG_DUE_DATE = "agenda_due";
+    public static final String ARG_TITLE = "agenda_title";
+    public static final String ARG_RECUR_OPTION = "agenda_recur_option";
+    public static final String ARG_RECUR_RULE = "agenda_recur_rule";
     public static int id;
 
     public NotificationController(Context context)
@@ -114,9 +118,12 @@ public class NotificationController
             long timeToNotify = setNextRecurrence(agendaModel.getmRecurrenceOption(),
                     agendaModel.getmRecurrenceRule(), reminder);
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
-            notifyEvent.putExtra(ARG_ITEM, agendaModel);
             id = (int) System.currentTimeMillis();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
+            notifyEvent.putExtra(ARG_TITLE, agendaModel.getAgendaTitle());
+            notifyEvent.putExtra(ARG_DUE_DATE, agendaModel.getDueDate());
+            notifyEvent.putExtra(ARG_RECUR_OPTION, agendaModel.getmRecurrenceOption());
+            notifyEvent.putExtra(ARG_RECUR_RULE, agendaModel.getmRecurrenceRule());
             //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
               //      PendingIntent.FLAG_CANCEL_CURRENT);
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;

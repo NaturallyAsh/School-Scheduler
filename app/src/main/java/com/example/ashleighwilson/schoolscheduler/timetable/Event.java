@@ -129,6 +129,7 @@ public class Event implements Serializable
     //	return events;
     //}
 
+
     public void setAdapter(BaseAdapter adapter){
         this.adapter = adapter;
     }

@@ -89,14 +89,14 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
 
         dbHelper = DbHelper.getInstance();
 
-        fab_all_cal = view.findViewById(R.id.fab_all_cal);
+        /*fab_all_cal = view.findViewById(R.id.fab_all_cal);
         fab_cal = view.findViewById(R.id.fab_cal);
         fab_cal_rec = view.findViewById(R.id.fab_cal_rec);
 
         fab_all_cal.showMenu(true);
         fab_all_cal.setClosedOnTouchOutside(true);
         fab_cal.setOnClickListener(mListener);
-        fab_cal_rec.setOnClickListener(mListener);
+        fab_cal_rec.setOnClickListener(mListener);*/
 
         if (savedInstanceState != null)
         {
@@ -111,7 +111,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             ft.commit();
         }
 
-        FloatingClicked();
+        //FloatingClicked();
 
         return view;
     }
@@ -186,7 +186,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             writeList(writeMonthEvent);
             Log.i(TAG, "pref event: " + writeMonthEvent);
         } */
-        eventDatabaseList();
+        //eventDatabaseList();
     }
 
     @Override

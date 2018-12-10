@@ -93,9 +93,9 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         public void onDateTimeRecurrenceSet(SelectedDate selectedDate, int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption, String recurrenceRule) {
 
             mSelectedDate = selectedDate;
-            mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
-            mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
-            mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
+            //mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
+            //mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
+            //mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
 
             mHour = hourOfDay;
             mMinute = minute;
@@ -224,17 +224,23 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
         recurrenceDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
         recurrenceDialog.show(getSupportFragmentManager(), "sublime");
+        /*if (!isChecked) {
+            if (mCallback !=null) {
+                mCallback.onCancelled();
+            }
+        }*/
 
     }
 
     public Pair<Boolean, SublimeOptions> getOptions()
     {
         SublimeOptions options = new SublimeOptions();
-        int displayOptions = 0;
+        int displayOptions;
 
-        displayOptions = SublimeOptions.ACTIVATE_DATE_PICKER + SublimeOptions.ACTIVATE_TIME_PICKER +
+        displayOptions = SublimeOptions.ACTIVATE_TIME_PICKER +
                 SublimeOptions.ACTIVATE_RECURRENCE_PICKER;
 
+        options.setPickerToShow(SublimeOptions.Picker.TIME_PICKER);
         options.setDisplayOptions(displayOptions);
 
         return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);

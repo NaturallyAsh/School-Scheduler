@@ -29,6 +29,8 @@ import java.util.List;
 public class ExtendedCalendarView extends RelativeLayout implements AdapterView.OnItemClickListener,
         View.OnClickListener
 {
+    private static final String TAG = ExtendedCalendarView.class.getSimpleName();
+
     private Context context;
     private OnDayClickListener dayListener;
     private GridView calendar;
@@ -343,6 +345,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         } else {
             Log.e("SWATI","eventList is already fetched!!!");
             currentPeriodEvents = eventListByMonth;
+            Log.i(TAG, "current: " + currentPeriodEvents.size());
         }
 //		Log.e("SWATI","numOfEvent in "+cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())+" : "+currentPeriodEvents.size());
         if (mEventRects == null) {
