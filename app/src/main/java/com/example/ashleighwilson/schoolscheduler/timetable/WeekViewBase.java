@@ -146,10 +146,12 @@ public class WeekViewBase extends WeekViewFragment
             end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
             end.set(Calendar.MONTH, newMonth -1);
             int color = cursor.getInt(5);
+            String rule = cursor.getString(6);
 
             WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
             dbEvent.setColor(color);
             dbEvent.setLocation(location);
+            dbEvent.setmRecurrenceRule(rule);
 
             events.add(dbEvent);
             //WeekViewFragment.notifyWeekView();

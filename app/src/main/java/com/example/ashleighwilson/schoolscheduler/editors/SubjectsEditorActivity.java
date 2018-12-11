@@ -20,9 +20,11 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +44,11 @@ import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class SubjectsEditorActivity extends AppCompatActivity implements
-        SimpleTimeDialog.OnDialogResultListener
+        SimpleTimeDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener
 {
     private static final String TAG = SubjectsEditorActivity.class.getSimpleName();
 
@@ -54,6 +57,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     private EditText mRoomEditText;
     private TextView viewColor;
     private TextView daysOfWeek;
+    private Switch mSwitch;
     TextView mStartTime;
     TextView mEndTime;
     private SelectedDate mSelectedDate;
@@ -67,8 +71,16 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     static private int subColor;
     DbHelper dbHelper;
     private SubjectsModel itemModel;
+    private SubjectsModel model;
     String editTitle = "";
-    public ArrayList<SubjectsModel> model;
+    //public ArrayList<SubjectsModel> model;
+    /*public int SU = 1;
+    public int MO = 2;
+    public int TU = 3;
+    public int WE = 4;
+    public int TH = 5;
+    public int FR = 6;
+    public int SA = 7;*/
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -145,10 +157,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         mStartTime = findViewById(R.id.sub_start_time);
         mEndTime = findViewById(R.id.sub_end_time);
         daysOfWeek = findViewById(R.id.recurrence_editor_tv);
+        mSwitch = findViewById(R.id.add_sub_to_calendar);
+
 
         mTitleEditText.setOnTouchListener(mTouchListener);
         mTeacherEditText.setOnTouchListener(mTouchListener);
         mRoomEditText.setOnTouchListener(mTouchListener);
+        mSwitch.setOnCheckedChangeListener(this);
 
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
@@ -283,9 +298,17 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         return false;
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked) {
+            mSwitch.setChecked(true);
+
+        }
+    }
+
     private void saveSubject()
     {
-        SubjectsModel model = new SubjectsModel();
+        model = new SubjectsModel();
         String titleString = mTitleEditText.getText().toString().trim();
         String teacherString = mTeacherEditText.getText().toString().trim();
         String roomString = mRoomEditText.getText().toString().trim();
@@ -324,11 +347,20 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         {
             Toast.makeText(this, "Subject saved", Toast.LENGTH_SHORT).show();
         }
+
+        if (mSwitch.isChecked()) {
+            addToTimetable(model);
+        }
+
         int resultCode = 1;
         Intent resultIntent = new Intent();
         resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
         //Log.i(TAG, "result intent color: " + subColor);
         setResult(resultCode, resultIntent);
+
+    }
+
+    private void addToTimetable(SubjectsModel subjectsModel) {
 
     }
 
@@ -352,6 +384,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)

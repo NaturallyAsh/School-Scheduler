@@ -14,6 +14,7 @@ public class WeekViewEvent implements Serializable{
     private String mName;
     private String mLocation;
     private int mColor;
+    private String mRecurrenceRule;
     private boolean mAllDay;
     private String mAgenda;
     private String mVisibility;
@@ -104,7 +105,7 @@ public class WeekViewEvent implements Serializable{
     }
 
     //db constructor
-    public WeekViewEvent(long id, String name, String location, Calendar startTime, Calendar endTime, int color)
+    public WeekViewEvent(long id, String name, String location, Calendar startTime, Calendar endTime, int color, String recurrence)
     {
         this.mId = id;
         this.mName = name;
@@ -112,6 +113,7 @@ public class WeekViewEvent implements Serializable{
         this.mStartTime = startTime;
         this.mEndTime = endTime;
         this.mColor = color;
+        this.mRecurrenceRule = recurrence;
     }
 
 
@@ -160,6 +162,14 @@ public class WeekViewEvent implements Serializable{
 
     public void setColor(int color) {
         this.mColor = color;
+    }
+
+    public String getmRecurrenceRule() {
+        return mRecurrenceRule;
+    }
+
+    public void setmRecurrenceRule(String recurrence) {
+        this.mRecurrenceRule = recurrence;
     }
 
     public boolean isAllDay() {

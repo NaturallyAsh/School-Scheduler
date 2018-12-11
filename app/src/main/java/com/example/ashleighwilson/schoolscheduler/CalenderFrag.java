@@ -239,8 +239,9 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             Calendar end = Calendar.getInstance();
             end.setTimeInMillis(cursor.getLong(4));
             int color = cursor.getInt(5);
+            String rule = cursor.getString(6);
 
-            event = new WeekViewEvent(id, name, location, start, end, color);
+            event = new WeekViewEvent(id, name, location, start, end, color, rule);
 
             writeObj(mContext, event);
 

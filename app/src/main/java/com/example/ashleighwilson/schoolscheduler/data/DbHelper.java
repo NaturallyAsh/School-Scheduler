@@ -70,7 +70,8 @@ public class DbHelper extends SQLiteOpenHelper
             TimeTableEntry.COLUMN_LOCATION,
             TimeTableEntry.COLUMN_STARTHOUR,
             TimeTableEntry.COLUMN_ENDHOUR,
-            TimeTableEntry.COLUMN_COLOR
+            TimeTableEntry.COLUMN_COLOR,
+            TimeTableEntry.COLUMN_RECURRENCE_RULE
     };
 
     String[] spinnerColumns = new String[] {
@@ -105,7 +106,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 69;
+    private static final int DATABASE_VERSION = 71;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -164,6 +165,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
         public final static String COLUMN_COLOR = "color";
+        public final static String COLUMN_RECURRENCE_RULE = "recurrence_rule";
 
     }
 
@@ -174,7 +176,8 @@ public class DbHelper extends SQLiteOpenHelper
             + TimeTableEntry.COLUMN_LOCATION + " TEXT, "
             + TimeTableEntry.COLUMN_STARTHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
-            + TimeTableEntry.COLUMN_COLOR + " INTEGER);";
+            + TimeTableEntry.COLUMN_COLOR + " INTEGER, "
+            + TimeTableEntry.COLUMN_RECURRENCE_RULE + " TEXT);";
 
     public static final class NoteEntry implements BaseColumns
     {
@@ -447,8 +450,9 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());
+        values.put(TimeTableEntry.COLUMN_RECURRENCE_RULE, model.getmRecurrenceRule());
 
-        long id = db.insert(TimeTableEntry.TABLE_NAME, null, values);
+        long id = db.insertWithOnConflict(TimeTableEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
         return id;
     }
