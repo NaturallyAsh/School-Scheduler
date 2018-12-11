@@ -141,12 +141,14 @@ public class CalendarAdapter extends BaseAdapter
                 day.events = new ArrayList<>();
             }
             day.events.clear();
+
             for (EventRect rect : mEventRects) {
                 if (isSameDay(rect.event.getStartTime(), currentCal)) {
                     iv.setVisibility(View.VISIBLE);
                     day.addDayEvent(rect.event);
                 }
             }
+
             if(day.getYear() == cal.get(Calendar.YEAR) && day.getMonth() == cal.get(Calendar.MONTH) && day.getDay() == cal.get(Calendar.DAY_OF_MONTH)){
                 currentDay = day;
                 today.setVisibility(View.VISIBLE);

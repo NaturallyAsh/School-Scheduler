@@ -49,7 +49,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     private WeekViewLoader mWeekViewLoader;
     List<WeekViewEvent> currentPeriodEvents = null;
-    private List<EventRect> mEventRects;
+    public List<EventRect> mEventRects;
     private OnMonthChaneListener monthChangeListener;
 
 
@@ -345,7 +345,6 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         } else {
             Log.e("SWATI","eventList is already fetched!!!");
             currentPeriodEvents = eventListByMonth;
-            Log.i(TAG, "current: " + currentPeriodEvents.size());
         }
 //		Log.e("SWATI","numOfEvent in "+cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())+" : "+currentPeriodEvents.size());
         if (mEventRects == null) {

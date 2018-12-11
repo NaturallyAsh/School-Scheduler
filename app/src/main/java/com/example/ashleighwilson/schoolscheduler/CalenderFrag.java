@@ -186,7 +186,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             writeList(writeMonthEvent);
             Log.i(TAG, "pref event: " + writeMonthEvent);
         } */
-        //eventDatabaseList();
+        eventDatabaseList();
     }
 
     @Override

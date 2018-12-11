@@ -1312,8 +1312,8 @@ public class WeekView extends View {
                 // Clear events.
                 mEventRects.clear();
                 WeekViewUtil.sortAndCacheEvents(previousPeriodEvents, mEventRects);
-                sortAndCacheEvents(currentPeriodEvents);
-                sortAndCacheEvents(nextPeriodEvents);
+                WeekViewUtil.sortAndCacheEvents(currentPeriodEvents, mEventRects);
+                WeekViewUtil.sortAndCacheEvents(nextPeriodEvents, mEventRects);
                 calculateHeaderHeight();
 
                 mPreviousPeriodEvents = previousPeriodEvents;
@@ -1350,7 +1350,7 @@ public class WeekView extends View {
         }
     }
 
-    private void clearEvents()
+    /*private void clearEvents()
     {
         mEventRects.clear();
         mEvents.clear();
@@ -1360,6 +1360,7 @@ public class WeekView extends View {
      * Cache the event for smooth scrolling functionality.
      * @param event The event to cache.
      */
+    /*
     private void cacheEvent(WeekViewEvent event) {
         if(event.getStartTime().compareTo(event.getEndTime()) >= 0)
             return;
@@ -1373,6 +1374,7 @@ public class WeekView extends View {
      * Sort and cache events.
      * @param events The events to be sorted and cached.
      */
+    /*
     private void sortAndCacheEvents(List<? extends WeekViewEvent> events) {
         sortEvents(events);
         for (WeekViewEvent event : events) {
@@ -1384,6 +1386,7 @@ public class WeekView extends View {
      * Sorts the events in ascending order.
      * @param events The events to be sorted.
      */
+    /*
     private void sortEvents(List<? extends WeekViewEvent> events) {
         Collections.sort(events, new Comparator<WeekViewEvent>() {
             @Override
@@ -1406,6 +1409,7 @@ public class WeekView extends View {
      * are overlapping.
      * @param eventRects The events along with their wrapper class.
      */
+
     private void computePositionOfEvents(List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect> eventRects) {
         // Make "collision groups" for all events that collide with others.
         List<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>> collisionGroups = new ArrayList<List<com.example.ashleighwilson.schoolscheduler.timetable.EventRect>>();

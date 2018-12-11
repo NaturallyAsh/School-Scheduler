@@ -1,6 +1,8 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.os.Bundle;
+import android.util.Log;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,8 +73,11 @@ public class WeekViewUtil {
 
     private static void cacheEvent(WeekViewEvent event, List<EventRect> mEventRects)
     {
-        if (event.getStartTime().compareTo(event.getEndTime()) >= 0)
+        if (event.getStartTime().compareTo(event.getEndTime()) >= 0) {
+            Log.i(TAG, "returned");
+
             return;
+        }
         List<WeekViewEvent> splitedEvents = event.splitWeekViewEvents();
         for (WeekViewEvent splitedEvent: splitedEvents)
         {

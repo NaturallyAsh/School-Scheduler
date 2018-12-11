@@ -164,7 +164,6 @@ public class WeekViewBase extends WeekViewFragment
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
-
         //listener.refreshData(events);
         return events;
     }

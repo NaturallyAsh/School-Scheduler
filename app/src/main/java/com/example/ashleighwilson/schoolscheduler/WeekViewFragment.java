@@ -38,8 +38,6 @@ import android.widget.TextView;
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
-import com.example.ashleighwilson.schoolscheduler.login.LoginAlertDialog;
-import com.example.ashleighwilson.schoolscheduler.timetable.CalendarAdapter;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventRect;
@@ -314,8 +312,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     @Override
     public void onDayClicked(AdapterView<?> adapter, View view, int position, long id, Event event)
     {
-        Log.i(TAG, "view: " + view);
-        Log.i(TAG, "event: " + event.events);
         if (view != null)
         {
             view.setBackgroundResource(R.drawable.normal_day);
@@ -325,12 +321,12 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
             Calendar tomCal = Calendar.getInstance();
             tomCal.add(Calendar.DAY_OF_WEEK, 1);
-            Log.i(TAG, "tom cal: " + tomCal.get(Calendar.DAY_OF_WEEK));
+            //Log.i(TAG, "tom cal: " + tomCal.get(Calendar.DAY_OF_WEEK));
 
 
             Calendar yesCal = Calendar.getInstance();
             yesCal.add(Calendar.DAY_OF_WEEK, -1);
-            Log.i(TAG, "yes cal: " + yesCal.get(Calendar.DAY_OF_WEEK));
+            //Log.i(TAG, "yes cal: " + yesCal.get(Calendar.DAY_OF_WEEK));
 
             Date today = dayCalendar.getTime();
             Date notToday = tomCal.getTime();
@@ -350,8 +346,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     private void buildEventList(Event eventObj)
     {
-        //dayEventObj = eventObj;
-        events = eventObj.events;
+        dayEventObj = eventObj;
+        events = dayEventObj.events;
 
         if (events == null || events.size() == 0)
         {
@@ -408,7 +404,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.getEvents();
         calendar.refreshCalendar();
         Log.i(TAG, "updateView()!");
-        if (todayTV.getText().equals("Today")) {
+        if (eventList == null) {
             eventList.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
             eventList.setAdapter(eventAdapter);
@@ -419,6 +415,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             emptyView.setVisibility(View.GONE);
             //eventAdapter = new EventAdapter(getContext(), events, this);
             //eventList.setAdapter(eventAdapter);
+            //eventAdapter.setData(events);
+            eventAdapter.notifyDataSetChanged();
         }
 
     }

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.format.Time;
+import android.util.Log;
 import android.widget.BaseAdapter;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Event implements Serializable
 {
+    private static final String TAG = Event.class.getSimpleName();
 
     int startDay;
     int monthEndDay;
