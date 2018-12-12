@@ -37,6 +37,10 @@ import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicke
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 import com.example.ashleighwilson.schoolscheduler.views.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
@@ -45,10 +49,11 @@ import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class SubjectsEditorActivity extends AppCompatActivity implements
-        SimpleTimeDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener
+        SimpleTimeDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener, MonthLoader.MonthLoaderListener
 {
     private static final String TAG = SubjectsEditorActivity.class.getSimpleName();
 
@@ -68,10 +73,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     final static private String COLOR_DIALOG = "colorDialog";
     private static final String START_TIME_DIALOG = "SimpleTimeStartDialog";
     private static final String END_TIME_DIALOG = "SimpleTimeEndDialog";
+    public static int START_HOUR, START_MINUTE = 0;
+    public static int END_HOUR, END_MINUTE = 0;
     static private int subColor;
     DbHelper dbHelper;
     private SubjectsModel itemModel;
     private SubjectsModel model;
+    private WeekViewLoader mWeekViewLoader;
     String editTitle = "";
     //public ArrayList<SubjectsModel> model;
     /*public int SU = 1;
@@ -113,8 +121,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
 
 
-            calendar = Calendar.getInstance();
-            calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
+            //calendar = Calendar.getInstance();
+            //calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
 
             //daysOfWeek.setText(applyBoldStyle("Days: ").append(mRecurrenceRule));
             if (mRecurrenceOption.equals("CUSTOM")) {
@@ -124,7 +132,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 //daysOfWeek.setText("N/A");
                 daysOfWeek.setText(mRecurrenceOption);
             }
-
         }
     };
 
@@ -141,7 +148,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         getSupportActionBar().setHomeButtonEnabled(true);
 
         dbHelper = DbHelper.getInstance();
-        //model = dbHelper.getAllSubjects();
+        mWeekViewLoader = new MonthLoader(this);
+
 
         Button colorSelector = findViewById(R.id.sub_create_button);
         viewColor = findViewById(R.id.sub_view_color);
@@ -277,6 +285,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
                 SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
 
+                START_HOUR = extras.getInt(SimpleTimeDialog.HOUR);
+                START_MINUTE = extras.getInt(SimpleTimeDialog.MINUTE);
+
                 mStartTime.setText(formatter.format(calender.getTime()));
                 return true;
             }
@@ -290,6 +301,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
                 SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
+
+                END_HOUR = extras.getInt(SimpleTimeDialog.HOUR);
+                END_MINUTE = extras.getInt(SimpleTimeDialog.MINUTE);
 
                 mEndTime.setText(formatter.format(calender.getTime()));
                 return true;
@@ -331,6 +345,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         model.setmRecurrence_rule(mRecurrenceRule);
         model.setmRecurrence_option(mRecurrenceOption);
 
+        if (mSwitch.isChecked()) {
+            addToTimetable(model);
+        }
 
         dbHelper.addClass(model);
         if (dbHelper.hasLabel(titleString)) {
@@ -348,10 +365,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             Toast.makeText(this, "Subject saved", Toast.LENGTH_SHORT).show();
         }
 
-        if (mSwitch.isChecked()) {
-            addToTimetable(model);
-        }
-
         int resultCode = 1;
         Intent resultIntent = new Intent();
         resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
@@ -361,7 +374,92 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     }
 
     private void addToTimetable(SubjectsModel subjectsModel) {
+        String titleString = subjectsModel.getmTitle();
+        String roomString = subjectsModel.getmRoom();
 
+        //Calendar startTime = subjectsModel.getConvertStartTime();
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
+        startTime.set(Calendar.MINUTE, START_MINUTE);
+
+
+        if (startTime == null) {
+            startTime.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        Calendar endTime = (Calendar) startTime.clone();
+        endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
+        endTime.set(Calendar.MINUTE, END_MINUTE);
+
+        WeekViewEvent createdEvent;
+        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(titleString,
+                startTime, endTime), startTime, endTime);
+        createdEvent.setColor(subjectsModel.getmColor());
+        createdEvent.setLocation(roomString);
+        createdEvent.setmRecurrenceRule(subjectsModel.getmRecurrence_rule());
+        //Log.i(TAG, "convert start time: " + subjectsModel.getConvertStartTime());
+
+        if (subjectsModel != null && !subjectsModel.getConvertStartTime().equals(startTime)) {
+            int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(subjectsModel.getConvertStartTime());
+            int year = periodToFetch / 12;
+            int month = periodToFetch % 12 + 1;
+            String monthKey = "" + (month - 1) + "-" + year;
+            Log.i(TAG, "called");
+
+            List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+
+            if (eventListByMonth != null)
+            {
+                eventListByMonth.remove(subjectsModel);
+            }
+            WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+        }
+        WeekViewUtil.masterEvents.put("" + createdEvent.getId(), createdEvent);
+
+        int periodToFetch = (int) mWeekViewLoader.toWeekViewPeriodIndex(startTime);
+        int year = periodToFetch / 12;
+        int month = periodToFetch % 12 + 1;
+        String monthKey = "" + (month - 1) + "-" + year;
+
+        List<WeekViewEvent> eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+
+        if (eventListByMonth == null)
+        {
+            eventListByMonth = new ArrayList<>();
+        }
+
+        WeekViewEvent model = new WeekViewEvent();
+        model.setName(titleString);
+        model.setLocation(roomString);
+        model.setStartTime(startTime);
+        model.setEndTime(endTime);
+        model.setColor(subjectsModel.getmColor());
+        model.setmRecurrenceRule(subjectsModel.getmRecurrence_rule());
+
+        dbHelper.addTimetable(model);
+
+        eventListByMonth.add(createdEvent);
+        WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+
+
+    }
+
+    public String getEventName(String name, Calendar startTime, Calendar endTime) {
+
+        String start = timeFormatter(startTime);
+        String end = timeFormatter(endTime);
+
+        String eventMsg = name + "\n" + start + " - " + end;
+
+        return eventMsg;
+    }
+
+    private String timeFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
     }
 
     private SpannableStringBuilder applyBoldStyle(String text) {
@@ -470,5 +568,10 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    @Override
+    public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
+        return null;
     }
 }

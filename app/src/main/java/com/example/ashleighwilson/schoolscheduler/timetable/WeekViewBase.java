@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
@@ -147,6 +148,16 @@ public class WeekViewBase extends WeekViewFragment
             end.set(Calendar.MONTH, newMonth -1);
             int color = cursor.getInt(5);
             String rule = cursor.getString(6);
+            Log.i(TAG, "rule: " + rule);
+
+            if (rule != null) {
+                EventRecurrence recurrence = new EventRecurrence();
+                recurrence.parse(rule);
+                for (int i = 0; i < recurrence.bydayCount; i++) {
+                    int day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
+                    Log.i(TAG, "day recur: " + day_recur);
+                }
+            }
 
             WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
             dbEvent.setColor(color);

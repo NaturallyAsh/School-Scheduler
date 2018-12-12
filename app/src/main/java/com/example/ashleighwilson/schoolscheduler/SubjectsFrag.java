@@ -161,15 +161,14 @@ public class SubjectsFrag extends DialogFragment
             String end = cursor.getString(6);
             String rule = cursor.getString(7);
             String option = cursor.getString(8);
-            Log.i(TAG, "rule: " + rule);
 
             //String formatRule = DateHelper.formatRecurrence(getContext(), rule);
-            EventRecurrence recurrence = new EventRecurrence();
+            /*EventRecurrence recurrence = new EventRecurrence();
             recurrence.parse(rule);
             for (int i = 0; i < recurrence.bydayCount; i++) {
                 int day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
                 Log.i(TAG, "day recur: " + day_recur);
-            }
+            }*/
             SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end,
                                     rule, option);
 

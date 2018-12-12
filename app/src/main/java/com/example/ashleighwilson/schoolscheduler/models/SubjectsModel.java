@@ -3,6 +3,11 @@ package com.example.ashleighwilson.schoolscheduler.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class SubjectsModel implements Parcelable
 {
     private String mTitle;
@@ -14,6 +19,7 @@ public class SubjectsModel implements Parcelable
     private String mEndTime;
     private String mRecurrence_rule;
     private String mRecurrence_option;
+    private Calendar mConvertStartTime;
 
     public SubjectsModel(int id, String title, String teacher, String room, int color, String start, String end,
                          String rule, String option)
@@ -94,9 +100,33 @@ public class SubjectsModel implements Parcelable
         return mStartTime;
     }
 
+    public Calendar getConvertStartTime() {
+        return mConvertStartTime;
+    }
+
+    public void setConvertStartTime() {
+        String convertString = mStartTime;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+        Date d = null;
+        try{
+            d = formatter.parse(convertString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Calendar thatTime = Calendar.getInstance();
+        thatTime.setTime(d);
+
+        mConvertStartTime = thatTime;
+    }
+
     public void setmStartTime(String startTime)
     {
         this.mStartTime = startTime;
+        if (startTime != null) {
+            setConvertStartTime();
+        }
     }
 
     public String getmEndTime()
