@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.Pair;
@@ -29,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
@@ -52,6 +54,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import eltos.simpledialogfragment.list.SimpleListDialog;
+
 
 public class SubjectsEditorActivity extends AppCompatActivity implements
         SimpleTimeDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener, MonthLoader.MonthLoaderListener
@@ -74,10 +78,13 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
     final static private String COLOR_DIALOG = "colorDialog";
     private static final String START_TIME_DIALOG = "SimpleTimeStartDialog";
     private static final String END_TIME_DIALOG = "SimpleTimeEndDialog";
+    private static final String CHOICE_DIALOG = "dialogTagChoice";
     public static int START_HOUR, START_MINUTE = 0;
     public static int END_HOUR, END_MINUTE = 0;
     static private int subColor;
     DbHelper dbHelper;
+    private ArrayList<String> labels;
+    private int dayWeekInt;
     private SubjectsModel itemModel;
     private SubjectsModel model;
     private WeekViewLoader mWeekViewLoader;
@@ -310,15 +317,66 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
                 return true;
             }
         }
+        if (which == BUTTON_POSITIVE) {
+            switch (dialogTag) {
+                case CHOICE_DIALOG:
+                    labels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+                    String labelString = "";
+                    if (labels != null) {
+                        labelString = TextUtils.join("\t", labels);
+                    }
+                    //Log.i(TAG, "label: " + labelString);
+                    getIntDays(labelString);
+            }
+        }
         return false;
+    }
+
+    private int getIntDays(String dayLabel) {
+        switch (dayLabel) {
+            case "SUNDAY":
+                dayWeekInt = Calendar.SUNDAY;
+                Log.i(TAG, "day int: " + dayWeekInt);
+                break;
+            case "MONDAY":
+                dayWeekInt = Calendar.MONDAY;
+                break;
+            case "TUESDAY":
+                dayWeekInt = Calendar.TUESDAY;
+                break;
+            case "WEDNESDAY":
+                dayWeekInt = Calendar.WEDNESDAY;
+                break;
+            case "THURSDAY":
+                dayWeekInt = Calendar.THURSDAY;
+                break;
+            case "FRIDAY":
+                dayWeekInt = Calendar.FRIDAY;
+                break;
+            case "SATURDAY":
+                dayWeekInt = Calendar.SATURDAY;
+                break;
+            default:
+                throw new RuntimeException("error with day: " + dayLabel);
+        }
+        return 0;
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             mSwitch.setChecked(true);
+            showChoice(mSwitch);
 
         }
+    }
+
+    public void showChoice(View view) {
+        SimpleListDialog.build()
+                .title("Select a day")
+                .choiceMode(SimpleListDialog.SINGLE_CHOICE_DIRECT)
+                .items(getApplicationContext(), R.array.day_of_week)
+                .show(this, CHOICE_DIALOG);
     }
 
     private void saveSubject()
@@ -382,6 +440,8 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
         startTime.set(Calendar.MINUTE, START_MINUTE);
+        startTime.set(Calendar.DAY_OF_WEEK, dayWeekInt);
+        Log.i(TAG, "day of week: " + startTime.get(Calendar.DAY_OF_WEEK));
 
 
         if (startTime == null) {
@@ -392,28 +452,9 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
         endTime.set(Calendar.MINUTE, END_MINUTE);
 
-        int day_recur = 0;
-        if (subjectsModel.getmRecurrence_rule() != null) {
-            EventRecurrence recurrence = new EventRecurrence();
-            recurrence.parse(subjectsModel.getmRecurrence_rule());
-            for (int i = 0; i < recurrence.bydayCount; i++) {
-                day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
-                Log.i(TAG, "day recur: " + day_recur);
-            }
-        }
-        Log.i(TAG, "int day recur: " + day_recur);
-
-        Calendar day = Calendar.getInstance();
-        day.set(Calendar.DAY_OF_WEEK, day_recur);
-        /*day.set(Calendar.DAY_OF_WEEK, day.getFirstDayOfWeek());
-        for (int i = 0; i < day_recur; i++) {
-            day.add(Calendar.DAY_OF_WEEK, 1);
-        }*/
-        Log.i(TAG, "day of week: " + day.get(Calendar.DAY_OF_WEEK));
-
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(titleString,
-                startTime, endTime), day, startTime, endTime);
+                startTime, endTime), startTime, endTime);
         createdEvent.setColor(subjectsModel.getmColor());
         createdEvent.setLocation(roomString);
         createdEvent.setmRecurrenceRule(subjectsModel.getmRecurrence_rule());
@@ -451,7 +492,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         WeekViewEvent model = new WeekViewEvent();
         model.setName(titleString);
         model.setLocation(roomString);
-        model.setmDay(day);
         model.setStartTime(startTime);
         model.setEndTime(endTime);
         model.setColor(subjectsModel.getmColor());

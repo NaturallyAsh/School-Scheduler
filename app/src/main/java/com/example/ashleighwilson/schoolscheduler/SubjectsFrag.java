@@ -161,6 +161,7 @@ public class SubjectsFrag extends DialogFragment
             String end = cursor.getString(6);
             String rule = cursor.getString(7);
             String option = cursor.getString(8);
+            String dayOfWeek = cursor.getString(9);
 
             //String formatRule = DateHelper.formatRecurrence(getContext(), rule);
             /*EventRecurrence recurrence = new EventRecurrence();
@@ -170,7 +171,7 @@ public class SubjectsFrag extends DialogFragment
                 Log.i(TAG, "day recur: " + day_recur);
             }*/
             SubjectsModel model = new SubjectsModel(id, title, teacher, room, color, start, end,
-                                    rule, option);
+                                    rule, option, dayOfWeek);
 
             subMod.add(model);
         }

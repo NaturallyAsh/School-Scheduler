@@ -134,22 +134,21 @@ public class WeekViewBase extends WeekViewFragment
             long id = cursor.getLong(0);
             String name = cursor.getString(1);
             String location = cursor.getString(2);
-            Calendar day = Calendar.getInstance();
-            day.setTimeInMillis(cursor.getLong(3));
             Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(cursor.getLong(4));
+            start.setTimeInMillis(cursor.getLong(3));
             start.set(Calendar.HOUR_OF_DAY, start.get(Calendar.HOUR_OF_DAY));
             start.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
             start.set(Calendar.MONTH, newMonth -1);
             start.set(Calendar.YEAR, newYear);
             Calendar end = Calendar.getInstance();
             //end = (Calendar) start.clone();
-            end.setTimeInMillis(cursor.getLong(5));
+            end.setTimeInMillis(cursor.getLong(4));
             end.set(Calendar.HOUR_OF_DAY, end.get(Calendar.HOUR_OF_DAY));
             end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
             end.set(Calendar.MONTH, newMonth -1);
-            int color = cursor.getInt(6);
-            String rule = cursor.getString(7);
+            int color = cursor.getInt(5);
+            String rule = cursor.getString(6);
+            //String dayOfWeek = cursor.getString(7);
 
             Log.i(TAG, "rule: " + rule);
 
@@ -170,7 +169,7 @@ public class WeekViewBase extends WeekViewFragment
                 }
             }
 
-            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), day, start, end);
+            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
             dbEvent.setColor(color);
             dbEvent.setLocation(location);
             dbEvent.setmRecurrenceRule(rule);

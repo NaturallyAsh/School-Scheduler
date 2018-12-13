@@ -8,6 +8,7 @@ import java.util.List;
 import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.*;
 
 public class WeekViewEvent implements Serializable{
+
     private long mId;
     private Calendar mStartTime;
     private Calendar mEndTime;

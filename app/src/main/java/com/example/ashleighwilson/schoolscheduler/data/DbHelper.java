@@ -53,7 +53,8 @@ public class DbHelper extends SQLiteOpenHelper
             SchoolEntry.COLUMN_STARTTIME,
             SchoolEntry.COLUMN_ENDTIME,
             SchoolEntry.COLUMN_RECUR_RULE,
-            SchoolEntry.COLUMN_RECUR_OPTION
+            SchoolEntry.COLUMN_RECUR_OPTION,
+            SchoolEntry.COLUMN_DAY_OF_WEEK
     };
 
     String[] recordColumns = new String[] {
@@ -68,7 +69,6 @@ public class DbHelper extends SQLiteOpenHelper
             TimeTableEntry._ID,
             TimeTableEntry.COLUMN_NAME,
             TimeTableEntry.COLUMN_LOCATION,
-            TimeTableEntry.COLUMN_DAY,
             TimeTableEntry.COLUMN_STARTHOUR,
             TimeTableEntry.COLUMN_ENDHOUR,
             TimeTableEntry.COLUMN_COLOR,
@@ -107,7 +107,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 73;
+    private static final int DATABASE_VERSION = 75;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -125,6 +125,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_ENDTIME = "endTime";
         public final static String COLUMN_RECUR_RULE = "recurrence_rule";
         public final static String COLUMN_RECUR_OPTION = "recurrence_option";
+        public final static String COLUMN_DAY_OF_WEEK = "day_of_week";
     }
 
     String SQL_CREATE_SUBJECTS_TABLE = "CREATE TABLE " + SchoolEntry.TABLE_NAME +
@@ -137,7 +138,8 @@ public class DbHelper extends SQLiteOpenHelper
             + SchoolEntry.COLUMN_STARTTIME + " TEXT, "
             + SchoolEntry.COLUMN_ENDTIME + " TEXT, "
             + SchoolEntry.COLUMN_RECUR_RULE + " TEXT, "
-            + SchoolEntry.COLUMN_RECUR_OPTION + " TEXT);";
+            + SchoolEntry.COLUMN_RECUR_OPTION + " TEXT, "
+            + SchoolEntry.COLUMN_DAY_OF_WEEK + " TEXT);";
 
     public static final class RecordEntry implements BaseColumns
     {
@@ -163,7 +165,6 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
         public final static String COLUMN_LOCATION = "location";
-        public final static String COLUMN_DAY = "day";
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
         public final static String COLUMN_COLOR = "color";
@@ -176,7 +177,6 @@ public class DbHelper extends SQLiteOpenHelper
             + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TimeTableEntry.COLUMN_NAME + " TEXT, "
             + TimeTableEntry.COLUMN_LOCATION + " TEXT, "
-            + TimeTableEntry.COLUMN_DAY + " INTEGER, "
             + TimeTableEntry.COLUMN_STARTHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_COLOR + " INTEGER, "
@@ -313,6 +313,7 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(SchoolEntry.COLUMN_ENDTIME, model.getmEndTime());
         values.put(SchoolEntry.COLUMN_RECUR_RULE, model.getmRecurrence_rule());
         values.put(SchoolEntry.COLUMN_RECUR_OPTION, model.getmRecurrence_option());
+        values.put(SchoolEntry.COLUMN_DAY_OF_WEEK, model.getmDayOfWeek());
 
         //long res = db.insert(SchoolEntry.TABLE_NAME, null, values);
         long res = db.insertWithOnConflict(SchoolEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -360,6 +361,7 @@ public class DbHelper extends SQLiteOpenHelper
             model.setmEndTime(cursor.getString(6));
             model.setmRecurrence_rule(cursor.getString(7));
             model.setmRecurrence_option(cursor.getString(8));
+            model.setmDayOfWeek(cursor.getString(9));
             cursor.close();
             return model;
         }
@@ -450,7 +452,6 @@ public class DbHelper extends SQLiteOpenHelper
         //values.put(TimeTableEntry._ID, model.getId());
         values.put(TimeTableEntry.COLUMN_NAME, model.getName());
         values.put(TimeTableEntry.COLUMN_LOCATION, model.getLocation());
-        values.put(TimeTableEntry.COLUMN_DAY, model.getmDay().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());

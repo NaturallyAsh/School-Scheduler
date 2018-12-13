@@ -20,9 +20,10 @@ public class SubjectsModel implements Parcelable
     private String mRecurrence_rule;
     private String mRecurrence_option;
     private Calendar mConvertStartTime;
+    private String mDayOfWeek;
 
     public SubjectsModel(int id, String title, String teacher, String room, int color, String start, String end,
-                         String rule, String option)
+                         String rule, String option, String dayOfWeek)
     {
         this.id = id;
         this.mTitle = title;
@@ -33,6 +34,7 @@ public class SubjectsModel implements Parcelable
         this.mEndTime = end;
         this.mRecurrence_rule = rule;
         this.mRecurrence_option = option;
+        this.mDayOfWeek = dayOfWeek;
     }
 
     public SubjectsModel() {
@@ -49,6 +51,7 @@ public class SubjectsModel implements Parcelable
         mEndTime = in.readString();
         mRecurrence_rule = in.readString();
         mRecurrence_option = in.readString();
+        mDayOfWeek = in.readString();
     }
 
     public int getId() {return id;}
@@ -152,6 +155,13 @@ public class SubjectsModel implements Parcelable
         this.mRecurrence_option = option;
     }
 
+    public String getmDayOfWeek() {
+        return mDayOfWeek;
+    }
+    public void setmDayOfWeek(String dayOfWeek) {
+        this.mDayOfWeek = dayOfWeek;
+    }
+
     public static final Parcelable.Creator<SubjectsModel> CREATOR = new
             Parcelable.Creator<SubjectsModel>() {
                 @Override
@@ -180,6 +190,7 @@ public class SubjectsModel implements Parcelable
         dest.writeString(mEndTime);
         dest.writeString(mRecurrence_rule);
         dest.writeString(mRecurrence_option);
+        dest.writeString(mDayOfWeek);
     }
 
 }
