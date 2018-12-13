@@ -33,6 +33,7 @@ import java.util.Calendar;
 
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
@@ -387,13 +388,32 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
             startTime.setTimeInMillis(System.currentTimeMillis());
         }
 
-        Calendar endTime = (Calendar) startTime.clone();
+        Calendar endTime = Calendar.getInstance();
         endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
         endTime.set(Calendar.MINUTE, END_MINUTE);
 
+        int day_recur = 0;
+        if (subjectsModel.getmRecurrence_rule() != null) {
+            EventRecurrence recurrence = new EventRecurrence();
+            recurrence.parse(subjectsModel.getmRecurrence_rule());
+            for (int i = 0; i < recurrence.bydayCount; i++) {
+                day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
+                Log.i(TAG, "day recur: " + day_recur);
+            }
+        }
+        Log.i(TAG, "int day recur: " + day_recur);
+
+        Calendar day = Calendar.getInstance();
+        day.set(Calendar.DAY_OF_WEEK, day_recur);
+        /*day.set(Calendar.DAY_OF_WEEK, day.getFirstDayOfWeek());
+        for (int i = 0; i < day_recur; i++) {
+            day.add(Calendar.DAY_OF_WEEK, 1);
+        }*/
+        Log.i(TAG, "day of week: " + day.get(Calendar.DAY_OF_WEEK));
+
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(titleString,
-                startTime, endTime), startTime, endTime);
+                startTime, endTime), day, startTime, endTime);
         createdEvent.setColor(subjectsModel.getmColor());
         createdEvent.setLocation(roomString);
         createdEvent.setmRecurrenceRule(subjectsModel.getmRecurrence_rule());
@@ -431,6 +451,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         WeekViewEvent model = new WeekViewEvent();
         model.setName(titleString);
         model.setLocation(roomString);
+        model.setmDay(day);
         model.setStartTime(startTime);
         model.setEndTime(endTime);
         model.setColor(subjectsModel.getmColor());

@@ -68,6 +68,7 @@ public class DbHelper extends SQLiteOpenHelper
             TimeTableEntry._ID,
             TimeTableEntry.COLUMN_NAME,
             TimeTableEntry.COLUMN_LOCATION,
+            TimeTableEntry.COLUMN_DAY,
             TimeTableEntry.COLUMN_STARTHOUR,
             TimeTableEntry.COLUMN_ENDHOUR,
             TimeTableEntry.COLUMN_COLOR,
@@ -106,7 +107,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 71;
+    private static final int DATABASE_VERSION = 73;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -162,6 +163,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_NAME = "name";
         public final static String COLUMN_LOCATION = "location";
+        public final static String COLUMN_DAY = "day";
         public final static String COLUMN_STARTHOUR = "starthour";
         public final static String COLUMN_ENDHOUR = "endhour";
         public final static String COLUMN_COLOR = "color";
@@ -174,6 +176,7 @@ public class DbHelper extends SQLiteOpenHelper
             + TimeTableEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + TimeTableEntry.COLUMN_NAME + " TEXT, "
             + TimeTableEntry.COLUMN_LOCATION + " TEXT, "
+            + TimeTableEntry.COLUMN_DAY + " INTEGER, "
             + TimeTableEntry.COLUMN_STARTHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_ENDHOUR + " INTEGER, "
             + TimeTableEntry.COLUMN_COLOR + " INTEGER, "
@@ -447,6 +450,7 @@ public class DbHelper extends SQLiteOpenHelper
         //values.put(TimeTableEntry._ID, model.getId());
         values.put(TimeTableEntry.COLUMN_NAME, model.getName());
         values.put(TimeTableEntry.COLUMN_LOCATION, model.getLocation());
+        values.put(TimeTableEntry.COLUMN_DAY, model.getmDay().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_STARTHOUR, model.getStartTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_ENDHOUR, model.getEndTime().getTimeInMillis());
         values.put(TimeTableEntry.COLUMN_COLOR, model.getColor());

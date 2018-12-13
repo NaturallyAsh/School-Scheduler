@@ -94,8 +94,10 @@ public class WeekView extends View {
     private WeekView.Direction mCurrentFlingDirection = WeekView.Direction.NONE;
     private ScaleGestureDetector mScaleDetector;
     private boolean mIsZooming;
-    private Calendar mFirstVisibleDay;
-    private Calendar mLastVisibleDay;
+    //private Calendar mFirstVisibleDay;
+    private final Calendar mFirstVisibleDay = Calendar.getInstance();
+    //private Calendar mLastVisibleDay;
+    private final Calendar mLastVisibleDay = Calendar.getInstance();
     private boolean mShowFirstDayOfWeekFirst = false;
     private int mDefaultEventColor;
     private int mMinimumFlingVelocity = 0;
@@ -648,6 +650,7 @@ public class WeekView extends View {
         drawTimeColumnAndAxes(canvas);
     }
 
+    private static final Calendar sFirstVisibleDayCalendar = Calendar.getInstance();
     private void calculateHeaderHeight(){
         //Make sure the header is the right size (depends on AllDay events)
         boolean containsAllDayEvent = false;
@@ -655,11 +658,18 @@ public class WeekView extends View {
             for (int dayNumber = 0;
                  dayNumber < mNumberOfVisibleDays;
                  dayNumber++) {
-                Calendar day = (Calendar) getFirstVisibleDay().clone();
-                day.add(Calendar.DATE, dayNumber);
+                //Calendar day = (Calendar) getFirstVisibleDay().clone();
+                //day.add(Calendar.DATE, dayNumber);
+                sFirstVisibleDayCalendar.setTimeInMillis(mFirstVisibleDay.getTimeInMillis());
+                sFirstVisibleDayCalendar.add(Calendar.DATE, dayNumber);
                 for (int i = 0; i < mEventRects.size(); i++) {
 
-                    if (isSameDay(mEventRects.get(i).event.getStartTime(), day) && mEventRects.get(i).event.isAllDay()) {
+                    /*if (isSameDay(mEventRects.get(i).event.getStartTime(), day) && mEventRects.get(i).event.isAllDay()) {
+                        containsAllDayEvent = true;
+                        break;
+                    }*/
+                    if (isSameDay(mEventRects.get(i).event.getStartTime(), sFirstVisibleDayCalendar.getTimeInMillis()) &&
+                            mEventRects.get(i).event.isAllDay()) {
                         containsAllDayEvent = true;
                         break;
                     }

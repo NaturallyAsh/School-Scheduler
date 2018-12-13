@@ -15,6 +15,7 @@ public class WeekViewEvent implements Serializable{
     private String mLocation;
     private int mColor;
     private String mRecurrenceRule;
+    private Calendar mDay;
     private boolean mAllDay;
     private String mAgenda;
     private String mVisibility;
@@ -101,7 +102,11 @@ public class WeekViewEvent implements Serializable{
      * @param endTime The time when the event ends.
      */
     public WeekViewEvent(long id, String name, Calendar startTime, Calendar endTime) {
-        this(id, name, null, startTime, endTime);
+        //this(id, name, null, startTime, endTime);
+        this.mId = id;
+        this.mName = name;
+        this.mStartTime = startTime;
+        this.mEndTime = endTime;
     }
 
     //db constructor
@@ -110,6 +115,26 @@ public class WeekViewEvent implements Serializable{
         this.mId = id;
         this.mName = name;
         this.mLocation = location;
+        this.mStartTime = startTime;
+        this.mEndTime = endTime;
+        this.mColor = color;
+        this.mRecurrenceRule = recurrence;
+    }
+
+    public WeekViewEvent(long id, String name, Calendar day, Calendar startTime, Calendar endTime) {
+        this.mId = id;
+        this.mName = name;
+        this.mDay = day;
+        this.mStartTime = startTime;
+        this.mEndTime = endTime;
+    }
+
+    public WeekViewEvent(long id, String name, String location, Calendar day, Calendar startTime, Calendar endTime, int color, String recurrence)
+    {
+        this.mId = id;
+        this.mName = name;
+        this.mLocation = location;
+        this.mDay = day;
         this.mStartTime = startTime;
         this.mEndTime = endTime;
         this.mColor = color;
@@ -138,6 +163,14 @@ public class WeekViewEvent implements Serializable{
         if (endTime != null)
             temp.setTime(endTime.getTime()); */
         this.mEndTime = endTime;
+    }
+
+    public Calendar getmDay() {
+        return mDay;
+    }
+
+    public void setmDay(Calendar day) {
+        this.mDay = day;
     }
 
     public String getName() {
@@ -219,7 +252,7 @@ public class WeekViewEvent implements Serializable{
             events.add(event1);
 
             // Add other days.
-            Calendar otherDay = (Calendar) this.getStartTime().clone();
+            /*Calendar otherDay = (Calendar) this.getStartTime().clone();
             otherDay.add(Calendar.DATE, 1);
             while (!isSameDay(otherDay, this.getEndTime())) {
                 Calendar overDay = (Calendar) otherDay.clone();
@@ -234,7 +267,7 @@ public class WeekViewEvent implements Serializable{
 
                 // Add next day.
                 otherDay.add(Calendar.DATE, 1);
-            }
+            }*/
 
             // Add last day.
             Calendar startTime = (Calendar) this.getEndTime().clone();

@@ -32,6 +32,12 @@ public class WeekViewUtil {
     public static boolean isSameDay(Calendar dayOne, Calendar dayTwo) {
         return dayOne.get(Calendar.YEAR) == dayTwo.get(Calendar.YEAR) && dayOne.get(Calendar.DAY_OF_YEAR) == dayTwo.get(Calendar.DAY_OF_YEAR);
     }
+    /*
+    private static Calendar sDayOne = Calendar.getInstance();
+    private static Calendar sDayTwo = Calendar.getInstance();
+    public static boolean isSameDay(long dayOne, long dayTwo) {
+
+    }*/
 
     /**
      * Returns a calendar instance at the start of this day
@@ -73,11 +79,11 @@ public class WeekViewUtil {
 
     private static void cacheEvent(WeekViewEvent event, List<EventRect> mEventRects)
     {
-        if (event.getStartTime().compareTo(event.getEndTime()) >= 0) {
+        /*if (event.getStartTime().compareTo(event.getEndTime()) >= 0) {
             Log.i(TAG, "returned");
 
             return;
-        }
+        }*/
         List<WeekViewEvent> splitedEvents = event.splitWeekViewEvents();
         for (WeekViewEvent splitedEvent: splitedEvents)
         {

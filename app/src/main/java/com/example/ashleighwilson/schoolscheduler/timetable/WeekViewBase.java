@@ -134,38 +134,50 @@ public class WeekViewBase extends WeekViewFragment
             long id = cursor.getLong(0);
             String name = cursor.getString(1);
             String location = cursor.getString(2);
+            Calendar day = Calendar.getInstance();
+            day.setTimeInMillis(cursor.getLong(3));
             Calendar start = Calendar.getInstance();
-            start.setTimeInMillis(cursor.getLong(3));
+            start.setTimeInMillis(cursor.getLong(4));
             start.set(Calendar.HOUR_OF_DAY, start.get(Calendar.HOUR_OF_DAY));
             start.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
             start.set(Calendar.MONTH, newMonth -1);
             start.set(Calendar.YEAR, newYear);
             Calendar end = Calendar.getInstance();
             //end = (Calendar) start.clone();
-            end.setTimeInMillis(cursor.getLong(4));
+            end.setTimeInMillis(cursor.getLong(5));
             end.set(Calendar.HOUR_OF_DAY, end.get(Calendar.HOUR_OF_DAY));
             end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
             end.set(Calendar.MONTH, newMonth -1);
-            int color = cursor.getInt(5);
-            String rule = cursor.getString(6);
+            int color = cursor.getInt(6);
+            String rule = cursor.getString(7);
+
             Log.i(TAG, "rule: " + rule);
 
+            int day_recur = 0;
             if (rule != null) {
                 EventRecurrence recurrence = new EventRecurrence();
                 recurrence.parse(rule);
                 for (int i = 0; i < recurrence.bydayCount; i++) {
-                    int day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
+                    day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
                     Log.i(TAG, "day recur: " + day_recur);
+                }
+                Calendar c = Calendar.getInstance();
+                recurrence.wkst = c.get(Calendar.DAY_OF_WEEK);
+                while (recurrence.wkst != day_recur) {
+                    c.add(Calendar.DAY_OF_WEEK, day_recur);
+                    recurrence.wkst = c.get(Calendar.DAY_OF_WEEK);
+                    Log.i(TAG, "recurrence wkst: " + recurrence.wkst);
                 }
             }
 
-            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
+            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), day, start, end);
             dbEvent.setColor(color);
             dbEvent.setLocation(location);
             dbEvent.setmRecurrenceRule(rule);
 
             events.add(dbEvent);
             //WeekViewFragment.notifyWeekView();
+            Log.i(TAG, "cursor event called");
 
             WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
 
@@ -173,6 +185,7 @@ public class WeekViewBase extends WeekViewFragment
 
         //WeekViewEvent fileEvent = CalenderFrag.readObj(mContext);
         //events.add(fileEvent);
+        Log.i(TAG, "non-cursor rule");
 
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);

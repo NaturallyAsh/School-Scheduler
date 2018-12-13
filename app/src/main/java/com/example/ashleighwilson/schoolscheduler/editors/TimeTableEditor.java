@@ -96,7 +96,7 @@ public class TimeTableEditor extends AppCompatActivity implements
             if (bundle.containsKey("start"))
             {
                 originalStartTime = (Calendar) bundle.get("start");
-                Log.i(TAG, "original start time: " + originalStartTime);
+                //Log.i(TAG, "original start time: " + originalStartTime);
             }
         }
 
