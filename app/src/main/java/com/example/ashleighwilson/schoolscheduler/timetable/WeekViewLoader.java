@@ -3,7 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 import java.util.Calendar;
 import java.util.List;
 
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 public interface WeekViewLoader
 {     /**

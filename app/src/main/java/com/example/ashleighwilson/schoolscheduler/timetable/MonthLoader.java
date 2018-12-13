@@ -1,6 +1,8 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
+
 import java.util.Calendar;
 import java.util.List;
 

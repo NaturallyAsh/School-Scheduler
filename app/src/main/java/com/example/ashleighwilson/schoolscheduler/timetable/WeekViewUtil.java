@@ -1,7 +1,6 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
-import android.os.Bundle;
-import android.util.Log;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.util.Calendar;
 import java.util.Collections;

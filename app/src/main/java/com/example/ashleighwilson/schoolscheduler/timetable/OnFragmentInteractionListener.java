@@ -1,6 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
-import java.util.Calendar;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
+
 import java.util.List;
 
 public interface OnFragmentInteractionListener

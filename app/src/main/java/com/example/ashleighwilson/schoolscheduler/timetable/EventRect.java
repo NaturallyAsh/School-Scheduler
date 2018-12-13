@@ -2,7 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.graphics.RectF;
 
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 public class EventRect
 {

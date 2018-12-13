@@ -5,12 +5,13 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
-import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -191,5 +192,10 @@ public class WeekViewBase extends WeekViewFragment
 
         //listener.refreshData(events);
         return events;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

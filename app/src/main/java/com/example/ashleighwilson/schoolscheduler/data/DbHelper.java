@@ -15,9 +15,10 @@ import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 import com.example.ashleighwilson.schoolscheduler.notes.Attachment;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.utils.OnDatabaseChangedListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -468,6 +469,63 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.query(TimeTableEntry.TABLE_NAME, timeTableColumns, null, null,
                 null, null, null);
+    }
+
+    public WeekViewEvent getTableAt(int position) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TimeTableEntry.TABLE_NAME, timeTableColumns, null, null,
+                null, null, null);
+
+        if (cursor.moveToPosition(position)) {
+            WeekViewEvent dbEvent = new WeekViewEvent();
+
+            dbEvent.setId(cursor.getInt(0));
+            dbEvent.setName(cursor.getString(1));
+            dbEvent.setLocation(cursor.getString(2));
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(cursor.getLong(3));
+            dbEvent.setStartTime(start);
+            Calendar end = Calendar.getInstance();
+            end.setTimeInMillis(cursor.getLong(4));
+            dbEvent.setEndTime(end);
+            dbEvent.setColor(cursor.getInt(5));
+            dbEvent.setmRecurrenceRule(cursor.getString(6));
+
+
+            /*WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
+            dbEvent.setColor(color);
+            dbEvent.setLocation(location);
+            dbEvent.setmRecurrenceRule(rule);*/
+            cursor.close();
+            return dbEvent;
+        }
+        return null;
+    }
+
+    public String getEventName(String name, Calendar startTime, Calendar endTime) {
+
+    String start = dateFormatter(startTime);
+    String end = dateFormatter(endTime);
+
+    String eventMsg = name + "\n" + start + " - " + end;
+
+    return eventMsg;
+}
+
+    private String dateFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
+    }
+
+    public long deleteTimetable(long id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        return db.delete(TimeTableEntry.TABLE_NAME, TimeTableEntry._ID + " =?",
+                new String[]{String.valueOf(id)});
     }
 
     public void addToSpinner(String label)

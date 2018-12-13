@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     private final View.OnClickListener onClickListener;
     LayoutInflater inflater;
     WeekViewEvent event;
+    DbHelper dbHelper;
 
     public EventAdapter(Context context, List<WeekViewEvent> events, View.OnClickListener listener)
     {
@@ -34,6 +36,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         Log.i(TAG, "events adapter events not calling: " + events);
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
+        dbHelper = DbHelper.getInstance();
     }
 
     @Override
@@ -91,7 +94,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 
     public void dismissEvent(int position) {
 
-        //eventList.remove(event.);
+        dbHelper.deleteTimetable(eventList.get(position).getId());
+        eventList.remove(position);
         notifyItemRemoved(position);
+        //notifyItemRangeChanged(0, eventList.size());
     }
 }

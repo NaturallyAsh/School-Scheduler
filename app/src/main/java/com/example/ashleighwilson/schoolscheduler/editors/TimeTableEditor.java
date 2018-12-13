@@ -10,7 +10,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,14 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
-import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventsPreference;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 
@@ -303,8 +301,7 @@ public class TimeTableEditor extends AppCompatActivity implements
         endTime.set(Calendar.MINUTE, END_MINUTE);
         
         WeekViewEvent createdEvent;
-        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(nameString,
-                startTime, endTime), startTime, endTime);
+        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
         createdEvent.setColor(subColor);
         createdEvent.setLocation(roomString);
 

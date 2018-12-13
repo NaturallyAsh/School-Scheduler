@@ -1,26 +1,15 @@
 package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.format.Time;
-import android.util.Log;
 import android.widget.BaseAdapter;
 
-import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
-import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
-import com.example.ashleighwilson.schoolscheduler.models.RecordingModel;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent.*;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -179,7 +168,8 @@ public class Event implements Serializable
         return "day: "+day+", month: "+month+", year: "+year;
     }
 
-    public void addDayEvent(WeekViewEvent event) {
+    public void addDayEvent(WeekViewEvent event)
+    {
         if (events.size() > 1) {
             for (WeekViewEvent e : events) {
                 if (e.getId() == event.getId()) {

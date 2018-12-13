@@ -1,25 +1,16 @@
 package com.example.ashleighwilson.schoolscheduler;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -45,7 +36,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekView;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -188,7 +179,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         add_event.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEventDetailsScreen(null, dayCalendar);
+                showNewEventScreen(null, dayCalendar);
             }
         });
 
@@ -216,6 +207,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
+
                             if (eventAdapter.getItemCount() == 0)
                                 updateView();
                         }
@@ -265,48 +257,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                 }
             }
         });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.calendar, menu);
-
-        MenuItem actionViewItem = menu.findItem(R.id.calendar_action);
-
-        // Retrieve the action-view from menu
-
-        //View v = MenuItemCompat.getActionView(actionViewItem);
-        View v = (View) actionViewItem.getActionView();
-
-        // Find the button within action-view
-
-        monthView = (TextView) v.findViewById(R.id.month_view);
-        monthView.setOnClickListener(this);
-
-        weekView = (TextView) v.findViewById(R.id.week_view);
-        weekView.setOnClickListener(this);
-
-        dayView = (TextView) v.findViewById(R.id.day_view);
-        dayView.setOnClickListener(this);
-
-        monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
-        weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-        dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-        //super.onCreateOptionsMenu(menu, inflater);
-        //return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id)
-        {
-
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -376,13 +326,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-
-
-        //super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public void onResume()
     {
         super.onResume();
@@ -448,59 +391,63 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.month_view) {
-            if (mWeekViewType != TYPE_MONTH_VIEW) {
-                mWeekViewType = TYPE_MONTH_VIEW;
-                mWeekView.setVisibility(View.GONE);
-                mAppBarLayout.setVisibility(View.VISIBLE);
-                updateView();
-                monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
-                weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-                dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-            }
-        } else if (v.getId() == R.id.week_view) {
-            if (mWeekViewType != TYPE_WEEK_VIEW) {
-                setupDateTimeInterpreter(true);
-                mWeekView.setVisibility(View.VISIBLE);
-                eventList.setVisibility(View.GONE);
-                mAppBarLayout.setVisibility(View.GONE);
-                mWeekViewType = TYPE_WEEK_VIEW;
-                mWeekView.setNumberOfVisibleDays(7);
-                add_event.setVisibility(View.INVISIBLE);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.action_week, menu);
 
-                //getSupportActionBar().setTitle(getTitle());
-                // Lets change some dimensions to best fit the view.
-                mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
-                mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+    }
 
-                monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-                weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
-                dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-            }
-        } else if (v.getId() == R.id.day_view) {
-            if (mWeekViewType != TYPE_DAY_VIEW) {
-                setupDateTimeInterpreter(false);
-                mWeekView.setVisibility(View.VISIBLE);
-                eventList.setVisibility(View.GONE);
-                mAppBarLayout.setVisibility(View.GONE);
-                mWeekViewType = TYPE_DAY_VIEW;
-                mWeekView.setNumberOfVisibleDays(1);
-                //getSupportActionBar().setTitle(getTitle());
-                // Lets change some dimensions to best fit the view.
-                mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_month_view:
+                if (mWeekViewType != TYPE_MONTH_VIEW) {
+                    mWeekViewType = TYPE_MONTH_VIEW;
+                    mWeekView.setVisibility(View.GONE);
+                    mAppBarLayout.setVisibility(View.VISIBLE);
+                    updateView();}
+                return true;
+            case R.id.action_day_view:
+                if (mWeekViewType != TYPE_DAY_VIEW) {
+                    setupDateTimeInterpreter(false);
+                    mWeekView.setVisibility(View.VISIBLE);
+                    eventList.setVisibility(View.GONE);
+                    mAppBarLayout.setVisibility(View.GONE);
+                    mWeekViewType = TYPE_DAY_VIEW;
+                    mWeekView.setNumberOfVisibleDays(1);
+                    //getSupportActionBar().setTitle(getTitle());
+                    // Lets change some dimensions to best fit the view.
+                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));}
+                return true;
+            case R.id.action_week_view:
+                if (mWeekViewType != TYPE_WEEK_VIEW) {
+                    setupDateTimeInterpreter(true);
+                    mWeekView.setVisibility(View.VISIBLE);
+                    eventList.setVisibility(View.GONE);
+                    mAppBarLayout.setVisibility(View.GONE);
+                    mWeekViewType = TYPE_WEEK_VIEW;
+                    mWeekView.setNumberOfVisibleDays(7);
+                    add_event.setVisibility(View.INVISIBLE);
 
-                monthView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-                weekView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.normal_day));
-                dayView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.today));
-            }
-        } else if (v.getId() == android.R.id.text1) {
-            WeekViewEvent event = (WeekViewEvent) v.getTag();
-            showEventDetailsScreen(event, null);
+                    //getSupportActionBar().setTitle(getTitle());
+                    // Lets change some dimensions to best fit the view.
+                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));}
+                return true;
+
         }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+
+        //super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -521,7 +468,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
-        showEventDetailsScreen(event, null);
+        showEventDetailScreen(event);
     }
 
     @Override
@@ -535,7 +482,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                 time.get(Calendar.HOUR_OF_DAY);
                 time.get(Calendar.MINUTE);
                 time.get(Calendar.SECOND);
-                showEventDetailsScreen(null, time);
+                showNewEventScreen(null, null);
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -577,7 +524,17 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         return mWeekView;
     }
 
-    private void showEventDetailsScreen(WeekViewEvent event, Calendar startTime)
+    private void showEventDetailScreen(WeekViewEvent event) {
+        Intent intent = new Intent(getActivity(), EventDetailActivity.class);
+        Bundle bundle = new Bundle();
+        if (event != null) {
+            bundle.putSerializable("event", event);
+        }
+        intent.putExtras(bundle);
+        getActivity().startActivity(intent);
+    }
+
+    private void showNewEventScreen(WeekViewEvent event, Calendar startTime)
     {
         Intent intent = new Intent(getActivity(), TimeTableEditor.class);
         Bundle bundle = new Bundle();

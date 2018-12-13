@@ -20,8 +20,7 @@ import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventsPreference;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.File;

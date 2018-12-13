@@ -1,4 +1,4 @@
-package com.example.ashleighwilson.schoolscheduler.timetable;
+package com.example.ashleighwilson.schoolscheduler.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ public class WeekViewEvent implements Serializable{
     private Calendar mDay;
     private boolean mAllDay;
     private String mAgenda;
+    public List<WeekViewEvent> events = null;
     private String mVisibility;
-    private ArrayList<String> mAttendees = new ArrayList<>();
     private String mInviteMessage;
     private String mCategory;
     private String mType;
@@ -231,6 +231,19 @@ public class WeekViewEvent implements Serializable{
 
         return mId == that.mId;
 
+    }
+
+    public void removeEvent(WeekViewEvent event) {
+        {
+            if (events.size() > 1) {
+                for (WeekViewEvent e : events) {
+                    if (e.getId() == event.getId()) {
+                        events.remove(e);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override

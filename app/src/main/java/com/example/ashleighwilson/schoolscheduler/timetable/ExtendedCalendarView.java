@@ -2,9 +2,7 @@ package com.example.ashleighwilson.schoolscheduler.timetable;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -20,7 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;

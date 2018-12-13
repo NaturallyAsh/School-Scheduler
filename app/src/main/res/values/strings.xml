@@ -148,4 +148,7 @@
     <string name="days_of_the_week_string">Days of The Week</string>
     <string name="weekly_schedule_string">Weekly Schedule</string>
     <string name="add_to_timetable_string">Add to Timetable</string>
+    <string name="action_month_view_string">Month View</string>
+    <string name="details_string">Details</string>
+    <string name="schedule_string">Schedule</string>
 </resources>

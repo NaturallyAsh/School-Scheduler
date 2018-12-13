@@ -8,7 +8,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,18 +29,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
-import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.RecyclerSubAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
@@ -51,7 +48,6 @@ import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 import com.example.ashleighwilson.schoolscheduler.models.SubjectsModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import eltos.simpledialogfragment.list.SimpleListDialog;
@@ -453,8 +449,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         endTime.set(Calendar.MINUTE, END_MINUTE);
 
         WeekViewEvent createdEvent;
-        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, getEventName(titleString,
-                startTime, endTime), startTime, endTime);
+        createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, titleString, startTime, endTime);
         createdEvent.setColor(subjectsModel.getmColor());
         createdEvent.setLocation(roomString);
         createdEvent.setmRecurrenceRule(subjectsModel.getmRecurrence_rule());
