@@ -8,18 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 {
     private static final String TAG = EventAdapter.class.getSimpleName();
 
-    private final Context mContext;
-    private final List<WeekViewEvent> eventList;
+    private Context mContext;
+    private List<WeekViewEvent> eventList;
     private final View.OnClickListener onClickListener;
     LayoutInflater inflater;
     WeekViewEvent event;
@@ -28,13 +31,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     public EventAdapter(Context context, List<WeekViewEvent> events, View.OnClickListener listener)
     {
         this.mContext = context;
-        this.eventList = new ArrayList<>();
+        //this.eventList = new ArrayList<>();
+        this.eventList = events;
         if (events != null) {
-            events.addAll(events);
-            Log.i(TAG, "events: " + events);
+            //events.addAll(events);
         }
-        Log.i(TAG, "events adapter events not calling: " + events);
-        inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Log.i(TAG, "events: " + events.size());
+        //inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
         dbHelper = DbHelper.getInstance();
     }
@@ -42,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        return new ViewHolder(inflater.inflate(android.R.layout.simple_list_item_1, parent, false));
+        return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.event_list_item, parent, false));
     }
 
     @Override
@@ -54,17 +57,30 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             holder.eventTitle.setText(event.getName());
             holder.eventTitle.setBackgroundColor(event.getColor());
             holder.eventTitle.setTag(event);
+            if (event.getStartTime() != null && event.getEndTime() != null) {
+                String start = dateFormatter(event.getStartTime());
+                String end = dateFormatter(event.getEndTime());
+                Log.i(TAG, "start: " + start + " end: " + end);
+
+                holder.eventSchedule.setText(new StringBuilder().append(start).append(" - ").append(end).toString());
+            } else {
+                holder.eventSchedule.setText("N/A");
+            }
+            holder.eventSchedule.setBackgroundColor(event.getColor());
+            holder.eventSchedule.setTag(event);
         }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         TextView eventTitle;
+        TextView eventSchedule;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
-            eventTitle = (TextView) itemView.findViewById(android.R.id.text1);
+            eventTitle = itemView.findViewById(R.id.event_list_title_tv);
+            eventSchedule = itemView.findViewById(R.id.event_list_schedule_tv);
             eventTitle.setOnClickListener(onClickListener);
         }
     }
@@ -87,8 +103,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         {
             this.eventList.clear();
         }
-        this.eventList.clear();
-        this.eventList.addAll(events);
+        //this.eventList.clear();
+        //this.eventList.addAll(events);
+        this.eventList = events;
         notifyDataSetChanged();
     }
 
@@ -98,5 +115,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         eventList.remove(position);
         notifyItemRemoved(position);
         //notifyItemRangeChanged(0, eventList.size());
+    }
+
+    private String dateFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
     }
 }

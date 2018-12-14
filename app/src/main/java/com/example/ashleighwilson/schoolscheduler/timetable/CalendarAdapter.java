@@ -33,7 +33,6 @@ public class CalendarAdapter extends BaseAdapter
     public Event currentDay;
     private Calendar currentCal;
     List<EventRect> mEventRects;
-//	OnAddNewEventClick mAddEvent;
 
     ArrayList<Event> dayList = new ArrayList<Event>();
 
@@ -42,6 +41,7 @@ public class CalendarAdapter extends BaseAdapter
         this.context = context;
         cal.set(Calendar.DAY_OF_MONTH, 1);
         refreshDays(eventRects);
+        Log.i(TAG, "created");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class CalendarAdapter extends BaseAdapter
         LayoutInflater vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(position >= 0 && position < 7){
             v = vi.inflate(R.layout.day_of_week, null);
-            TextView day = (TextView)v.findViewById(R.id.textView3);
+            TextView day = v.findViewById(R.id.textView3);
 
             if(position == 0){
                 day.setText(R.string.sunday);
@@ -119,7 +119,7 @@ public class CalendarAdapter extends BaseAdapter
         }else{
 
             v = vi.inflate(R.layout.day_view, null);
-            FrameLayout today = (FrameLayout)v.findViewById(R.id.today_frame);
+            FrameLayout today = v.findViewById(R.id.today_frame);
             Calendar cal = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault());
             Event day = dayList.get(position);
             currentCal = (Calendar) cal.clone();
@@ -128,10 +128,10 @@ public class CalendarAdapter extends BaseAdapter
             currentCal.set(Calendar.YEAR, day.getYear());
             currentCal.set(Calendar.DAY_OF_MONTH, day.getDay());
 
-            TextView dayTV = (TextView)v.findViewById(R.id.textView1);
+            TextView dayTV = v.findViewById(R.id.textView1);
 
-            RelativeLayout rl = (RelativeLayout)v.findViewById(R.id.rl);
-            ImageView iv = (ImageView)v.findViewById(R.id.imageView1);
+            RelativeLayout rl = v.findViewById(R.id.rl);
+            ImageView iv = v.findViewById(R.id.imageView1);
 
             iv.setVisibility(View.INVISIBLE);
             dayTV.setVisibility(View.VISIBLE);
@@ -172,7 +172,7 @@ public class CalendarAdapter extends BaseAdapter
         dayList.clear();
 
         int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH)+7;
-        int firstDay = (int)cal.get(Calendar.DAY_OF_WEEK);
+        int firstDay = cal.get(Calendar.DAY_OF_WEEK);
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         TimeZone tz = TimeZone.getDefault();

@@ -43,6 +43,8 @@ public class Event implements Serializable
         monthEndDay = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
     }
 
+    public Event() {}
+
     public int getMonth(){
         return month;
     }

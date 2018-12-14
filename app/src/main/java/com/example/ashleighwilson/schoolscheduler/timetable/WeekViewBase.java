@@ -10,6 +10,7 @@ import android.view.View;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.WeekViewFragment;
+import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
@@ -26,7 +27,7 @@ public class WeekViewBase extends WeekViewFragment
     public final static String ARG_EVENT_ID = "arg_event_id";
     Context mContext = MySchedulerApp.getInstance();
     DbHelper dbHelper = DbHelper.getInstance();
-    WeekViewEvent loadedEvent;
+    WeekViewEvent dbEvent;
 
     public static WeekViewBase newInstance(long event_id)
     {
@@ -151,7 +152,7 @@ public class WeekViewBase extends WeekViewFragment
             String rule = cursor.getString(6);
             //String dayOfWeek = cursor.getString(7);
 
-            Log.i(TAG, "rule: " + rule);
+            /*Log.i(TAG, "rule: " + rule);
 
             int day_recur = 0;
             if (rule != null) {
@@ -168,9 +169,9 @@ public class WeekViewBase extends WeekViewFragment
                     recurrence.wkst = c.get(Calendar.DAY_OF_WEEK);
                     Log.i(TAG, "recurrence wkst: " + recurrence.wkst);
                 }
-            }
+            }*/
 
-            WeekViewEvent dbEvent = new WeekViewEvent(id, getEventName(name, start, end), start, end);
+            dbEvent = new WeekViewEvent(id, name, start, end);
             dbEvent.setColor(color);
             dbEvent.setLocation(location);
             dbEvent.setmRecurrenceRule(rule);
@@ -190,6 +191,7 @@ public class WeekViewBase extends WeekViewFragment
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
+        addLoadedEvents(events);
         //listener.refreshData(events);
         return events;
     }
