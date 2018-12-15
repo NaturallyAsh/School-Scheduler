@@ -37,6 +37,7 @@
         </com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView>
 
         <LinearLayout
+            android:id="@+id/day_tv_container"
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_height="70dp"
@@ -74,23 +75,13 @@
 
 
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/nested"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="bottom"
-            app:layout_anchor="@id/app_bar_cal"
-            app:layout_anchorGravity="bottom">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/event_RV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/event_RV"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="500dp">
-
-            </android.support.v7.widget.RecyclerView>
-
-        </android.support.v4.widget.NestedScrollView>
+    </android.support.v7.widget.RecyclerView>
 
         <TextView
             android:id="@+id/empty_calendar_view"
@@ -133,7 +124,7 @@
         android:id="@+id/week_view_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/nested"
+        app:layout_anchor="@id/day_tv_container"
         app:layout_anchorGravity="end"
         android:src="@drawable/fab_add"
         android:layout_margin="16dp"/>

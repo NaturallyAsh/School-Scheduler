@@ -1,5 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
+import org.ocpsoft.prettytime.units.Week;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -241,6 +243,17 @@ public class WeekViewEvent implements Serializable{
                         events.remove(e);
                         break;
                     }
+                }
+            }
+        }
+    }
+
+    public void removeEvent(long id) {
+        if (events.size() > 1) {
+            for (WeekViewEvent e : events) {
+                if (e.getId() == id) {
+                    events.remove(e);
+                    break;
                 }
             }
         }

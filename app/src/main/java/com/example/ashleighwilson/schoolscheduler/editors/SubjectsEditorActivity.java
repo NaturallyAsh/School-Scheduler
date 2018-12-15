@@ -432,17 +432,12 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String titleString = subjectsModel.getmTitle();
         String roomString = subjectsModel.getmRoom();
 
-        //Calendar startTime = subjectsModel.getConvertStartTime();
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
         startTime.set(Calendar.MINUTE, START_MINUTE);
         startTime.set(Calendar.DAY_OF_WEEK, dayWeekInt);
         Log.i(TAG, "day of week: " + startTime.get(Calendar.DAY_OF_WEEK));
 
-
-        if (startTime == null) {
-            startTime.setTimeInMillis(System.currentTimeMillis());
-        }
 
         Calendar endTime = Calendar.getInstance();
         endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);

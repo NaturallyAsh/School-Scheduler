@@ -204,7 +204,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
-
+                            updateView();
                             if (eventAdapter.getItemCount() == 0)
                                 updateView();
                         }
@@ -454,7 +454,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
        {
            if (calendar.mAdapter.currentDay != null)
            {
-               //buildEventList(calendar.mAdapter.currentDay);
+               buildEventList(calendar.mAdapter.currentDay);
            }
        }
     }

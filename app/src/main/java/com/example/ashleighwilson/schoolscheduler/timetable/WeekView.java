@@ -1147,7 +1147,7 @@ public class WeekView extends View {
         // Prepare the name of the event.
         SpannableStringBuilder bob = new SpannableStringBuilder();
         if (!TextUtils.isEmpty(event.getName())) {
-            bob.append(event.getName());
+            bob.append(event.getName() + "\n" + event.getStartTime() + event.getEndTime());
             bob.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, bob.length(), 0);
         }
 

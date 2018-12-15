@@ -60,7 +60,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
             if (event.getStartTime() != null && event.getEndTime() != null) {
                 String start = dateFormatter(event.getStartTime());
                 String end = dateFormatter(event.getEndTime());
-                Log.i(TAG, "start: " + start + " end: " + end);
 
                 holder.eventSchedule.setText(new StringBuilder().append(start).append(" - ").append(end).toString());
             } else {
@@ -112,9 +111,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     public void dismissEvent(int position) {
 
         dbHelper.deleteTimetable(eventList.get(position).getId());
+        Log.i(TAG, "eventlist id: " + eventList.get(position).getId());
+        //event.removeEvent(eventList.get(position).getId());
         eventList.remove(position);
         notifyItemRemoved(position);
-        //notifyItemRangeChanged(0, eventList.size());
+        notifyItemRangeChanged(position, eventList.size());
     }
 
     private String dateFormatter(Calendar time)
