@@ -184,4 +184,15 @@ public class Event implements Serializable
             events.add(event);
         }
     }
+
+    public void removeEvent(long id) {
+        if (events.size() > 1) {
+            for (WeekViewEvent e : events) {
+                if (e.getId() == id) {
+                    events.remove(e);
+                    break;
+                }
+            }
+        }
+    }
 }

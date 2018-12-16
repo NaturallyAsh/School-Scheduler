@@ -85,6 +85,7 @@ public class WeekViewBase extends WeekViewFragment
 
         monthKey = "" + (newMonth - 1) + "-" + newYear;
         eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+        //Log.i(TAG, "event by month size: " + eventListByMonth.size());
         if (eventListByMonth == null)
         {
             eventListByMonth = new ArrayList<>();
@@ -95,39 +96,6 @@ public class WeekViewBase extends WeekViewFragment
         }
 
         List<WeekViewEvent> events = new ArrayList<>();
-
-        /*Calendar startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY, 3);
-        startTime.set(Calendar.MINUTE, 0);
-        startTime.set(Calendar.MONTH, newMonth - 1);
-        startTime.set(Calendar.YEAR, newYear);
-        Calendar endTime = (Calendar) startTime.clone();
-        endTime.add(Calendar.HOUR, 3);
-        endTime.set(Calendar.MONTH, newMonth - 1);
-        WeekViewEvent event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
-                startTime, endTime);
-        event.setColor(getResources().getColor(R.color.AliceBlue));
-        event.setLocation(event.getLocation());
-        events.add(event);
-
-        WeekViewUtil.masterEvents.put("" + event.getId(), event);
-
-        startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY, 8);
-        startTime.set(Calendar.MINUTE, 30);
-        startTime.set(Calendar.MONTH, newMonth-1);
-        startTime.set(Calendar.YEAR, newYear);
-        endTime = (Calendar) startTime.clone();
-        endTime.set(Calendar.HOUR_OF_DAY, 9);
-        endTime.set(Calendar.MINUTE, 30);
-        endTime.set(Calendar.MONTH, newMonth-1);
-        event = new WeekViewEvent(WeekViewUtil.eventId++, getEventTitle(startTime, endTime),
-                startTime, endTime);
-        event.setColor(getResources().getColor(R.color.Green));
-        event.setLocation(event.getLocation());
-        events.add(event);
-
-        WeekViewUtil.masterEvents.put("" + event.getId(), event); */
 
         Cursor cursor = dbHelper.fetchEvents();
 
@@ -178,7 +146,7 @@ public class WeekViewBase extends WeekViewFragment
 
             events.add(dbEvent);
             //WeekViewFragment.notifyWeekView();
-            Log.i(TAG, "cursor event called");
+            Log.i(TAG, "cursor event called. Id: " + dbEvent.getId());
 
             WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
 
@@ -186,10 +154,10 @@ public class WeekViewBase extends WeekViewFragment
 
         //WeekViewEvent fileEvent = CalenderFrag.readObj(mContext);
         //events.add(fileEvent);
-        Log.i(TAG, "non-cursor rule");
 
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+        Log.i(TAG, "event size: " + eventListByMonth.size());
 
         addLoadedEvents(events);
         //listener.refreshData(events);

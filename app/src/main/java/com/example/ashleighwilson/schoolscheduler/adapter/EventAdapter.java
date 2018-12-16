@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     public void onBindViewHolder(ViewHolder holder, int position)
     {
         event = eventList.get(position);
+        Log.i(TAG, "event bind id: " + event.getId());
         if (event != null)
         {
             holder.eventTitle.setText(event.getName());
@@ -98,24 +100,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 
     public void setData(List<WeekViewEvent> events)
     {
-        if (this.eventList == null)
+        /*if (this.eventList == null)
         {
             this.eventList.clear();
-        }
-        //this.eventList.clear();
-        //this.eventList.addAll(events);
+        }*/
         this.eventList = events;
         notifyDataSetChanged();
+        notifyItemInserted(getItemCount());
+        notifyItemRangeChanged(0, events.size());
     }
 
     public void dismissEvent(int position) {
 
-        dbHelper.deleteTimetable(eventList.get(position).getId());
         Log.i(TAG, "eventlist id: " + eventList.get(position).getId());
-        //event.removeEvent(eventList.get(position).getId());
+        event.removeEvent(event, eventList.get(position).getId());
+        dbHelper.deleteTimetable(eventList.get(position).getId());
         eventList.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, eventList.size());
+        //notifyItemRangeChanged(position, eventList.size());
     }
 
     private String dateFormatter(Calendar time)

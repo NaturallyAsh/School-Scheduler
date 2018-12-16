@@ -1,5 +1,7 @@
 package com.example.ashleighwilson.schoolscheduler.models;
 
+import android.util.Log;
+
 import org.ocpsoft.prettytime.units.Week;
 
 import java.io.Serializable;
@@ -10,6 +12,8 @@ import java.util.List;
 import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.*;
 
 public class WeekViewEvent implements Serializable{
+
+    private static final String TAG = WeekViewEvent.class.getSimpleName();
 
     private long mId;
     private Calendar mStartTime;
@@ -248,14 +252,14 @@ public class WeekViewEvent implements Serializable{
         }
     }
 
-    public void removeEvent(long id) {
-        if (events.size() > 1) {
-            for (WeekViewEvent e : events) {
-                if (e.getId() == id) {
-                    events.remove(e);
-                    break;
-                }
-            }
+    public void removeEvent(WeekViewEvent event, long id) {
+        Log.i(TAG, "events id: " + event.getId() + " adapter id: " + id);
+        if (this.events == null) {
+            this.events = new ArrayList<>();
+        }
+        this.events.add(event);
+        if (event.getId() == id) {
+            events.remove(event);
         }
     }
 
