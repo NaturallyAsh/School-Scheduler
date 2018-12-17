@@ -41,6 +41,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         //inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
         dbHelper = DbHelper.getInstance();
+        setData(events);
     }
 
     @Override
@@ -92,6 +93,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         return position;
     }
 
+    public WeekViewEvent getAdapterEvent() {
+        return event;
+    }
+
     @Override
     public int getItemCount()
     {
@@ -112,12 +117,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 
     public void dismissEvent(int position) {
 
-        Log.i(TAG, "eventlist id: " + eventList.get(position).getId());
-        event.removeEvent(event, eventList.get(position).getId());
+        Log.i(TAG, "eventlist id to remove: " + eventList.get(position).getId());
+        //event.removeEvent(event, eventList.get(position).getId());
         dbHelper.deleteTimetable(eventList.get(position).getId());
         eventList.remove(position);
         notifyItemRemoved(position);
-        //notifyItemRangeChanged(position, eventList.size());
+        //notifyItemRangeChanged(0, eventList.size());
     }
 
     private String dateFormatter(Calendar time)

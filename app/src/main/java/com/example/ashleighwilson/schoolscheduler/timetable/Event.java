@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.text.format.Time;
+import android.util.Log;
 import android.widget.BaseAdapter;
 
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
@@ -185,11 +186,14 @@ public class Event implements Serializable
         }
     }
 
-    public void removeEvent(long id) {
+    public void removeEvent(WeekViewEvent event) {
+        Log.i(TAG, "event id: " + event.getId());
         if (events.size() > 1) {
             for (WeekViewEvent e : events) {
-                if (e.getId() == id) {
+                Log.i(TAG, "e id: " + e.getId());
+                if (e.getId() == event.getId()) {
                     events.remove(e);
+                    Log.i(TAG, "event removed: " + e.getId());
                     break;
                 }
             }

@@ -342,7 +342,8 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
             currentPeriodEvents = mWeekViewLoader.onLoad(periodToFetch);
         } else {
             Log.e("SWATI","eventList is already fetched!!!");
-            currentPeriodEvents = eventListByMonth;
+            //currentPeriodEvents = eventListByMonth;
+            currentPeriodEvents = mWeekViewLoader.onLoad(periodToFetch);
         }
 //		Log.e("SWATI","numOfEvent in "+cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())+" : "+currentPeriodEvents.size());
         if (mEventRects == null) {

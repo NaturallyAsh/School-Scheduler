@@ -205,7 +205,11 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            //dayEventObj.removeEvent(eventAdapter.getAdapterEvent());
+                            //Log.i(TAG,"day object: " + dayEventObj.events.size());
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
+                            calendar.getEvents();
+                            mWeekView.notifyDatasetChanged();
                             updateEventAdapter();
                             if (eventAdapter.getItemCount() == 0)
                                 updateView();
@@ -298,6 +302,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         Log.i(TAG, "build events");
         dayEventObj = eventObj;
         events = dayEventObj.events;
+        Log.i(TAG, "build events size: " + events.size());
 
         if (events == null || events.size() == 0)
         {
@@ -349,6 +354,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.setGesture(ExtendedCalendarView.LEFT_RIGHT_GESTURE);
         calendar.getEvents();
         calendar.refreshCalendar();
+        //calendar.notifyCalendar();
         Log.i(TAG, "updateView()!");
         updateEventAdapter();
     }
@@ -411,6 +417,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     mWeekViewType = TYPE_MONTH_VIEW;
                     mWeekView.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.VISIBLE);
+                    add_event.setVisibility(View.VISIBLE);
                     updateView();}
                 return true;
             case R.id.action_day_view:
@@ -421,6 +428,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     mAppBarLayout.setVisibility(View.GONE);
                     mWeekViewType = TYPE_DAY_VIEW;
                     mWeekView.setNumberOfVisibleDays(1);
+                    add_event.setVisibility(View.INVISIBLE);
                     //getSupportActionBar().setTitle(getTitle());
                     // Lets change some dimensions to best fit the view.
                     mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
@@ -430,13 +438,13 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             case R.id.action_week_view:
                 if (mWeekViewType != TYPE_WEEK_VIEW) {
                     setupDateTimeInterpreter(true);
+                    mWeekView.setRefreshEvents(true);
                     mWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
                     mWeekViewType = TYPE_WEEK_VIEW;
                     mWeekView.setNumberOfVisibleDays(7);
                     add_event.setVisibility(View.INVISIBLE);
-
                     //getSupportActionBar().setTitle(getTitle());
                     // Lets change some dimensions to best fit the view.
                     mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
