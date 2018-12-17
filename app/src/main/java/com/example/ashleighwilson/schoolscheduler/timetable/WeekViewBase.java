@@ -145,7 +145,6 @@ public class WeekViewBase extends WeekViewFragment
             dbEvent.setmRecurrenceRule(rule);
 
             events.add(dbEvent);
-            //WeekViewFragment.notifyWeekView();
             Log.i(TAG, "cursor event called. Id: " + dbEvent.getId());
 
             WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
@@ -157,7 +156,6 @@ public class WeekViewBase extends WeekViewFragment
 
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
-        Log.i(TAG, "event size: " + eventListByMonth.size());
 
         addLoadedEvents(events);
         //listener.refreshData(events);

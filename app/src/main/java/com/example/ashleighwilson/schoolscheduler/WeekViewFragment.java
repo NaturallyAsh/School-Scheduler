@@ -205,8 +205,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //dayEventObj.removeEvent(eventAdapter.getAdapterEvent());
-                            //Log.i(TAG,"day object: " + dayEventObj.events.size());
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
                             calendar.getEvents();
                             mWeekView.notifyDatasetChanged();
@@ -318,14 +316,12 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             emptyView.setVisibility(View.GONE);
             if (eventAdapter == null)
             {
-                Log.i(TAG, "event adapter calling null");
                 eventAdapter = new EventAdapter(getContext(), events, this);
                 eventList.setAdapter(eventAdapter);
 
             }
             else
             {
-                Log.i(TAG, "set data called");
                 eventAdapter.setData(events);
                 eventAdapter.notifyDataSetChanged();
             }
@@ -354,7 +350,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         calendar.setGesture(ExtendedCalendarView.LEFT_RIGHT_GESTURE);
         calendar.getEvents();
         calendar.refreshCalendar();
-        //calendar.notifyCalendar();
         Log.i(TAG, "updateView()!");
         updateEventAdapter();
     }
@@ -442,6 +437,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                     mWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
+
                     mWeekViewType = TYPE_WEEK_VIEW;
                     mWeekView.setNumberOfVisibleDays(7);
                     add_event.setVisibility(View.INVISIBLE);

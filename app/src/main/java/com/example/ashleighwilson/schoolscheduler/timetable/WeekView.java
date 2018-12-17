@@ -1131,6 +1131,13 @@ public class WeekView extends View {
         }
     }
 
+    private String dateFormatter(Calendar time)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+        String msg = sdf.format(time.getTime());
+
+        return msg;
+    }
 
     /**
      * Draw the name of the event on top of the event rectangle.
@@ -1147,7 +1154,9 @@ public class WeekView extends View {
         // Prepare the name of the event.
         SpannableStringBuilder bob = new SpannableStringBuilder();
         if (!TextUtils.isEmpty(event.getName())) {
-            bob.append(event.getName() + "\n" + event.getStartTime() + event.getEndTime());
+            String start = dateFormatter(event.getStartTime());
+            String end = dateFormatter(event.getEndTime());
+            bob.append(event.getName() + "\n" + start + end);
             bob.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, bob.length(), 0);
         }
 

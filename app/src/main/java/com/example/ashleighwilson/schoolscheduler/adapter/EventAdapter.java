@@ -105,10 +105,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
 
     public void setData(List<WeekViewEvent> events)
     {
-        /*if (this.eventList == null)
-        {
-            this.eventList.clear();
-        }*/
         this.eventList = events;
         notifyDataSetChanged();
         notifyItemInserted(getItemCount());
@@ -118,11 +114,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     public void dismissEvent(int position) {
 
         Log.i(TAG, "eventlist id to remove: " + eventList.get(position).getId());
-        //event.removeEvent(event, eventList.get(position).getId());
         dbHelper.deleteTimetable(eventList.get(position).getId());
         eventList.remove(position);
         notifyItemRemoved(position);
-        //notifyItemRangeChanged(0, eventList.size());
     }
 
     private String dateFormatter(Calendar time)
