@@ -310,7 +310,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             if (mNotification.isChecked()) {
                 model.setmNotification(mNotification.isChecked());
 
-                controller.notificationTest3(model);
+                NotificationController.notificationTest3(this, model);
                 Log.i(TAG, "check notification: " + controller.checkNotification(this));
             }
 

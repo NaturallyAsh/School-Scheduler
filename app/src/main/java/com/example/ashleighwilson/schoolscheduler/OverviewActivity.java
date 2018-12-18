@@ -151,23 +151,20 @@ public class OverviewActivity extends AppCompatActivity
                     case 0:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.curriculum)
-                                //.apply(new RequestOptions().override(600, 400))
                                 .into(backdropIV);
-                        //Picasso.get().load(R.drawable.curriculum_banner).resize(600, 300).into(backdropIV);
+                        appBarLayout.setExpanded(true);
                         break;
                     case 1:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.agenda_drawable)
-                                //.apply(new RequestOptions().override(600, 600))
                                 .into(backdropIV);
-                        //Picasso.get().load(R.drawable.agenda_drawable).resize(600, 300).into(backdropIV);
+                        appBarLayout.setExpanded(true);
                         break;
                     case 2:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.calendar_events_drawable)
-                                //.apply(new RequestOptions().override(600, 300))
                                 .into(backdropIV);
-                        //Picasso.get().load(R.drawable.calendar_events_drawable).resize(600, 300).into(backdropIV);
+                        appBarLayout.setExpanded(false);
                         break;
                 }
                 invalidateFragmentMenus(tab.getPosition());
@@ -278,23 +275,6 @@ public class OverviewActivity extends AppCompatActivity
             super.onBackPressed();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        //appBarLayout.setVisibility(View.INVISIBLE);
-        //getMenuInflater().inflate(R.menu.main_nav, menu);
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private void setupDrawerContent(NavigationView navigationView)
     {

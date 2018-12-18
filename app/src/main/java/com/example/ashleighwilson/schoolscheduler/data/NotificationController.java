@@ -37,7 +37,6 @@ public class NotificationController
     private Context mContext;
     private AlarmManager alarmManager;
     private ArrayList<PendingIntent> list;
-    private AgendaModel agendaModel;
     public static final String ARG_ITEM = "agenda_item";
     public static final String ARG_DUE_DATE = "agenda_due";
     public static final String ARG_TITLE = "agenda_title";
@@ -92,15 +91,14 @@ public class NotificationController
         return longCode.intValue();
     }
 
-    public void notificationTest3(AgendaModel model)
+    public static void notificationTest3(Context mContext, AgendaModel model)
     {
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        this.agendaModel = model;
         //Log.i(TAG, "recurrence: " + agendaModel.getmRecurrence());
 
-        String dueDate = agendaModel.getDueDate();
+        String dueDate = model.getDueDate();
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
         try {
@@ -114,26 +112,30 @@ public class NotificationController
         if (futureDay.after(curr))
         {
             //long timeToNotify = futureDay.getTimeInMillis() - 86500000;
-            long reminder = futureDay.getTimeInMillis();
-            long timeToNotify = setNextRecurrence(agendaModel.getmRecurrenceOption(),
-                    agendaModel.getmRecurrenceRule(), reminder);
+            long testTimeToNotify = System.currentTimeMillis();
+            //long reminder = futureDay.getTimeInMillis();
+            long timeToNotify = setNextRecurrence(model.getmRecurrenceOption(),
+                    model.getmRecurrenceRule(), d.getTime());
+            Log.i(TAG, "option: " + model.getmRecurrenceOption() + " rule: " +
+                model.getmRecurrenceRule());
+            Log.i(TAG, "date in long: " + d.getTime());
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
             id = (int) System.currentTimeMillis();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            notifyEvent.putExtra(ARG_TITLE, agendaModel.getAgendaTitle());
+            /*notifyEvent.putExtra(ARG_TITLE, agendaModel.getAgendaTitle());
             notifyEvent.putExtra(ARG_DUE_DATE, agendaModel.getDueDate());
             notifyEvent.putExtra(ARG_RECUR_OPTION, agendaModel.getmRecurrenceOption());
-            notifyEvent.putExtra(ARG_RECUR_RULE, agendaModel.getmRecurrenceRule());
-            //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
-              //      PendingIntent.FLAG_CANCEL_CURRENT);
+            notifyEvent.putExtra(ARG_RECUR_RULE, agendaModel.getmRecurrenceRule());*/
+            notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
+
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
             alrmManager.set(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
 
 
             NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
-                    .setContentTitle(agendaModel.getAgendaTitle())
-                    .setContentText("Alarm Set: " + dueDate).setSound(alarmSound)
+                    .setContentTitle(model.getAgendaTitle())
+                    .setContentText("Due on: " + dueDate).setSound(alarmSound)
                     .setSmallIcon(R.drawable.notification_important_black_18dp)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);
@@ -170,7 +172,7 @@ public class NotificationController
         }
     }
 
-    public long setNextRecurrence(String recurrenceOption, String recurrenceRule, long reminder) {
+    public static long setNextRecurrence(String recurrenceOption, String recurrenceRule, long reminder) {
         long timeToNotify = 0;
 
         switch (recurrenceOption) {
@@ -190,7 +192,8 @@ public class NotificationController
                 Log.i(TAG, "custom set");
                 break;
         }
-        Log.i(TAG, "time to notify: " + timeToNotify);
+        Date date = new Date(timeToNotify);
+        Log.i(TAG, "time to notify: " + date);
         return timeToNotify;
     }
 }

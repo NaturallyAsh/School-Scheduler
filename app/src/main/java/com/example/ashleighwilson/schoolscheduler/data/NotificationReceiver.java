@@ -15,6 +15,7 @@ import android.util.Log;
 import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
+import com.example.ashleighwilson.schoolscheduler.SnoozeActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
@@ -28,27 +29,32 @@ public class NotificationReceiver extends BroadcastReceiver {
     private static final String TAG = NotificationReceiver.class.getSimpleName();
 
     public static String NOTIFICATION_ID = "notification_id";
-    private AgendaModel agendaModel;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        String title = intent.getStringExtra(NotificationController.ARG_TITLE);
-        String dueDate = intent.getStringExtra(NotificationController.ARG_DUE_DATE);
-        String option = intent.getStringExtra(NotificationController.ARG_RECUR_OPTION);
-        String rule = intent.getStringExtra(NotificationController.ARG_RECUR_RULE);
-
-        //createNotification(context, title, dueDate, id);
-        testRefire(context, title, dueDate, option, rule, id);
+        AgendaModel agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
+                AgendaModel.CREATOR);
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
+        Date d = null;
+        try{
+            d = formatter.parse(agendaModel.getDueDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        createNotification(agendaModel, id, context);
+        if (agendaModel.getmRecurrenceRule() != null || !agendaModel.getmRecurrenceRule().equals("n/a")) {
+            SnoozeActivity.setNextRecurrentReminder(agendaModel);
+        }
     }
 
-    private void createNotification(Context context, String title, String dueDate, int id) {
+    private void createNotification(AgendaModel model, int id, Context context) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_important_black_18dp)
-                .setContentTitle(title)
+                .setContentTitle(model.getAgendaTitle())
                 .setContentText("due!").setSound(alarmSound)
                 .setVibrate(new long[]{1000, 1000, 1000, 1000});
 
@@ -63,7 +69,6 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationManager.notify(id, mBuilder.build());
-        id++;
         Log.i(TAG, "notification received");
     }
 

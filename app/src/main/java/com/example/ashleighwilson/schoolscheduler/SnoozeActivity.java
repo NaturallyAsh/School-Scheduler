@@ -3,24 +3,33 @@ package com.example.ashleighwilson.schoolscheduler;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
+import com.example.ashleighwilson.schoolscheduler.data.SaveAgendaTask;
 import com.example.ashleighwilson.schoolscheduler.data.SaveNoteTask;
+import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
 import com.example.ashleighwilson.schoolscheduler.notes.Constants;
 import com.example.ashleighwilson.schoolscheduler.notes.Note;
 import com.example.ashleighwilson.schoolscheduler.notes.OnReminderPickedListener;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class SnoozeActivity extends AppCompatActivity implements OnReminderPickedListener
 {
+    private static final String TAG = SnoozeActivity.class.getSimpleName();
     private Note note;
     private Note[] notes;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +93,34 @@ public class SnoozeActivity extends AppCompatActivity implements OnReminderPicke
             NotificationController.addReminder(MySchedulerApp.getInstance(), noteToUpdate, reminder);
             DateHelper.getNoteReminderText(noteToUpdate.getAlarm(), reminder);
         }
+    }
+
+    public static void setNextRecurrentReminder(AgendaModel model) {
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
+        Date d = null;
+        try{
+            d = formatter.parse(model.getDueDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (model.getmRecurrenceRule() != null || !model.getmRecurrenceRule().equals("n/a")) {
+            long nextReminder = DateHelper.nextReminderFromRecurrenceRule(d.getTime(), model.getmRecurrenceRule());
+            if (nextReminder > 0) {
+                updateAgendaReminder(nextReminder, model);
+            }
+        } else {
+            new SaveAgendaTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, model);
+        }
+    }
+
+    private static void updateAgendaReminder(long reminder, AgendaModel model) {
+        Date date = new Date(reminder);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
+        model.setDueDate(dateFormat.format(date));
+        new SaveAgendaTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, model);
+        NotificationController.notificationTest3(MySchedulerApp.getInstance(), model);
+        Log.i(TAG, "snooze agenda reminder reset");
     }
 
     @Override

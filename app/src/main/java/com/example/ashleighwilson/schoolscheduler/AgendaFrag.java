@@ -215,10 +215,10 @@ public class AgendaFrag extends Fragment
     };
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        inflater.inflate(R.menu.menu_overview, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_overview, menu);
+
     }
 
     @Override

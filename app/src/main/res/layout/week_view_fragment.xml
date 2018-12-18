@@ -97,7 +97,7 @@
 
 
 
-    <com.example.ashleighwilson.schoolscheduler.timetable.WeekView
+    <com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

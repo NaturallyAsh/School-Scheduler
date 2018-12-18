@@ -439,7 +439,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         Log.i(TAG, "day of week: " + startTime.get(Calendar.DAY_OF_WEEK));
 
 
-        //Calendar endTime = Calendar.getInstance();
         Calendar endTime = (Calendar) startTime.clone();
         endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
         endTime.set(Calendar.MINUTE, END_MINUTE);

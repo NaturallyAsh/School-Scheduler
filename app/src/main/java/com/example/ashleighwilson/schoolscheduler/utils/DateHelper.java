@@ -88,12 +88,13 @@ public class DateHelper{
         RRule rule = new RRule();
         try {
             rule.setValue(recurrenceRule);
-            DateTime seed = new DateTime(reminder);
+            //DateTime seed = new DateTime(reminder);
+            DateTime seed = new DateTime(currentTime);
             //long startTimestamp = reminder + 60 * 1000;
-            long startTimestamp = reminder;
-            if (startTimestamp < currentTime) {
+            long startTimestamp = currentTime;
+            /*if (startTimestamp < currentTime) {
                 startTimestamp = currentTime;
-            }
+            }*/
             DateTime start = new DateTime(startTimestamp);
             Date nextDate = rule.getRecur().getNextDate(seed, start);
             return nextDate == null ? 0L : nextDate.getTime();

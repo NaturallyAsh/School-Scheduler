@@ -65,7 +65,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
     {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate!");
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false);
         pref = new EventsPreference(getActivity());
         //ARG_EVENT_ID = WeekViewUtil.eventId;
         setRetainInstance(true);
@@ -206,13 +206,6 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
             //readEvent = readObj(mContext);
             Log.i(TAG, "read object: " + readEvent);
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        //inflater.inflate(R.menu.calendar, menu);
-        //super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

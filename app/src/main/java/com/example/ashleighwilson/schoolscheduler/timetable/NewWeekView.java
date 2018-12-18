@@ -48,7 +48,7 @@ import java.util.Locale;
 
 import static com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil.*;
 
-public class WeekView extends View {
+public class NewWeekView extends View {
 
     private enum Direction {
         NONE, LEFT, RIGHT, VERTICAL
@@ -68,7 +68,7 @@ public class WeekView extends View {
     private GestureDetectorCompat mGestureDetector;
     private OverScroller mScroller;
     private PointF mCurrentOrigin = new PointF(0f, 0f);
-    private WeekView.Direction mCurrentScrollDirection = WeekView.Direction.NONE;
+    private NewWeekView.Direction mCurrentScrollDirection = NewWeekView.Direction.NONE;
     private Paint mHeaderBackgroundPaint;
     private float mWidthPerDay;
     private Paint mDayBackgroundPaint;
@@ -91,7 +91,7 @@ public class WeekView extends View {
     private Paint mHeaderColumnBackgroundPaint;
     private int mFetchedPeriod = -1; // the middle period the calendar has fetched.
     private boolean mRefreshEvents = false;
-    private WeekView.Direction mCurrentFlingDirection = WeekView.Direction.NONE;
+    private NewWeekView.Direction mCurrentFlingDirection = NewWeekView.Direction.NONE;
     private ScaleGestureDetector mScaleDetector;
     private boolean mIsZooming;
     //private Calendar mFirstVisibleDay;
@@ -195,26 +195,26 @@ public class WeekView extends View {
                     // Allow scrolling only in one direction.
                     if (Math.abs(distanceX) > Math.abs(distanceY)) {
                         if (distanceX > 0) {
-                            mCurrentScrollDirection = WeekView.Direction.LEFT;
+                            mCurrentScrollDirection = NewWeekView.Direction.LEFT;
                         } else {
-                            mCurrentScrollDirection = WeekView.Direction.RIGHT;
+                            mCurrentScrollDirection = NewWeekView.Direction.RIGHT;
                         }
                     } else {
-                        mCurrentScrollDirection = WeekView.Direction.VERTICAL;
+                        mCurrentScrollDirection = NewWeekView.Direction.VERTICAL;
                     }
                     break;
                 }
                 case LEFT: {
                     // Change direction if there was enough change.
                     if (Math.abs(distanceX) > Math.abs(distanceY) && (distanceX < -mScaledTouchSlop)) {
-                        mCurrentScrollDirection = WeekView.Direction.RIGHT;
+                        mCurrentScrollDirection = NewWeekView.Direction.RIGHT;
                     }
                     break;
                 }
                 case RIGHT: {
                     // Change direction if there was enough change.
                     if (Math.abs(distanceX) > Math.abs(distanceY) && (distanceX > mScaledTouchSlop)) {
-                        mCurrentScrollDirection = WeekView.Direction.LEFT;
+                        mCurrentScrollDirection = NewWeekView.Direction.LEFT;
                     }
                     break;
                 }
@@ -233,7 +233,7 @@ public class WeekView extends View {
                     } else {
                         mCurrentOrigin.x -= distanceX * mXScrollingSpeed;
                     }
-                    ViewCompat.postInvalidateOnAnimation(WeekView.this);
+                    ViewCompat.postInvalidateOnAnimation(NewWeekView.this);
                     break;
                 case VERTICAL:
                     float minY = getYMinLimit();
@@ -245,7 +245,7 @@ public class WeekView extends View {
                     } else {
                         mCurrentOrigin.y -= distanceY;
                     }
-                    ViewCompat.postInvalidateOnAnimation(WeekView.this);
+                    ViewCompat.postInvalidateOnAnimation(NewWeekView.this);
                     break;
                 default:
                     break;
@@ -258,9 +258,9 @@ public class WeekView extends View {
             if (mIsZooming)
                 return true;
 
-            if ((mCurrentFlingDirection == WeekView.Direction.LEFT && !mHorizontalFlingEnabled) ||
-                    (mCurrentFlingDirection == WeekView.Direction.RIGHT && !mHorizontalFlingEnabled) ||
-                    (mCurrentFlingDirection == WeekView.Direction.VERTICAL && !mVerticalFlingEnabled)) {
+            if ((mCurrentFlingDirection == NewWeekView.Direction.LEFT && !mHorizontalFlingEnabled) ||
+                    (mCurrentFlingDirection == NewWeekView.Direction.RIGHT && !mHorizontalFlingEnabled) ||
+                    (mCurrentFlingDirection == NewWeekView.Direction.VERTICAL && !mVerticalFlingEnabled)) {
                 return true;
             }
 
@@ -279,7 +279,7 @@ public class WeekView extends View {
                     break;
             }
 
-            ViewCompat.postInvalidateOnAnimation(WeekView.this);
+            ViewCompat.postInvalidateOnAnimation(NewWeekView.this);
             return true;
         }
 
@@ -366,73 +366,76 @@ public class WeekView extends View {
         }
     };
 
-    public WeekView(Context context) {
+    public NewWeekView(Context context) {
         this(context, null);
     }
 
-    public WeekView(Context context, AttributeSet attrs) {
+    public NewWeekView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WeekView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NewWeekView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         // Hold references.
         mContext = context;
 
         // Get the attribute values (if any).
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.WeekView, 0, 0);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.NewWeekView, 0, 0);
         try {
-            mFirstDayOfWeek = a.getInteger(R.styleable.WeekView_firstDayOfWeek, mFirstDayOfWeek);
-            mHourHeight = a.getDimensionPixelSize(R.styleable.WeekView_hourHeight, mHourHeight);
-            mMinHourHeight = a.getDimensionPixelSize(R.styleable.WeekView_minHourHeight, mMinHourHeight);
+            mFirstDayOfWeek = a.getInteger(R.styleable.NewWeekView_newFirstDayOfWeek, mFirstDayOfWeek);
+            mHourHeight = a.getDimensionPixelSize(R.styleable.NewWeekView_hourHeight, mHourHeight);
+            mMinHourHeight = a.getDimensionPixelSize(R.styleable.NewWeekView_minHourHeight, mMinHourHeight);
             mEffectiveMinHourHeight = mMinHourHeight;
-            mMaxHourHeight = a.getDimensionPixelSize(R.styleable.WeekView_maxHourHeight, mMaxHourHeight);
-            mTextSize = a.getDimensionPixelSize(R.styleable.WeekView_textSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mTextSize, context.getResources().getDisplayMetrics()));
-            mHeaderColumnPadding = a.getDimensionPixelSize(R.styleable.WeekView_headerColumnPadding, mHeaderColumnPadding);
-            mColumnGap = a.getDimensionPixelSize(R.styleable.WeekView_columnGap, mColumnGap);
-            mHeaderColumnTextColor = a.getColor(R.styleable.WeekView_headerColumnTextColor, mHeaderColumnTextColor);
-            mNumberOfVisibleDays = a.getInteger(R.styleable.WeekView_noOfVisibleDays, mNumberOfVisibleDays);
-            mShowFirstDayOfWeekFirst = a.getBoolean(R.styleable.WeekView_showFirstDayOfWeekFirst, mShowFirstDayOfWeekFirst);
-            mHeaderRowPadding = a.getDimensionPixelSize(R.styleable.WeekView_headerRowPadding, mHeaderRowPadding);
-            mHeaderRowBackgroundColor = a.getColor(R.styleable.WeekView_headerRowBackgroundColor, mHeaderRowBackgroundColor);
-            mDayBackgroundColor = a.getColor(R.styleable.WeekView_dayBackgroundColor, mDayBackgroundColor);
-            mFutureBackgroundColor = a.getColor(R.styleable.WeekView_futureBackgroundColor, mFutureBackgroundColor);
-            mPastBackgroundColor = a.getColor(R.styleable.WeekView_pastBackgroundColor, mPastBackgroundColor);
-            mFutureWeekendBackgroundColor = a.getColor(R.styleable.WeekView_futureWeekendBackgroundColor, mFutureBackgroundColor); // If not set, use the same color as in the week
-            mPastWeekendBackgroundColor = a.getColor(R.styleable.WeekView_pastWeekendBackgroundColor, mPastBackgroundColor);
-            mNowLineColor = a.getColor(R.styleable.WeekView_nowLineColor, mNowLineColor);
-            mNowLineThickness = a.getDimensionPixelSize(R.styleable.WeekView_nowLineThickness, mNowLineThickness);
-            mHourSeparatorColor = a.getColor(R.styleable.WeekView_hourSeparatorColor, mHourSeparatorColor);
-            mTodayBackgroundColor = a.getColor(R.styleable.WeekView_todayBackgroundColor, mTodayBackgroundColor);
-            mHourSeparatorHeight = a.getDimensionPixelSize(R.styleable.WeekView_hourSeparatorHeight, mHourSeparatorHeight);
-            mTodayHeaderTextColor = a.getColor(R.styleable.WeekView_todayHeaderTextColor, mTodayHeaderTextColor);
-            mEventTextSize = a.getDimensionPixelSize(R.styleable.WeekView_eventTextSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mEventTextSize, context.getResources().getDisplayMetrics()));
-            mEventTextColor = a.getColor(R.styleable.WeekView_eventTextColor, mEventTextColor);
-            mEventPadding = a.getDimensionPixelSize(R.styleable.WeekView_eventPadding, mEventPadding);
-            mHeaderColumnBackgroundColor = a.getColor(R.styleable.WeekView_headerColumnBackground, mHeaderColumnBackgroundColor);
-            mDayNameLength = a.getInteger(R.styleable.WeekView_dayNameLength, mDayNameLength);
-            mOverlappingEventGap = a.getDimensionPixelSize(R.styleable.WeekView_overlappingEventGap, mOverlappingEventGap);
-            mEventMarginVertical = a.getDimensionPixelSize(R.styleable.WeekView_eventMarginVertical, mEventMarginVertical);
-            mXScrollingSpeed = a.getFloat(R.styleable.WeekView_xScrollingSpeed, mXScrollingSpeed);
-            mEventCornerRadius = a.getDimensionPixelSize(R.styleable.WeekView_eventCornerRadius, mEventCornerRadius);
-            mShowDistinctPastFutureColor = a.getBoolean(R.styleable.WeekView_showDistinctPastFutureColor, mShowDistinctPastFutureColor);
-            mShowDistinctWeekendColor = a.getBoolean(R.styleable.WeekView_showDistinctWeekendColor, mShowDistinctWeekendColor);
-            mShowNowLine = a.getBoolean(R.styleable.WeekView_showNowLine, mShowNowLine);
-            mHorizontalFlingEnabled = a.getBoolean(R.styleable.WeekView_horizontalFlingEnabled, mHorizontalFlingEnabled);
-            mVerticalFlingEnabled = a.getBoolean(R.styleable.WeekView_verticalFlingEnabled, mVerticalFlingEnabled);
-            mAllDayEventHeight = a.getDimensionPixelSize(R.styleable.WeekView_allDayEventHeight, mAllDayEventHeight);
-            mScrollDuration = a.getInt(R.styleable.WeekView_scrollDuration, mScrollDuration);
-            mMinTime = a.getInt(R.styleable.WeekView_minTime, mMinTime);
-            mMaxTime = a.getInt(R.styleable.WeekView_maxTime, mMaxTime);
-            mTimeColumnResolution = a.getInt(R.styleable.WeekView_timeColumnResolution, mTimeColumnResolution);
-            mNewEventColor = a.getColor(R.styleable.WeekView_newEventColor, mNewEventColor);
-            mNewEventIconDrawable = a.getDrawable(R.styleable.WeekView_newEventIconResource);
+            mMaxHourHeight = a.getDimensionPixelSize(R.styleable.NewWeekView_maxHourHeight, mMaxHourHeight);
+            mTextSize = a.getDimensionPixelSize(R.styleable.NewWeekView_textSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mTextSize, context.getResources().getDisplayMetrics()));
+            mHeaderColumnPadding = a.getDimensionPixelSize(R.styleable.NewWeekView_headerColumnPadding, mHeaderColumnPadding);
+            mColumnGap = a.getDimensionPixelSize(R.styleable.NewWeekView_columnGap, mColumnGap);
+            mHeaderColumnTextColor = a.getColor(R.styleable.NewWeekView_headerColumnTextColor, mHeaderColumnTextColor);
+            mNumberOfVisibleDays = a.getInteger(R.styleable.NewWeekView_noOfVisibleDays, mNumberOfVisibleDays);
+            mShowFirstDayOfWeekFirst = a.getBoolean(R.styleable.NewWeekView_showFirstDayOfWeekFirst, mShowFirstDayOfWeekFirst);
+            mHeaderRowPadding = a.getDimensionPixelSize(R.styleable.NewWeekView_headerRowPadding, mHeaderRowPadding);
+            mHeaderRowBackgroundColor = a.getColor(R.styleable.NewWeekView_headerRowBackgroundColor, mHeaderRowBackgroundColor);
+            mDayBackgroundColor = a.getColor(R.styleable.NewWeekView_dayBackgroundColor, mDayBackgroundColor);
+            mFutureBackgroundColor = a.getColor(R.styleable.NewWeekView_futureBackgroundColor, mFutureBackgroundColor);
+            mPastBackgroundColor = a.getColor(R.styleable.NewWeekView_pastBackgroundColor, mPastBackgroundColor);
+            mFutureWeekendBackgroundColor = a.getColor(R.styleable.NewWeekView_futureWeekendBackgroundColor, mFutureBackgroundColor); // If not set, use the same color as in the week
+            mPastWeekendBackgroundColor = a.getColor(R.styleable.NewWeekView_pastWeekendBackgroundColor, mPastBackgroundColor);
+            mNowLineColor = a.getColor(R.styleable.NewWeekView_nowLineColor, mNowLineColor);
+            mNowLineThickness = a.getDimensionPixelSize(R.styleable.NewWeekView_nowLineThickness, mNowLineThickness);
+            mHourSeparatorColor = a.getColor(R.styleable.NewWeekView_hourSeparatorColor, mHourSeparatorColor);
+            mTodayBackgroundColor = a.getColor(R.styleable.NewWeekView_todayBackgroundColor, mTodayBackgroundColor);
+            mHourSeparatorHeight = a.getDimensionPixelSize(R.styleable.NewWeekView_hourSeparatorHeight, mHourSeparatorHeight);
+            mTodayHeaderTextColor = a.getColor(R.styleable.NewWeekView_todayHeaderTextColor, mTodayHeaderTextColor);
+            mEventTextSize = a.getDimensionPixelSize(R.styleable.NewWeekView_eventTextSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mEventTextSize, context.getResources().getDisplayMetrics()));
+            mEventTextColor = a.getColor(R.styleable.NewWeekView_eventTextColor, mEventTextColor);
+            mEventPadding = a.getDimensionPixelSize(R.styleable.NewWeekView_eventPadding, mEventPadding);
+            mHeaderColumnBackgroundColor = a.getColor(R.styleable.NewWeekView_headerColumnBackground, mHeaderColumnBackgroundColor);
+            mDayNameLength = a.getInteger(R.styleable.NewWeekView_newDayNameLength, mDayNameLength);
+            mOverlappingEventGap = a.getDimensionPixelSize(R.styleable.NewWeekView_overlappingEventGap, mOverlappingEventGap);
+            mEventMarginVertical = a.getDimensionPixelSize(R.styleable.NewWeekView_eventMarginVertical, mEventMarginVertical);
+            mXScrollingSpeed = a.getFloat(R.styleable.NewWeekView_xScrollingSpeed, mXScrollingSpeed);
+            mEventCornerRadius = a.getDimensionPixelSize(R.styleable.NewWeekView_eventCornerRadius, mEventCornerRadius);
+            mShowDistinctPastFutureColor = a.getBoolean(R.styleable.NewWeekView_showDistinctPastFutureColor, mShowDistinctPastFutureColor);
+            mShowDistinctWeekendColor = a.getBoolean(R.styleable.NewWeekView_showDistinctWeekendColor, mShowDistinctWeekendColor);
+            mShowNowLine = a.getBoolean(R.styleable.NewWeekView_showNowLine, mShowNowLine);
+            mHorizontalFlingEnabled = a.getBoolean(R.styleable.NewWeekView_horizontalFlingEnabled, mHorizontalFlingEnabled);
+            mVerticalFlingEnabled = a.getBoolean(R.styleable.NewWeekView_verticalFlingEnabled, mVerticalFlingEnabled);
+            mAllDayEventHeight = a.getDimensionPixelSize(R.styleable.NewWeekView_allDayEventHeight, mAllDayEventHeight);
+            mScrollDuration = a.getInt(R.styleable.NewWeekView_scrollDuration, mScrollDuration);
+            //mMinTime = a.getInt(R.styleable.WeekView_minTime, mMinTime);
+            mMinTime = a.getInt(R.styleable.NewWeekView_minTime, mMinTime);
+            //mMaxTime = a.getInt(R.styleable.WeekView_maxTime, mMaxTime);
+            mMaxTime = a.getInt(R.styleable.NewWeekView_maxTime, mMaxTime);
+            mAutoLimitTime = a.getBoolean(R.styleable.NewWeekView_autoLimitTime, mAutoLimitTime);
+            mTimeColumnResolution = a.getInt(R.styleable.NewWeekView_timeColumnResolution, mTimeColumnResolution);
+            mNewEventColor = a.getColor(R.styleable.NewWeekView_newEventColor, mNewEventColor);
+            mNewEventIconDrawable = a.getDrawable(R.styleable.NewWeekView_newEventIconResource);
             // For backward compatibility : Set "mNewEventIdentifier" if the attribute is "WeekView_newEventId" of type int
-            mNewEventIdentifier = (a.getString(R.styleable.WeekView_newEventIdentifier) != null) ? Long.parseLong(a.getString(R.styleable.WeekView_newEventIdentifier)) : mNewEventIdentifier;
-            mNewEventLengthInMinutes = a.getInt(R.styleable.WeekView_newEventLengthInMinutes, mNewEventLengthInMinutes);
-            mNewEventTimeResolutionInMinutes = a.getInt(R.styleable.WeekView_newEventTimeResolutionInMinutes, mNewEventTimeResolutionInMinutes);
-            mMinOverlappingMinutes = a.getInt(R.styleable.WeekView_minOverlappingMinutes, 0);
+            mNewEventIdentifier = (a.getString(R.styleable.NewWeekView_newEventIdentifier) != null) ? Long.parseLong(a.getString(R.styleable.NewWeekView_newEventIdentifier)) : mNewEventIdentifier;
+            mNewEventLengthInMinutes = a.getInt(R.styleable.NewWeekView_newEventLengthInMinutes, mNewEventLengthInMinutes);
+            mNewEventTimeResolutionInMinutes = a.getInt(R.styleable.NewWeekView_newEventTimeResolutionInMinutes, mNewEventTimeResolutionInMinutes);
+            mMinOverlappingMinutes = a.getInt(R.styleable.NewWeekView_minOverlappingMinutes, 0);
 
         } finally {
             a.recycle();
@@ -2408,11 +2411,11 @@ public class WeekView extends View {
         boolean val = mGestureDetector.onTouchEvent(event);
 
         // Check after call of mGestureDetector, so mCurrentFlingDirection and mCurrentScrollDirection are set.
-        if (event.getAction() == MotionEvent.ACTION_UP && !mIsZooming && mCurrentFlingDirection == WeekView.Direction.NONE) {
-            if (mCurrentScrollDirection == WeekView.Direction.RIGHT || mCurrentScrollDirection == WeekView.Direction.LEFT) {
+        if (event.getAction() == MotionEvent.ACTION_UP && !mIsZooming && mCurrentFlingDirection == NewWeekView.Direction.NONE) {
+            if (mCurrentScrollDirection == NewWeekView.Direction.RIGHT || mCurrentScrollDirection == NewWeekView.Direction.LEFT) {
                 goToNearestOrigin();
             }
-            mCurrentScrollDirection = WeekView.Direction.NONE;
+            mCurrentScrollDirection = NewWeekView.Direction.NONE;
         }
 
         return val;
@@ -2421,13 +2424,13 @@ public class WeekView extends View {
     private void goToNearestOrigin(){
         double leftDays = mCurrentOrigin.x / (mWidthPerDay + mColumnGap);
 
-        if (mCurrentFlingDirection != WeekView.Direction.NONE) {
+        if (mCurrentFlingDirection != NewWeekView.Direction.NONE) {
             // snap to nearest day
             leftDays = Math.round(leftDays);
-        } else if (mCurrentScrollDirection == WeekView.Direction.LEFT) {
+        } else if (mCurrentScrollDirection == NewWeekView.Direction.LEFT) {
             // snap to last day
             leftDays = Math.floor(leftDays);
-        } else if (mCurrentScrollDirection == WeekView.Direction.RIGHT) {
+        } else if (mCurrentScrollDirection == NewWeekView.Direction.RIGHT) {
             // snap to next day
             leftDays = Math.ceil(leftDays);
         } else {
@@ -2442,17 +2445,17 @@ public class WeekView extends View {
 
         if (mayScrollHorizontal) {
             mScroller.startScroll((int) mCurrentOrigin.x, (int) mCurrentOrigin.y, -nearestOrigin, 0);
-            ViewCompat.postInvalidateOnAnimation(WeekView.this);
+            ViewCompat.postInvalidateOnAnimation(NewWeekView.this);
         }
         if (nearestOrigin != 0) {
             // Stop current animation.
             mScroller.forceFinished(true);
             // Snap to date.
             mScroller.startScroll((int) mCurrentOrigin.x, (int) mCurrentOrigin.y, -nearestOrigin, 0, (int) (Math.abs(nearestOrigin) / mWidthPerDay * mScrollDuration));
-            ViewCompat.postInvalidateOnAnimation(WeekView.this);
+            ViewCompat.postInvalidateOnAnimation(NewWeekView.this);
         }
         // Reset scrolling and fling direction.
-        mCurrentScrollDirection = mCurrentFlingDirection = WeekView.Direction.NONE;
+        mCurrentScrollDirection = mCurrentFlingDirection = NewWeekView.Direction.NONE;
     }
 
 
@@ -2461,12 +2464,12 @@ public class WeekView extends View {
         super.computeScroll();
 
         if (mScroller.isFinished()) {
-            if (mCurrentFlingDirection != WeekView.Direction.NONE) {
+            if (mCurrentFlingDirection != NewWeekView.Direction.NONE) {
                 // Snap to day after fling is finished.
                 goToNearestOrigin();
             }
         } else {
-            if (mCurrentFlingDirection != WeekView.Direction.NONE && forceFinishScroll()) {
+            if (mCurrentFlingDirection != NewWeekView.Direction.NONE && forceFinishScroll()) {
                 goToNearestOrigin();
             } else if (mScroller.computeScrollOffset()) {
                 mCurrentOrigin.y = mScroller.getCurrY();
@@ -2510,7 +2513,7 @@ public class WeekView extends View {
      */
     public void goToDate(Calendar date) {
         mScroller.forceFinished(true);
-        mCurrentScrollDirection = mCurrentFlingDirection = WeekView.Direction.NONE;
+        mCurrentScrollDirection = mCurrentFlingDirection = NewWeekView.Direction.NONE;
 
         date.set(Calendar.HOUR_OF_DAY, 0);
         date.set(Calendar.MINUTE, 0);
@@ -2631,7 +2634,7 @@ public class WeekView extends View {
 
     public interface EventLongPressListener {
         /**
-         * Similar to {@link WeekView.EventClickListener} but with a long press.
+         * Similar to {@link NewWeekView.EventClickListener} but with a long press.
          * @param event: event clicked.
          * @param eventRect: view containing the clicked event.
          */
@@ -2648,7 +2651,7 @@ public class WeekView extends View {
 
     public interface EmptyViewLongPressListener {
         /**
-         * Similar to {@link WeekView.EmptyViewClickListener} but with long press.
+         * Similar to {@link NewWeekView.EmptyViewClickListener} but with long press.
          * @param time: {@link Calendar} object set with the date and time of the long pressed position on the view.
          */
         void onEmptyViewLongPress(Calendar time);

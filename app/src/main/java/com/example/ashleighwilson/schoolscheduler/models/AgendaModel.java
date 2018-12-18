@@ -53,6 +53,8 @@ public class AgendaModel implements Parcelable
         mColor = in.readInt();
         mDueDate = in.readString();
         setmNotification(in.readInt());
+        mRecurrenceOption = in.readString();
+        mRecurrenceRule = in.readString();
     }
 
     public int getmId()
@@ -206,5 +208,7 @@ public class AgendaModel implements Parcelable
         dest.writeInt(mColor);
         dest.writeString(mDueDate);
         dest.writeInt(mNotification ? 1 : 0);
+        dest.writeString(mRecurrenceOption);
+        dest.writeString(mRecurrenceRule);
     }
 }

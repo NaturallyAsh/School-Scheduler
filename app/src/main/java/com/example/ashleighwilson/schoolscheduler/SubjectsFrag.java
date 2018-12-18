@@ -58,6 +58,8 @@ public class SubjectsFrag extends DialogFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         Log.i(TAG, "onCreate!");
     }
 
@@ -67,7 +69,6 @@ public class SubjectsFrag extends DialogFragment
 
          View view = inflater.inflate(R.layout.fragment_subjects, container, false);
 
-        setHasOptionsMenu(true);
         Log.i(TAG, "onCreateView!");
 
         titleView = view.findViewById(R.id.edit_subject);
@@ -260,10 +261,9 @@ public class SubjectsFrag extends DialogFragment
     };
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
+    public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        inflater.inflate(R.menu.menu_overview, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        getActivity().getMenuInflater().inflate(R.menu.menu_overview, menu);
+
     }
 }

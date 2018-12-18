@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,16 +26,14 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
-import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
-import com.example.ashleighwilson.schoolscheduler.timetable.CalendarAdapter;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventRect;
 import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekView;
+import com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.text.SimpleDateFormat;
@@ -47,11 +44,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class WeekViewFragment extends Fragment implements WeekView.EventClickListener,
-        MonthLoader.MonthLoaderListener, WeekView.EventLongPressListener,
-        WeekView.EmptyViewLongPressListener, ExtendedCalendarView.OnDayClickListener,
+public abstract class WeekViewFragment extends Fragment implements NewWeekView.EventClickListener,
+        MonthLoader.MonthLoaderListener, NewWeekView.EventLongPressListener,
+        NewWeekView.EmptyViewLongPressListener, ExtendedCalendarView.OnDayClickListener,
         ExtendedCalendarView.OnMonthChaneListener, View.OnClickListener,
-        WeekView.EmptyViewClickListener
+        NewWeekView.EmptyViewClickListener
 {
     private static final String TAG = WeekViewFragment.class.getSimpleName();
 
@@ -60,7 +57,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     private static final int TYPE_WEEK_VIEW = 3;
     private static final int TYPE_MONTH_VIEW = 4;
     private int mWeekViewType = TYPE_MONTH_VIEW;
-    private WeekView mWeekView;
+    private NewWeekView mNewWeekView;
     View rootView;
     private ExtendedCalendarView calendar;
     private FloatingActionButton add_event;
@@ -72,11 +69,8 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     Toolbar toolbar;
     Calendar dayCalendar;
     private Event dayEventObj;
-    CalendarAdapter calendarAdapter;
     OnFragmentInteractionListener listener;
     public List<WeekViewEvent> events = new ArrayList<>();
-    private Event allEvents = new Event();
-    private DbHelper dbHelper;
 
     public void onAttachToParent(Fragment fragment)
     {
@@ -114,9 +108,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
         mAppBarLayout = rootView.findViewById(R.id.app_bar_cal);
 
-        dbHelper = DbHelper.getInstance();
-
-
 
         emptyView = rootView.findViewById(R.id.empty_calendar_view);
 
@@ -140,22 +131,22 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         updateEventAdapter();
 
         // Get a reference for the week view in the layout.
-        mWeekView = rootView.findViewById(R.id.weekView);
+        mNewWeekView = rootView.findViewById(R.id.weekView);
 
         // Show a toast message about the touched event.
-        mWeekView.setOnEventClickListener(this);
+        mNewWeekView.setOnEventClickListener(this);
 
         // The week view has infinite scrolling horizontally. We have to provide the events of a
         // month every time the month changes on the week view.
-        mWeekView.setMonthLoaderListener(this);
+        mNewWeekView.setMonthLoaderListener(this);
 
         // Set long press listener for events.
-        mWeekView.setEventLongPressListener(this);
+        mNewWeekView.setEventLongPressListener(this);
 
         // Set long press listener for empty view
-        mWeekView.setEmptyViewLongPressListener(this);
+        mNewWeekView.setEmptyViewLongPressListener(this);
 
-        mWeekView.setEmptyViewClickListener(this);
+        mNewWeekView.setEmptyViewClickListener(this);
 
         todayTV.setText(R.string.today_string);
 
@@ -167,12 +158,12 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             //calendarViewLayout.setVisibility(View.VISIBLE);
 //            calendar.setVisibility(View.VISIBLE);
             updateView();
-            mWeekView.setVisibility(View.GONE);
+            mNewWeekView.setVisibility(View.GONE);
 //            eventListLayout.setVisibility(View.VISIBLE);
         } else {
             // calendarViewLayout.setVisibility(View.GONE);
 //            calendar.setVisibility(View.GONE);
-            mWeekView.setVisibility(View.VISIBLE);
+            mNewWeekView.setVisibility(View.VISIBLE);
         }
 
         add_event.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +198,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
                         public void onClick(DialogInterface dialog, int which) {
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
                             calendar.getEvents();
-                            mWeekView.notifyDatasetChanged();
+                            mNewWeekView.notifyDatasetChanged();
                             updateEventAdapter();
                             if (eventAdapter.getItemCount() == 0)
                                 updateView();
@@ -229,7 +220,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
     }
 
     private void setupDateTimeInterpreter(final boolean shortDate) {
-        mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
+        mNewWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
             @Override
             public String interpretDate(Calendar date) {
                 SimpleDateFormat weekdayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
@@ -297,7 +288,6 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     private void buildEventList(Event eventObj)
     {
-        Log.i(TAG, "build events");
         dayEventObj = eventObj;
         events = dayEventObj.events;
         Log.i(TAG, "build events size: " + events.size());
@@ -336,11 +326,11 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         Log.i(TAG, "onResume!");
         if (mWeekViewType == TYPE_MONTH_VIEW) {
             updateView();
-            mWeekView.setRefreshEvents(true);
+            mNewWeekView.setRefreshEvents(true);
         } else if (mWeekViewType == TYPE_WEEK_VIEW) {
-            mWeekView.notifyDatasetChanged();
+            mNewWeekView.notifyDatasetChanged();
         } else if (mWeekViewType == TYPE_DAY_VIEW) {
-            mWeekView.notifyDatasetChanged();
+            mNewWeekView.notifyDatasetChanged();
         }
         //listener.refreshData();
     }
@@ -373,7 +363,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
 
     public void notifyWeekView()
     {
-        mWeekView.notifyDatasetChanged();
+        mNewWeekView.notifyDatasetChanged();
     }
 
     public void addLoadedEvents(List<WeekViewEvent> loadedEvent) {
@@ -410,7 +400,7 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             case R.id.action_month_view:
                 if (mWeekViewType != TYPE_MONTH_VIEW) {
                     mWeekViewType = TYPE_MONTH_VIEW;
-                    mWeekView.setVisibility(View.GONE);
+                    mNewWeekView.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.VISIBLE);
                     add_event.setVisibility(View.VISIBLE);
                     updateView();}
@@ -418,34 +408,34 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             case R.id.action_day_view:
                 if (mWeekViewType != TYPE_DAY_VIEW) {
                     setupDateTimeInterpreter(false);
-                    mWeekView.setVisibility(View.VISIBLE);
+                    mNewWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
                     mWeekViewType = TYPE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(1);
+                    mNewWeekView.setNumberOfVisibleDays(1);
                     add_event.setVisibility(View.INVISIBLE);
                     //getSupportActionBar().setTitle(getTitle());
                     // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));}
+                    mNewWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+                    mNewWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                    mNewWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));}
                 return true;
             case R.id.action_week_view:
                 if (mWeekViewType != TYPE_WEEK_VIEW) {
                     setupDateTimeInterpreter(true);
-                    mWeekView.setRefreshEvents(true);
-                    mWeekView.setVisibility(View.VISIBLE);
+                    mNewWeekView.setRefreshEvents(true);
+                    mNewWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
 
                     mWeekViewType = TYPE_WEEK_VIEW;
-                    mWeekView.setNumberOfVisibleDays(7);
+                    mNewWeekView.setNumberOfVisibleDays(7);
                     add_event.setVisibility(View.INVISIBLE);
                     //getSupportActionBar().setTitle(getTitle());
                     // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));}
+                    mNewWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                    mNewWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                    mNewWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));}
                 return true;
 
         }
@@ -530,9 +520,9 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
         return msg;
     }
 
-    public WeekView getWeekView()
+    public NewWeekView getWeekView()
     {
-        return mWeekView;
+        return mNewWeekView;
     }
 
     private void showEventDetailScreen(WeekViewEvent event) {
@@ -571,11 +561,11 @@ public abstract class WeekViewFragment extends Fragment implements WeekView.Even
             if (requestCode == 1) {
                 if (mWeekViewType == TYPE_MONTH_VIEW) {
                     updateView();
-                    mWeekView.setRefreshEvents(true);
+                    mNewWeekView.setRefreshEvents(true);
                 } else if (mWeekViewType == TYPE_WEEK_VIEW) {
-                    mWeekView.notifyDatasetChanged();
+                    mNewWeekView.notifyDatasetChanged();
                 } else if (mWeekViewType == TYPE_DAY_VIEW) {
-                    mWeekView.notifyDatasetChanged();
+                    mNewWeekView.notifyDatasetChanged();
                 }
             }
     }

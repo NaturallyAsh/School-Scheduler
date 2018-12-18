@@ -581,7 +581,7 @@ public class DbHelper extends SQLiteOpenHelper
         return labels;
     }
 
-    public long addAgenda(AgendaModel model)
+    public AgendaModel addAgenda(AgendaModel model)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -596,10 +596,11 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_RECURRENCE_OPTION, model.getmRecurrenceOption());
         values.put(AgendaEntry.COLUMN_RECURRENCE_RULE, model.getmRecurrenceRule());
 
-        long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        //long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 
-        return id;
+        return model;
     }
 
     public Cursor getAgenda()
