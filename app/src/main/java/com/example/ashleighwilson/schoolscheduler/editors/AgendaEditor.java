@@ -71,6 +71,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String ARG_ITEM = "agenda_arg";
     private static final String TIME_DIALOG = "time_dialog";
     private static final String CHOICE_DIALOG = "choice_dialog";
+    private static final String WEEK_CHOICE_DIALOG = "week_choice_dialog";
     static private int agendaColor;
     NotificationController controller;
     private AgendaAdapter agendaAdapter;
@@ -80,12 +81,12 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private List<String> labels;
     private String titleString, dueDate;
     private SelectedDate mSelectedDate;
-    private int mHour, mMinute, mRepeatInt;
+    private int mHour, mMinute, mRepeatInt, dayWeekInt;
     private long NOTIFY_DATE;
     private String mRecurrenceOption, mRecurrenceRule;
     private Calendar calendar;
     private LinearLayout moreLayout, repeatContainer;
-    private ArrayList<String> repeatLabels;
+    private ArrayList<String> repeatLabels, weekLabels;
 
 
     private boolean mSubjectHasChanged = false;
@@ -298,13 +299,24 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 if (repeatLabels != null) {
                     labelString = TextUtils.join("\t", repeatLabels);
                 }
-                getIntDays(labelString);
+                getRepeatIntDays(labelString);
+            }
+        }
+        if (dialogTag.equals(WEEK_CHOICE_DIALOG)) {
+            if (which == BUTTON_POSITIVE) {
+                weekLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+
+                String weekLabelString = "";
+                if (weekLabels != null) {
+                    weekLabelString = TextUtils.join("\t", weekLabels);
+                }
+                getDayWeekInt(weekLabelString);
             }
         }
         return false;
     }
 
-    private int getIntDays(String repeatLabel) {
+    private int getRepeatIntDays(String repeatLabel) {
         switch (repeatLabel) {
             case "Never":
                 mRepeatInt = 0;
@@ -328,12 +340,51 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 break;
             case "Custom days":
                 mRepeatInt = 5;
-                mRepeat.setText(repeatLabel);
+                //mRepeat.setText(repeatLabel);
+                showChoice(null);
                 break;
             default:
                 throw new RuntimeException("error with repeat: " + repeatLabel);
         }
         return 0;
+    }
+
+    private int getDayWeekInt(String dayLabel) {
+        switch (dayLabel) {
+            case "SUNDAY":
+                dayWeekInt = Calendar.SUNDAY;
+                Log.i(TAG, "day int: " + dayWeekInt);
+                break;
+            case "MONDAY":
+                dayWeekInt = Calendar.MONDAY;
+                break;
+            case "TUESDAY":
+                dayWeekInt = Calendar.TUESDAY;
+                break;
+            case "WEDNESDAY":
+                dayWeekInt = Calendar.WEDNESDAY;
+                break;
+            case "THURSDAY":
+                dayWeekInt = Calendar.THURSDAY;
+                break;
+            case "FRIDAY":
+                dayWeekInt = Calendar.FRIDAY;
+                break;
+            case "SATURDAY":
+                dayWeekInt = Calendar.SATURDAY;
+                break;
+            default:
+                throw new RuntimeException("error with day: " + dayLabel);
+        }
+        return 0;
+    }
+
+    public void showChoice(View view) {
+        SimpleListDialog.build()
+                .title("Select a day")
+                .choiceMode(SimpleListDialog.SINGLE_CHOICE_DIRECT)
+                .items(getApplicationContext(), R.array.day_of_week)
+                .show(this, WEEK_CHOICE_DIALOG);
     }
 
     private void onSave()
