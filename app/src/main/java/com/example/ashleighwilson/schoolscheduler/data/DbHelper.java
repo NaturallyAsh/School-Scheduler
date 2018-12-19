@@ -87,9 +87,10 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_TITLE,
             AgendaEntry.COLUMN_DUEDATE,
             AgendaEntry.COLUMN_COLOR,
-            AgendaEntry.COLUMN_NOTIFICATION,
-            AgendaEntry.COLUMN_RECURRENCE_OPTION,
-            AgendaEntry.COLUMN_RECURRENCE_RULE
+            AgendaEntry.COLUMN_TIME_TO_NOTIFY,
+            AgendaEntry.COLUMN_DAY_TO_NOTIFY,
+            AgendaEntry.COLUMN_ADD_REMINDER,
+            AgendaEntry.COLUMN_REPEAT_TYPE
     };
 
     String[] noteColumns = new String[] {
@@ -108,7 +109,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 81;
+    private static final int DATABASE_VERSION = 82;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -251,9 +252,10 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_DUEDATE = "date";
         public final static String COLUMN_COLOR = "color";
-        public final static String COLUMN_NOTIFICATION = "notification";
-        public final static String COLUMN_RECURRENCE_OPTION = "recurrence_option";
-        public final static String COLUMN_RECURRENCE_RULE = "recurrence_rule";
+        public final static String COLUMN_TIME_TO_NOTIFY = "time_to_notify";
+        public final static String COLUMN_DAY_TO_NOTIFY = "day_to_notify";
+        public final static String COLUMN_ADD_REMINDER = "add_reminder";
+        public final static String COLUMN_REPEAT_TYPE = "repeat_type";
     }
 
     String SQL_CREATE_AGENDA_TABLE = "CREATE TABLE " + AgendaEntry.TABLE_NAME +
@@ -263,9 +265,10 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_TITLE + " TEXT, "
             + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
             + AgendaEntry.COLUMN_COLOR + " INTEGER, "
-            + AgendaEntry.COLUMN_NOTIFICATION + " INTEGER, "
-            + AgendaEntry.COLUMN_RECURRENCE_OPTION + " TEXT, "
-            + AgendaEntry.COLUMN_RECURRENCE_RULE + " TEXT);";
+            + AgendaEntry.COLUMN_TIME_TO_NOTIFY + " INTEGER, "
+            + AgendaEntry.COLUMN_DAY_TO_NOTIFY + " INTEGER, "
+            + AgendaEntry.COLUMN_ADD_REMINDER + " INTEGER, "
+            + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER);";
 
 
     @Override
@@ -592,9 +595,10 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
-        values.put(AgendaEntry.COLUMN_NOTIFICATION, model.ismNotification());
-        values.put(AgendaEntry.COLUMN_RECURRENCE_OPTION, model.getmRecurrenceOption());
-        values.put(AgendaEntry.COLUMN_RECURRENCE_RULE, model.getmRecurrenceRule());
+        values.put(AgendaEntry.COLUMN_TIME_TO_NOTIFY, model.getTimeToNotify());
+        values.put(AgendaEntry.COLUMN_DAY_TO_NOTIFY, model.getmDayToNotify());
+        values.put(AgendaEntry.COLUMN_ADD_REMINDER, model.getmAddReminder());
+        values.put(AgendaEntry.COLUMN_REPEAT_TYPE, model.getmRepeatType());
 
         //long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -627,6 +631,10 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setAgendaTitle(cursor.getString(i++));
                 model.setDueDate(cursor.getString(i++));
                 model.setmColor(cursor.getInt(i++));
+                model.setTimeToNotify(cursor.getLong(i++));
+                model.setmDayToNotify(cursor.getLong(i++));
+                model.setmAddReminder(cursor.getLong(i++));
+                model.setmRepeatType(cursor.getInt(i++));
 
                 list.add(model);
 
@@ -649,7 +657,10 @@ public class DbHelper extends SQLiteOpenHelper
             model.setAgendaTitle(cursor.getString(2));
             model.setDueDate(cursor.getString(3));
             model.setmColor(cursor.getInt(4));
-            model.setmNotification(cursor.getInt(5));
+            model.setTimeToNotify(cursor.getLong(5));
+            model.setmDayToNotify(cursor.getLong(6));
+            model.setmAddReminder(cursor.getLong(7));
+            model.setmRepeatType(cursor.getInt(8));
 
             cursor.close();
             return model;

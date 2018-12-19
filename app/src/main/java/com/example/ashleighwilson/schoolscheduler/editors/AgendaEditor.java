@@ -66,7 +66,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private DbHelper dbHelper;
     private Date date;
     private static final String COLOR_DIALOG = "color dialog";
-    private static final String DATE_DIALOG = "date dialog";
+    private static final String DUE_DATE_DIALOG = "due date dialog";
+    private static final String DAY_TO_NOTIFY_DIALOG = "day to notify dialog";
     private static final String ARG_ITEM = "agenda_arg";
     private static final String TIME_DIALOG = "time_dialog";
     private static final String CHOICE_DIALOG = "choice_dialog";
@@ -79,7 +80,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private List<String> labels;
     private String titleString, dueDate;
     private SelectedDate mSelectedDate;
-    private int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
+    private int mHour, mMinute, mRepeatInt;
+    private long NOTIFY_DATE;
     private String mRecurrenceOption, mRecurrenceRule;
     private Calendar calendar;
     private LinearLayout moreLayout, repeatContainer;
@@ -136,8 +138,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
             mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
-            mNotification.setChecked(itemModel.ismNotification());
-            Log.i(TAG, "item notify: " + itemModel.ismNotification());
         }
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +156,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(View v) {
                 SimpleDateDialog.build()
                         //.firstDayOfWeek(Calendar.MONDAY)
-                        .show(AgendaEditor.this, DATE_DIALOG);
+                        .show(AgendaEditor.this, DUE_DATE_DIALOG);
             }
         });
 
@@ -174,7 +174,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 SimpleDateDialog.build()
-                        .show(AgendaEditor.this, DATE_DIALOG);
+                        .show(AgendaEditor.this, DAY_TO_NOTIFY_DIALOG);
             }
         });
 
@@ -251,7 +251,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             viewColor.setBackgroundColor(agendaColor);
             return true;
         }
-        if (dialogTag.equals(DATE_DIALOG))
+        if (dialogTag.equals(DUE_DATE_DIALOG))
         {
             if (which == BUTTON_POSITIVE)
             {
@@ -259,6 +259,19 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
                 mDueDate.setText(dateFormat.format(date));
+                return true;
+            }
+        }
+        if (dialogTag.equals(DAY_TO_NOTIFY_DIALOG))
+        {
+            if (which == BUTTON_POSITIVE)
+            {
+                Date date = new Date(extras.getLong(SimpleDateDialog.DATE));
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
+
+                NOTIFY_DATE = extras.getLong(SimpleDateDialog.DATE);
+                mDayToNotify.setText(dateFormat.format(date));
                 return true;
             }
         }
@@ -281,9 +294,46 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             if (which == BUTTON_POSITIVE) {
                 repeatLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
 
+                String labelString = "";
+                if (repeatLabels != null) {
+                    labelString = TextUtils.join("\t", repeatLabels);
+                }
+                getIntDays(labelString);
             }
         }
         return false;
+    }
+
+    private int getIntDays(String repeatLabel) {
+        switch (repeatLabel) {
+            case "Never":
+                mRepeatInt = 0;
+                mRepeat.setText(repeatLabel);
+                break;
+            case "Daily":
+                mRepeatInt = 1;
+                mRepeat.setText(repeatLabel);
+                break;
+            case "Weekly":
+                mRepeatInt = 2;
+                mRepeat.setText(repeatLabel);
+                break;
+            case "Monthly":
+                mRepeatInt = 3;
+                mRepeat.setText(repeatLabel);
+                break;
+            case "Yearly":
+                mRepeatInt = 4;
+                mRepeat.setText(repeatLabel);
+                break;
+            case "Custom days":
+                mRepeatInt = 5;
+                mRepeat.setText(repeatLabel);
+                break;
+            default:
+                throw new RuntimeException("error with repeat: " + repeatLabel);
+        }
+        return 0;
     }
 
     private void onSave()
@@ -291,6 +341,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         model = new AgendaModel();
         titleString = mAssignmentTitle.getText().toString().trim();
         dueDate = mDueDate.getText().toString().trim();
+
+        Calendar timeNote = Calendar.getInstance();
+        timeNote.set(Calendar.HOUR, mHour);
+        timeNote.set(Calendar.MINUTE, mMinute);
 
         if (titleString.matches("") || dueDate.matches("")) {
             Toast.makeText(this, "Please enter a title", Toast.LENGTH_SHORT).show();
@@ -307,16 +361,16 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             } else {
                 model.setmColor(agendaColor);
             }
-            model.setmRecurrenceOption(mRecurrenceOption);
-            model.setmRecurrenceRule(mRecurrenceRule);
-            Log.i(TAG, "recurrence rule:" + mRecurrenceRule);
-            model.setTimeToNotify(calendar);
-            if (mNotification.isChecked()) {
+            model.setTimeToNotify(timeNote.getTimeInMillis());
+            model.setmDayToNotify(NOTIFY_DATE);
+            model.setmAddReminder(0);
+            model.setmRepeatType(mRepeatInt);
+            /*if (mNotification.isChecked()) {
                 model.setmNotification(mNotification.isChecked());
 
                 NotificationController.notificationTest3(this, model);
                 Log.i(TAG, "check notification: " + controller.checkNotification(this));
-            }
+            }*/
 
             dbHelper.addAgenda(model);
             finish();

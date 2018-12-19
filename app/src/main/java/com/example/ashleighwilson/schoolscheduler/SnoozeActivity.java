@@ -95,7 +95,7 @@ public class SnoozeActivity extends AppCompatActivity implements OnReminderPicke
         }
     }
 
-    public static void setNextRecurrentReminder(AgendaModel model) {
+    /*public static void setNextRecurrentReminder(AgendaModel model) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
         try{
@@ -121,7 +121,7 @@ public class SnoozeActivity extends AppCompatActivity implements OnReminderPicke
         new SaveAgendaTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, model);
         NotificationController.notificationTest3(MySchedulerApp.getInstance(), model);
         Log.i(TAG, "snooze agenda reminder reset");
-    }
+    }*/
 
     @Override
     public void onReminderPicked(long reminder) {

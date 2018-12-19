@@ -156,4 +156,5 @@
     <string name="add_reminder_string">Add reminder</string>
     <string name="repeat_string">Repeat</string>
     <string name="never_string">Never</string>
+    <string name="overdue_string">OVERDUE!</string>
 </resources>

@@ -25,21 +25,23 @@ public class AgendaModel implements Parcelable
     private String mDueDate;
     private boolean mBefore;
     private long mInterval;
-    private boolean mNotification;
-    private String mRecurrenceOption;
-    private String mRecurrenceRule;
-    private Calendar timeToNotify;
-    private ArrayList<AgendaModel> allList = new ArrayList<>();
-    private NotificationController controller = new NotificationController(mContext);
+    private long mTimeToNotify;
+    private long mDayToNotify;
+    private long mAddReminder;
+    private int mRepeatType;
 
-    public AgendaModel(int id, String name, String title, String date, int color, int notification)
+    public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
+                       long dayToNotify, long reminder, int repeatType)
     {
         this.mId = id;
         this.mClassName = name;
         this.mAgendaTitle = title;
         this.mColor = color;
-        this.mDueDate = date;
-        this.mNotification = notification == 1;
+        this.mDueDate = dueDate;
+        this.mTimeToNotify = timeToNotify;
+        this.mDayToNotify = dayToNotify;
+        this.mAddReminder = reminder;
+        this.mRepeatType = repeatType;
     }
 
     public AgendaModel() {
@@ -52,9 +54,10 @@ public class AgendaModel implements Parcelable
         mAgendaTitle = in.readString();
         mColor = in.readInt();
         mDueDate = in.readString();
-        setmNotification(in.readInt());
-        mRecurrenceOption = in.readString();
-        mRecurrenceRule = in.readString();
+        mTimeToNotify = in.readLong();
+        mDayToNotify = in.readLong();
+        mAddReminder = in.readLong();
+        mRepeatType = in.readInt();
     }
 
     public int getmId()
@@ -102,22 +105,6 @@ public class AgendaModel implements Parcelable
         return mDueDate;
     }
 
-    public String getmRecurrenceOption() {
-        return mRecurrenceOption;
-    }
-
-    public void setmRecurrenceOption(String mRecurrence) {
-        this.mRecurrenceOption = mRecurrence;
-    }
-
-    public String getmRecurrenceRule() {
-        return mRecurrenceRule;
-    }
-
-    public void setmRecurrenceRule(String recurrenceRule) {
-        this.mRecurrenceRule = recurrenceRule;
-    }
-
     public void setDueDate(String date)
     {
         this.mDueDate = date;
@@ -125,30 +112,38 @@ public class AgendaModel implements Parcelable
             setmInterval();
     }
 
-    public boolean ismBefore() {
-        return mBefore;
+    public long getTimeToNotify() {
+        return mTimeToNotify;
     }
 
-    public boolean ismNotification()
+    public void setTimeToNotify(long timeToNotify) {
+        this.mTimeToNotify = timeToNotify;
+    }
+
+    public long getmDayToNotify() {
+        return mDayToNotify;
+    }
+
+    public void setmDayToNotify(long dayToNotify) {
+        this.mDayToNotify = dayToNotify;
+    }
+
+    public long getmAddReminder() {
+        return mAddReminder;
+    }
+
+    public void setmAddReminder(long reminder) {
+        this.mAddReminder = reminder;
+    }
+
+    public int getmRepeatType()
     {
-        return mNotification;
+        return mRepeatType;
     }
 
-    public void setmNotification(boolean notification)
+    public void setmRepeatType(int repeatType)
     {
-        this.mNotification = notification;
-    }
-
-    public void setmNotification(int notification) {
-        this.mNotification = notification == 1;
-    }
-
-    public Calendar getTimeToNotify() {
-        return timeToNotify;
-    }
-
-    public void setTimeToNotify(Calendar timeToNotify) {
-        this.timeToNotify = timeToNotify;
+        this.mRepeatType = repeatType;
     }
 
     public long getmInterval() {
@@ -207,8 +202,9 @@ public class AgendaModel implements Parcelable
         dest.writeString(mAgendaTitle);
         dest.writeInt(mColor);
         dest.writeString(mDueDate);
-        dest.writeInt(mNotification ? 1 : 0);
-        dest.writeString(mRecurrenceOption);
-        dest.writeString(mRecurrenceRule);
+        dest.writeLong(mTimeToNotify);
+        dest.writeLong(mDayToNotify);
+        dest.writeLong(mAddReminder);
+        dest.writeInt(mRepeatType);
     }
 }

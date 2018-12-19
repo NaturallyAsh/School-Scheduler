@@ -4,23 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
@@ -40,11 +33,6 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     private List<AgendaModel> agendaData;
     private DbHelper dbHelper;
     AgendaMenuClickListener menuClickListener;
-    public static final String ARG_ID = "ID";
-    public static final String ARG_TITLE = "TITLE";
-    public static final String ARG_CLASSNAME = "CLASS_NAME";
-    public static final String ARG_COLOR = "COLOR";
-    public static final String ARG_DATE = "DATE";
     public static final String AGENDA_ARG = "agenda_item";
     private SessionManager manager;
     private String newDate;
@@ -77,12 +65,13 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         holder.className.setText(currentAgenda.getClassName());
         holder.dueDate.setText(currentAgenda.getDueDate());
         holder.dueDate.setTag(holder);
-        holder.alarmIcon.setVisibility(currentAgenda.ismNotification() ? View.VISIBLE : View.INVISIBLE);
-        Log.i(TAG, "isNotification: " + currentAgenda.ismNotification());
+        if (currentAgenda.getTimeToNotify() != 0) {
+            holder.alarmIcon.setVisibility(View.VISIBLE);
+        }
         holder.color.setBackgroundColor(currentAgenda.getmColor());
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
         if (currentAgenda.getmInterval() == 0) {
-            holder.countdownDate.setText("OVERDUE!");
+            holder.countdownDate.setText(R.string.overdue_string);
             holder.countdownDate.setTextColor(Color.RED);
         }
 

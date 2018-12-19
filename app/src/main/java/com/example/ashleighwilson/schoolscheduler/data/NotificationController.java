@@ -114,11 +114,7 @@ public class NotificationController
             //long timeToNotify = futureDay.getTimeInMillis() - 86500000;
             long testTimeToNotify = System.currentTimeMillis();
             //long reminder = futureDay.getTimeInMillis();
-            long timeToNotify = setNextRecurrence(model.getmRecurrenceOption(),
-                    model.getmRecurrenceRule(), d.getTime());
-            Log.i(TAG, "option: " + model.getmRecurrenceOption() + " rule: " +
-                model.getmRecurrenceRule());
-            Log.i(TAG, "date in long: " + d.getTime());
+            long timeToNotify = System.currentTimeMillis();
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
             id = (int) System.currentTimeMillis();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
