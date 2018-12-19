@@ -45,6 +45,7 @@ public class DateHelper{
         {
             EventRecurrence eventRecurrence = new EventRecurrence();
             eventRecurrence.setStartDate(new Time("" + new Date().getTime()));
+            //eventRecurrence.parse(recurrenceRule.replace("WKST=SU", "WKST=MO"));
             eventRecurrence.parse(recurrenceRule);
             return EventRecurrenceFormatter.getRepeatString(context.getApplicationContext(),
                     context.getResources(), eventRecurrence, true);
@@ -88,13 +89,14 @@ public class DateHelper{
         RRule rule = new RRule();
         try {
             rule.setValue(recurrenceRule);
-            //DateTime seed = new DateTime(reminder);
-            DateTime seed = new DateTime(currentTime);
+            DateTime seed = new DateTime(reminder);
+            //DateTime seed = new DateTime(currentTime);
             //long startTimestamp = reminder + 60 * 1000;
-            long startTimestamp = currentTime;
-            /*if (startTimestamp < currentTime) {
+            long startTimestamp = reminder + 60 * 1000;
+            if (startTimestamp < currentTime) {
                 startTimestamp = currentTime;
-            }*/
+            }
+
             DateTime start = new DateTime(startTimestamp);
             Date nextDate = rule.getRecur().getNextDate(seed, start);
             return nextDate == null ? 0L : nextDate.getTime();

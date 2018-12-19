@@ -22,4 +22,13 @@
         <item>SATURDAY</item>
     </string-array>
 
+    <string-array name="repeat_days">
+        <item>Does not repeat</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+        <item>Custom days</item>
+    </string-array>
+
 </resources>

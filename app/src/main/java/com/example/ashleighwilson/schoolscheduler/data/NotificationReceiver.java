@@ -42,10 +42,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        createNotification(agendaModel, id, context);
-        if (agendaModel.getmRecurrenceRule() != null || !agendaModel.getmRecurrenceRule().equals("n/a")) {
-            SnoozeActivity.setNextRecurrentReminder(agendaModel);
-        }
+
     }
 
     private void createNotification(AgendaModel model, int id, Context context) {

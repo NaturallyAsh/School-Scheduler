@@ -10,6 +10,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 
 import com.appeaser.sublimepickerlibrary.datepicker.SelectedDate;
 import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions;
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.adapter.AgendaAdapter;
@@ -39,11 +42,15 @@ import com.example.ashleighwilson.schoolscheduler.views.RecurrenceDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleColorDialog;
 import com.example.ashleighwilson.schoolscheduler.views.SimpleDateDialog;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
+import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import eltos.simpledialogfragment.list.SimpleListDialog;
 
 public class AgendaEditor extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         SimpleDateDialog.OnDialogResultListener, CompoundButton.OnCheckedChangeListener
@@ -51,7 +58,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String TAG = AgendaEditor.class.getSimpleName();
 
     private EditText mAssignmentTitle;
-    private TextView mDueDate, viewColor, mNotificationTv;
+    private TextView mDueDate, viewColor, mNotificationTv, mTimeToNotify, mDayToNotify, mAddReminder,
+        mRepeat;
     private Switch mNotification;
     private String label;
     private Spinner mClassName;
@@ -60,6 +68,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String COLOR_DIALOG = "color dialog";
     private static final String DATE_DIALOG = "date dialog";
     private static final String ARG_ITEM = "agenda_arg";
+    private static final String TIME_DIALOG = "time_dialog";
+    private static final String CHOICE_DIALOG = "choice_dialog";
     static private int agendaColor;
     NotificationController controller;
     private AgendaAdapter agendaAdapter;
@@ -72,6 +82,9 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private int mHour, mMinute, mReminderYear, mReminderMonth, mReminderDay;
     private String mRecurrenceOption, mRecurrenceRule;
     private Calendar calendar;
+    private LinearLayout moreLayout, repeatContainer;
+    private ArrayList<String> repeatLabels;
+
 
     private boolean mSubjectHasChanged = false;
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -79,36 +92,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mSubjectHasChanged = true;
             return false;
-        }
-    };
-    private RecurrenceDialog.Callback mCallback = new RecurrenceDialog.Callback() {
-        @Override
-        public void onCancelled() {
-            if (mCallback != null) {
-                mCallback.onCancelled();
-            }
-        }
-
-        @Override
-        public void onDateTimeRecurrenceSet(SelectedDate selectedDate, int hourOfDay, int minute, SublimeRecurrencePicker.RecurrenceOption recurrenceOption, String recurrenceRule) {
-
-            mSelectedDate = selectedDate;
-            //mReminderYear = mSelectedDate.getFirstDate().get(Calendar.YEAR);
-            //mReminderMonth = mSelectedDate.getFirstDate().get(Calendar.MONTH);
-            //mReminderDay = mSelectedDate.getFirstDate().get(Calendar.DAY_OF_MONTH);
-
-            mHour = hourOfDay;
-            mMinute = minute;
-            mRecurrenceOption = recurrenceOption != null ? recurrenceOption.name() : "n/a";
-            mRecurrenceRule = recurrenceRule != null ? recurrenceRule : "n/a";
-
-
-            calendar = Calendar.getInstance();
-            calendar.set(mReminderYear, mReminderMonth, mReminderDay, mHour, mMinute, 0);
-
-            mNotificationTv.setText(DateHelper.dateFormatter(calendar.getTimeInMillis()));
-
-            //model.setTimeToNotify(calendar);
         }
     };
 
@@ -124,13 +107,18 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
         dbHelper = DbHelper.getInstance();
         controller = new NotificationController(this);
+        moreLayout = findViewById(R.id.more_layout);
 
         mAssignmentTitle = findViewById(R.id.assignment_title_edit_text);
         mClassName = findViewById(R.id.agenda_subject_spinner);
         mDueDate = findViewById(R.id.agenda_due_date_text);
         viewColor = findViewById(R.id.agenda_view_color);
         mNotification = findViewById(R.id.notification_switch);
-        mNotificationTv = findViewById(R.id.notification_tv);
+        mTimeToNotify = findViewById(R.id.assign_time_to_notify);
+        mDayToNotify = findViewById(R.id.assign_day_to_notify);
+        mAddReminder = findViewById(R.id.assign_add_reminder);
+        mRepeat = findViewById(R.id.assign_repeat);
+        repeatContainer = findViewById(R.id.assign_repeat_container);
 
         mAssignmentTitle.setOnTouchListener(mTouchListener);
         mClassName.setOnItemSelectedListener(this);
@@ -143,13 +131,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         viewColor.setBackgroundColor(agendaColor);
 
         itemModel = getIntent().getParcelableExtra(AgendaAdapter.AGENDA_ARG);
-        //Bundle intent = getIntent().getExtras();
         if (itemModel != null) {
-            /*String title = intent.getString(AgendaAdapter.ARG_TITLE);
-            String name = intent.getString(AgendaAdapter.ARG_CLASSNAME);
-            String due = intent.getString(AgendaAdapter.ARG_DATE);
-            int color = intent.getInt(AgendaAdapter.ARG_COLOR);*/
-
             mAssignmentTitle.setText(itemModel.getAgendaTitle());
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
@@ -175,6 +157,35 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 SimpleDateDialog.build()
                         //.firstDayOfWeek(Calendar.MONDAY)
                         .show(AgendaEditor.this, DATE_DIALOG);
+            }
+        });
+
+        mTimeToNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleTimeDialog.build()
+                        .hour(Calendar.HOUR_OF_DAY).minute(Calendar.MINUTE)
+                        .set24HourView(false)
+                        .show(AgendaEditor.this, TIME_DIALOG);
+            }
+        });
+
+        mDayToNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleDateDialog.build()
+                        .show(AgendaEditor.this, DATE_DIALOG);
+            }
+        });
+
+        repeatContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleListDialog.build()
+                        .title("Repeat Options")
+                        .choiceMode(SimpleListDialog.SINGLE_CHOICE_DIRECT)
+                        .items(getApplicationContext(), R.array.repeat_days)
+                        .show(AgendaEditor.this, CHOICE_DIALOG);
             }
         });
 
@@ -212,39 +223,11 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         {
             mNotification.setChecked(true);
             //model.setmNotification(mNotification.isChecked());
+            moreLayout.setVisibility(View.VISIBLE);
+        } else {
+            mNotification.setChecked(false);
+            moreLayout.setVisibility(View.INVISIBLE);
         }
-        RecurrenceDialog recurrenceDialog = new RecurrenceDialog();
-        recurrenceDialog.setCallback(mCallback);
-
-        Pair<Boolean, SublimeOptions> optionsPair = getOptions();
-
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second);
-        recurrenceDialog.setArguments(bundle);
-
-        recurrenceDialog.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
-        recurrenceDialog.show(getSupportFragmentManager(), "sublime");
-        /*if (!isChecked) {
-            if (mCallback !=null) {
-                mCallback.onCancelled();
-            }
-        }*/
-
-    }
-
-    public Pair<Boolean, SublimeOptions> getOptions()
-    {
-        SublimeOptions options = new SublimeOptions();
-        int displayOptions;
-
-        displayOptions = SublimeOptions.ACTIVATE_TIME_PICKER +
-                SublimeOptions.ACTIVATE_RECURRENCE_PICKER;
-
-        options.setPickerToShow(SublimeOptions.Picker.TIME_PICKER);
-        options.setDisplayOptions(displayOptions);
-
-        return new Pair<>(displayOptions != 0 ? Boolean.TRUE : Boolean.FALSE, options);
-
     }
 
     private int getMatColor(String typeColor) {
@@ -277,6 +260,27 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
                 mDueDate.setText(dateFormat.format(date));
                 return true;
+            }
+        }
+        if (dialogTag.equals(TIME_DIALOG)) {
+            if (which == BUTTON_POSITIVE) {
+                Calendar calender = Calendar.getInstance();
+                calender.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
+                calender.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
+
+                SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
+
+                mHour = extras.getInt(SimpleTimeDialog.HOUR);
+                mMinute = extras.getInt(SimpleTimeDialog.MINUTE);
+
+                mTimeToNotify.setText(formatter.format(calender.getTime()));
+                return true;
+            }
+        }
+        if (dialogTag.equals(CHOICE_DIALOG)) {
+            if (which == BUTTON_POSITIVE) {
+                repeatLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+
             }
         }
         return false;

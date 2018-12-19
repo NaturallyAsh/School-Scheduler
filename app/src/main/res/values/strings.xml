@@ -151,4 +151,9 @@
     <string name="action_month_view_string">Month View</string>
     <string name="details_string">Details</string>
     <string name="schedule_string">Schedule</string>
+    <string name="time_to_notify_string">Time to notify</string>
+    <string name="day_to_notify_string">Day to notify</string>
+    <string name="add_reminder_string">Add reminder</string>
+    <string name="repeat_string">Repeat</string>
+    <string name="never_string">Never</string>
 </resources>
