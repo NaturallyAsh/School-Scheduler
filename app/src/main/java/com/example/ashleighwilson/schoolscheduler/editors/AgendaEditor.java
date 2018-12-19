@@ -374,7 +374,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 dayWeekInt = Calendar.SATURDAY;
                 break;
             default:
-                throw new RuntimeException("error with day: " + dayLabel);
+                throw new RuntimeException("error with week: " + dayLabel);
         }
         return 0;
     }
