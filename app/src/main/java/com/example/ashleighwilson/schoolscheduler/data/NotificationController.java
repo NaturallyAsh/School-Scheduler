@@ -96,8 +96,6 @@ public class NotificationController
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        //Log.i(TAG, "recurrence: " + agendaModel.getmRecurrence());
-
         String dueDate = model.getDueDate();
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
         Date d = null;
@@ -111,17 +109,11 @@ public class NotificationController
         Calendar curr = Calendar.getInstance();
         if (futureDay.after(curr))
         {
-            //long timeToNotify = futureDay.getTimeInMillis() - 86500000;
-            long testTimeToNotify = System.currentTimeMillis();
-            //long reminder = futureDay.getTimeInMillis();
+            //id = (int) System.currentTimeMillis();
             long timeToNotify = System.currentTimeMillis();
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
-            id = (int) System.currentTimeMillis();
+            id = model.getmId();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            /*notifyEvent.putExtra(ARG_TITLE, agendaModel.getAgendaTitle());
-            notifyEvent.putExtra(ARG_DUE_DATE, agendaModel.getDueDate());
-            notifyEvent.putExtra(ARG_RECUR_OPTION, agendaModel.getmRecurrenceOption());
-            notifyEvent.putExtra(ARG_RECUR_RULE, agendaModel.getmRecurrenceRule());*/
             notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
 
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;

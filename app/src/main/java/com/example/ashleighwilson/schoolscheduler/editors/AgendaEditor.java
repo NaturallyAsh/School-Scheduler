@@ -46,6 +46,7 @@ import com.example.ashleighwilson.schoolscheduler.views.SimpleTimeDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -71,7 +72,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String ARG_ITEM = "agenda_arg";
     private static final String TIME_DIALOG = "time_dialog";
     private static final String CHOICE_DIALOG = "choice_dialog";
-    private static final String WEEK_CHOICE_DIALOG = "week_choice_dialog";
+    private static final String REMINDER_CHOICE_DIALOG = "reminder_choice_dialog";
     static private int agendaColor;
     NotificationController controller;
     private AgendaAdapter agendaAdapter;
@@ -84,9 +85,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private int mHour, mMinute, mRepeatInt, dayWeekInt;
     private long NOTIFY_DATE;
     private String mRecurrenceOption, mRecurrenceRule;
-    private Calendar calendar;
+    private Calendar mCalendar;
     private LinearLayout moreLayout, repeatContainer;
     private ArrayList<String> repeatLabels, weekLabels;
+    private boolean[] daysOfWeek = new boolean[7];
 
 
     private boolean mSubjectHasChanged = false;
@@ -110,6 +112,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
         dbHelper = DbHelper.getInstance();
         controller = new NotificationController(this);
+        mCalendar = Calendar.getInstance();
         moreLayout = findViewById(R.id.more_layout);
 
         mAssignmentTitle = findViewById(R.id.assignment_title_edit_text);
@@ -179,6 +182,19 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        mAddReminder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleListDialog.build()
+                        .title("Select a day")
+                        .choiceMode(SimpleListDialog.MULTI_CHOICE)
+                        .choiceMax(1)
+                        .filterable(false)
+                        .items(getApplicationContext(), R.array.reminder_choices)
+                        .show(AgendaEditor.this, REMINDER_CHOICE_DIALOG);
+            }
+        });
+
         repeatContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,7 +205,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                         .show(AgendaEditor.this, CHOICE_DIALOG);
             }
         });
-
     }
 
     private void loadSpinnerData()
@@ -302,7 +317,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 getRepeatIntDays(labelString);
             }
         }
-        if (dialogTag.equals(WEEK_CHOICE_DIALOG)) {
+        if (dialogTag.equals(REMINDER_CHOICE_DIALOG)) {
             if (which == BUTTON_POSITIVE) {
                 weekLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
 
@@ -310,7 +325,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 if (weekLabels != null) {
                     weekLabelString = TextUtils.join("\t", weekLabels);
                 }
-                getDayWeekInt(weekLabelString);
+                reminderChoices(weekLabelString);
             }
         }
         return false;
@@ -340,8 +355,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 break;
             case "Custom days":
                 mRepeatInt = 5;
-                //mRepeat.setText(repeatLabel);
-                showChoice(null);
+                showChoiceDialog();
                 break;
             default:
                 throw new RuntimeException("error with repeat: " + repeatLabel);
@@ -349,42 +363,72 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         return 0;
     }
 
-    private int getDayWeekInt(String dayLabel) {
-        switch (dayLabel) {
-            case "SUNDAY":
-                dayWeekInt = Calendar.SUNDAY;
-                Log.i(TAG, "day int: " + dayWeekInt);
-                break;
-            case "MONDAY":
-                dayWeekInt = Calendar.MONDAY;
-                break;
-            case "TUESDAY":
-                dayWeekInt = Calendar.TUESDAY;
-                break;
-            case "WEDNESDAY":
-                dayWeekInt = Calendar.WEDNESDAY;
-                break;
-            case "THURSDAY":
-                dayWeekInt = Calendar.THURSDAY;
-                break;
-            case "FRIDAY":
-                dayWeekInt = Calendar.FRIDAY;
-                break;
-            case "SATURDAY":
-                dayWeekInt = Calendar.SATURDAY;
-                break;
-            default:
-                throw new RuntimeException("error with week: " + dayLabel);
-        }
-        return 0;
+    public void showChoiceDialog() {
+        final boolean[] values = daysOfWeek;
+        final String[] shortWeekDays = DateHelper.getShortWeekDays();
+        String[] weekDays = DateHelper.getWeekDays();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMultiChoiceItems(weekDays, daysOfWeek, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                values[which] = isChecked;
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Arrays.toString(values).contains("true")) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("Repeats on:");
+                    stringBuilder.append(" ");
+                    for (int i = 0; i < values.length; i++) {
+                        if (values[i]) {
+                            stringBuilder.append(shortWeekDays[i]);
+                            stringBuilder.append(" ");
+                        }
+                    }
+                    mRepeat.setText(stringBuilder);
+                } else {
+                    mRepeat.setText(getResources().getStringArray(R.array.repeat_days)[0]);
+                    mRepeatInt = 0;
+                }
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        }).create().show();
     }
 
-    public void showChoice(View view) {
-        SimpleListDialog.build()
-                .title("Select a day")
-                .choiceMode(SimpleListDialog.SINGLE_CHOICE_DIRECT)
-                .items(getApplicationContext(), R.array.day_of_week)
-                .show(this, WEEK_CHOICE_DIALOG);
+    public long reminderChoices(String arrayString) {
+        switch (arrayString) {
+            case "None":
+
+                break;
+            case "On time":
+
+                break;
+            case "10 mins before":
+
+                break;
+            case "30 mins before":
+
+                break;
+            case "1 hour before":
+
+                break;
+            case "1 day before":
+
+                break;
+            case "1 week before":
+
+                break;
+            default:
+                throw new RuntimeException("error with repeat: " + arrayString);
+
+        }
+        return 0;
     }
 
     private void onSave()
@@ -416,14 +460,23 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             model.setmDayToNotify(NOTIFY_DATE);
             model.setmAddReminder(0);
             model.setmRepeatType(mRepeatInt);
-            /*if (mNotification.isChecked()) {
-                model.setmNotification(mNotification.isChecked());
+            dbHelper.addAgenda(model);
+
+            if (mRepeatInt == 5) {
+                model.setmDayOfWeekInt(daysOfWeek);
+                if (dbHelper.isPresentDaysOfWeek(model)) {
+                    Log.i(TAG, "is present: " + dbHelper.isPresentDaysOfWeek(model));
+                    dbHelper.addDaysOfWeek(model);
+                }
+            }
+
+            //model.setmDayOfWeekInt(dayWeekInt);
+            if (mNotification.isChecked()) {
 
                 NotificationController.notificationTest3(this, model);
                 Log.i(TAG, "check notification: " + controller.checkNotification(this));
-            }*/
+            }
 
-            dbHelper.addAgenda(model);
             finish();
         }
 

@@ -17,6 +17,7 @@ import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.SnoozeActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
+import com.example.ashleighwilson.schoolscheduler.utils.AlarmUtil;
 import com.example.ashleighwilson.schoolscheduler.utils.DateHelper;
 
 import java.text.ParseException;
@@ -29,20 +30,53 @@ public class NotificationReceiver extends BroadcastReceiver {
     private static final String TAG = NotificationReceiver.class.getSimpleName();
 
     public static String NOTIFICATION_ID = "notification_id";
+    private AgendaModel agendaModel;
+    private Calendar calendar;
+    private DbHelper dbHelper;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        AgendaModel agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
+        agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
                 AgendaModel.CREATOR);
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
-        Date d = null;
-        try{
-            d = formatter.parse(agendaModel.getDueDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
+        dbHelper = DbHelper.getInstance();
+        calendar = Calendar.getInstance();
+
+        createNotification(agendaModel, id, context);
+
+        switch (agendaModel.getmRepeatType()) {
+            case 1: calendar.add(Calendar.DATE, 1); break;
+            case 2: calendar.add(Calendar.WEEK_OF_YEAR, 1); break;
+            case 3: calendar.add(Calendar.MONTH, 1); break;
+            case 4: calendar.add(Calendar.YEAR, 1); break;
+            case 5: setDayOfWeek(); break;
         }
 
+        calendar.setTimeInMillis(agendaModel.getTimeToNotify());
+
+        Intent alarmIntent = new Intent(context, NotificationReceiver.class);
+        AlarmUtil.setAlarm(context, alarmIntent, id, calendar);
+    }
+
+    public void setDayOfWeek() {
+        int day = getNextDay();
+        if (day <= calendar.get(Calendar.DAY_OF_WEEK)) {
+            calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        }
+        calendar.set(Calendar.DAY_OF_WEEK, day);
+    }
+
+    public int getNextDay() {
+        Calendar mCalendar = Calendar.getInstance();
+        mCalendar.add(Calendar.DATE, 1);
+        for (int i = 0; i < 7; i++) {
+            int position = (i + (mCalendar.get(Calendar.DAY_OF_WEEK) - 1)) %
+                    agendaModel.getmDayOfWeek().length;
+            if (agendaModel.getmDayOfWeek()[position]) {
+                return position + 1;
+            }
+        }
+        return 0;
     }
 
     private void createNotification(AgendaModel model, int id, Context context) {
@@ -52,7 +86,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_important_black_18dp)
                 .setContentTitle(model.getAgendaTitle())
-                .setContentText("due!").setSound(alarmSound)
+                .setContentText("Due Today!").setSound(alarmSound)
                 .setVibrate(new long[]{1000, 1000, 1000, 1000});
 
         Intent resultIntent = new Intent(context, AgendaFrag.class);

@@ -93,6 +93,17 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_REPEAT_TYPE
     };
 
+    String[] daysOfWeekColumns = new String[] {
+            DaysOfWeekEntry._ID,
+            DaysOfWeekEntry.COL_SUNDAY,
+            DaysOfWeekEntry.COL_MONDAY,
+            DaysOfWeekEntry.COL_TUESDAY,
+            DaysOfWeekEntry.COL_WEDNESDAY,
+            DaysOfWeekEntry.COL_THURSDAY,
+            DaysOfWeekEntry.COL_FRIDAY,
+            DaysOfWeekEntry.COL_SATURDAY
+    };
+
     String[] noteColumns = new String[] {
             NoteEntry.KEY_ID,
             NoteEntry.KEY_CREATION,
@@ -109,7 +120,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 82;
+    private static final int DATABASE_VERSION = 85;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -270,6 +281,29 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_ADD_REMINDER + " INTEGER, "
             + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER);";
 
+    public static final class DaysOfWeekEntry implements BaseColumns
+    {
+        public static final String TABLE_NAME = "DAYS_OF_WEEK";
+        public static final String COL_SUNDAY = "SUNDAY";
+        public static final String COL_MONDAY = "MONDAY";
+        public static final String COL_TUESDAY = "TUESDAY";
+        public static final String COL_WEDNESDAY = "WEDNESDAY";
+        public static final String COL_THURSDAY = "THURSDAY";
+        public static final String COL_FRIDAY = "FRIDAY";
+        public static final String COL_SATURDAY = "SATURDAY";
+    }
+
+    String SQL_CREATE_DAYS_OF_WEEK_TABLE = "CREATE TABLE " + DaysOfWeekEntry.TABLE_NAME +
+            " ("
+            + DaysOfWeekEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + DaysOfWeekEntry.COL_SUNDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_MONDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_TUESDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_WEDNESDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_THURSDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_FRIDAY + " TEXT, "
+            + DaysOfWeekEntry.COL_SATURDAY + " TEXT);";
+
 
     @Override
     public void onCreate(SQLiteDatabase db)
@@ -281,6 +315,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL(SQL_CREATE_AGENDA_TABLE);
         db.execSQL(SQL_CREATE_NOTES_TABLE);
         db.execSQL(SQL_CREATE_ATTACHMENT_TABLE);
+        db.execSQL(SQL_CREATE_DAYS_OF_WEEK_TABLE);
     }
 
     @Override
@@ -293,6 +328,7 @@ public class DbHelper extends SQLiteOpenHelper
         db.execSQL("DROP TABLE IF EXISTS " + AgendaEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + NoteEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + AttachEntry.TABLE_ATTACHMENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + DaysOfWeekEntry.TABLE_NAME);
         onCreate(db);
     }
 
@@ -624,17 +660,28 @@ public class DbHelper extends SQLiteOpenHelper
 
         if (cursor.moveToFirst()) {
             do {
-                int i = 0;
                 AgendaModel model = new AgendaModel();
-                model.setmId(cursor.getInt(i++));
-                model.setClassName(cursor.getString(i++));
-                model.setAgendaTitle(cursor.getString(i++));
-                model.setDueDate(cursor.getString(i++));
-                model.setmColor(cursor.getInt(i++));
-                model.setTimeToNotify(cursor.getLong(i++));
-                model.setmDayToNotify(cursor.getLong(i++));
-                model.setmAddReminder(cursor.getLong(i++));
-                model.setmRepeatType(cursor.getInt(i++));
+                model.setmId(cursor.getInt(0));
+                model.setClassName(cursor.getString(1));
+                model.setAgendaTitle(cursor.getString(2));
+                model.setDueDate(cursor.getString(3));
+                model.setmColor(cursor.getInt(4));
+                model.setTimeToNotify(cursor.getLong(5));
+                model.setmDayToNotify(cursor.getLong(6));
+                model.setmAddReminder(cursor.getLong(7));
+                model.setmRepeatType(cursor.getInt(8));
+
+                if (model.getmRepeatType() == 5) {
+                    Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
+                     " WHERE " + DaysOfWeekEntry._ID + " = ? LIMIT 1", new String[]{String.valueOf(cursor.getInt(0))});
+                    dayCursor.moveToFirst();
+                    boolean[] daysOfWeek = new boolean[7];
+                    for (int i = 0; i < 7; i++) {
+                        daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    }
+                    model.setmDayOfWeekInt(daysOfWeek);
+                    dayCursor.close();
+                }
 
                 list.add(model);
 
@@ -674,6 +721,42 @@ public class DbHelper extends SQLiteOpenHelper
 
         return db.delete(AgendaEntry.TABLE_NAME, AgendaEntry._ID + " =?",
                 new String[]{String.valueOf(id)});
+    }
+
+    public void addDaysOfWeek(AgendaModel model) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (model.getmId() != 0) {
+            values.put(DaysOfWeekEntry._ID, model.getmId());
+        }
+        values.put(DaysOfWeekEntry.COL_SUNDAY, Boolean.toString(model.getmDayOfWeek()[0]));
+        values.put(DaysOfWeekEntry.COL_MONDAY, Boolean.toString(model.getmDayOfWeek()[1]));
+        values.put(DaysOfWeekEntry.COL_TUESDAY, Boolean.toString(model.getmDayOfWeek()[2]));
+        values.put(DaysOfWeekEntry.COL_WEDNESDAY, Boolean.toString(model.getmDayOfWeek()[3]));
+        values.put(DaysOfWeekEntry.COL_THURSDAY, Boolean.toString(model.getmDayOfWeek()[4]));
+        values.put(DaysOfWeekEntry.COL_FRIDAY, Boolean.toString(model.getmDayOfWeek()[5]));
+        values.put(DaysOfWeekEntry.COL_SATURDAY, Boolean.toString(model.getmDayOfWeek()[6]));
+        db.insertWithOnConflict(DaysOfWeekEntry.TABLE_NAME, DaysOfWeekEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public boolean isPresent(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + AgendaEntry.TABLE_NAME + " WHERE " +
+            AgendaEntry._ID + " = ? LIMIT 1", new String[]{String.valueOf(id)});
+
+        boolean result = cursor.moveToFirst();
+        cursor.close();
+        return result;
+    }
+
+    public boolean isPresentDaysOfWeek(AgendaModel model) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME + " WHERE " +
+            DaysOfWeekEntry._ID + " = ? LIMIT 1", new String[]{String.valueOf(model.getmId())});
+
+        boolean result = cursor.moveToFirst();
+        cursor.close();
+        return result;
     }
 
     public Note updateNote(Note note, boolean updateLastMod)

@@ -31,4 +31,14 @@
         <item>Custom days</item>
     </string-array>
 
+    <string-array name="reminder_choices">
+        <item>None</item>
+        <item>On time</item>
+        <item>10 mins before</item>
+        <item>30 mins before</item>
+        <item>1 hour before</item>
+        <item>1 day before</item>
+        <item>1 week before</item>
+    </string-array>
+
 </resources>

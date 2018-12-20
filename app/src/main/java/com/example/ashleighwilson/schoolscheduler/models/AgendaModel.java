@@ -29,6 +29,7 @@ public class AgendaModel implements Parcelable
     private long mDayToNotify;
     private long mAddReminder;
     private int mRepeatType;
+    private boolean[] mDayOfWeek;
 
     public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
                        long dayToNotify, long reminder, int repeatType)
@@ -144,6 +145,14 @@ public class AgendaModel implements Parcelable
     public void setmRepeatType(int repeatType)
     {
         this.mRepeatType = repeatType;
+    }
+
+    public boolean[] getmDayOfWeek() {
+        return mDayOfWeek;
+    }
+
+    public void setmDayOfWeekInt(boolean[] dayOfWeekInt) {
+        this.mDayOfWeek = dayOfWeekInt;
     }
 
     public long getmInterval() {

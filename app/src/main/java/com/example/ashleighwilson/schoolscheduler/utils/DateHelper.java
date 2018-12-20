@@ -26,6 +26,9 @@ import java.util.Locale;
 public class DateHelper{
     private static final String TAG = DateHelper.class.getSimpleName();
 
+    private static final SimpleDateFormat SHORT_WEEK_DAYS_FORMAT = new SimpleDateFormat("E", Locale.getDefault());
+    private static final SimpleDateFormat WEEK_DAYS_FORMAT = new SimpleDateFormat("EEEE", Locale.getDefault());
+
     public static String dateFormatter(Long time)
     {
         if (time == null)
@@ -162,5 +165,27 @@ public class DateHelper{
         }
 
         return pt.format(date);
+    }
+
+    public static String[] getShortWeekDays() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        String[] weekDays = new String[7];
+        for (int i = 0; i < 7; i++) {
+            weekDays[i] = SHORT_WEEK_DAYS_FORMAT.format(calendar.getTime());
+            calendar.add(Calendar.DATE, 1);
+        }
+        return weekDays;
+    }
+
+    public static String[] getWeekDays() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        String[] weekDays = new String[7];
+        for (int i = 0; i < 7; i++) {
+            weekDays[i] = WEEK_DAYS_FORMAT.format(calendar.getTime());
+            calendar.add(Calendar.DATE, 1);
+        }
+        return weekDays;
     }
 }
