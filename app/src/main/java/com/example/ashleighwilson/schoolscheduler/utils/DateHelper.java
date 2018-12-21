@@ -42,6 +42,21 @@ public class DateHelper{
         return msg;
     }
 
+    public static String justDateFormatter (Long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
+        String msg = sdf.format(time);
+
+        return msg;
+    }
+
+    public static String timeFormatter(Long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
+
+        String msg = sdf.format(time);
+
+        return msg;
+    }
+
     public static String formatRecurrence(Context context, String recurrenceRule)
     {
         if (!TextUtils.isEmpty(recurrenceRule))

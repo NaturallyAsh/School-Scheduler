@@ -3,6 +3,7 @@ package com.example.ashleighwilson.schoolscheduler.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
 import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
@@ -12,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class AgendaModel implements Parcelable
 {
@@ -30,6 +32,7 @@ public class AgendaModel implements Parcelable
     private long mAddReminder;
     private int mRepeatType;
     private boolean[] mDayOfWeek;
+
 
     public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
                        long dayToNotify, long reminder, int repeatType)
@@ -59,6 +62,10 @@ public class AgendaModel implements Parcelable
         mDayToNotify = in.readLong();
         mAddReminder = in.readLong();
         mRepeatType = in.readInt();
+        if (mDayOfWeek == null) {
+            mDayOfWeek = new boolean[7];
+        }
+        in.readBooleanArray(mDayOfWeek);
     }
 
     public int getmId()
@@ -215,5 +222,9 @@ public class AgendaModel implements Parcelable
         dest.writeLong(mDayToNotify);
         dest.writeLong(mAddReminder);
         dest.writeInt(mRepeatType);
+        if (mDayOfWeek == null) {
+            mDayOfWeek = new boolean[7];
+        }
+        dest.writeBooleanArray(mDayOfWeek);
     }
 }

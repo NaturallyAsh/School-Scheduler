@@ -95,6 +95,7 @@ public class NotificationController
     {
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Log.i(TAG, "boolean array: " + model.getmDayOfWeek().length);
 
         String dueDate = model.getDueDate();
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
@@ -114,7 +115,7 @@ public class NotificationController
             Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
             id = model.getmId();
             notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
+            //notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
 
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);

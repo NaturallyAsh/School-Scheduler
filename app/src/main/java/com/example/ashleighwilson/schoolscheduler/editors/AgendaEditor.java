@@ -83,11 +83,11 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private String titleString, dueDate;
     private SelectedDate mSelectedDate;
     private int mHour, mMinute, mRepeatInt, dayWeekInt;
-    private long NOTIFY_DATE;
+    private long NOTIFY_DATE, reminderLong;
     private String mRecurrenceOption, mRecurrenceRule;
     private Calendar mCalendar;
     private LinearLayout moreLayout, repeatContainer;
-    private ArrayList<String> repeatLabels, weekLabels;
+    private ArrayList<String> repeatLabels, remindLabels;
     private boolean[] daysOfWeek = new boolean[7];
 
 
@@ -130,6 +130,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         mClassName.setOnItemSelectedListener(this);
         mNotification.setOnCheckedChangeListener(this);
 
+        //Arrays.fill(daysOfWeek, false);
+
         loadSpinnerData();
 
         Button colorSelector = findViewById(R.id.agenda_create_color);
@@ -142,6 +144,44 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
             mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
+            if (itemModel.getTimeToNotify() != 0 || itemModel.getmDayToNotify() != 0 || itemModel.getmAddReminder()
+                    != 0 || itemModel.getmDayOfWeek() != null) {
+                mNotification.setChecked(true);
+            }
+            if (itemModel.getTimeToNotify() != 0) {
+                mTimeToNotify.setText(DateHelper.timeFormatter(itemModel.getTimeToNotify()));
+            }
+            if (itemModel.getmDayToNotify() != 0) {
+                mDayToNotify.setText(DateHelper.justDateFormatter(itemModel.getmDayToNotify()));
+            }
+            if (itemModel.getmAddReminder() != 0) {
+                reminderChoicesDb((int) itemModel.getmAddReminder());
+            }
+            if (itemModel.getmRepeatType() != 0) {
+                String[] repeatTypes = getResources().getStringArray(R.array.repeat_days);
+                mRepeat.setText(repeatTypes[itemModel.getmRepeatType()]);
+            }
+            if (itemModel.getmRepeatType() == 5) {
+                AgendaModel model1;
+                model1 = dbHelper.getDaysOfWeek(itemModel.getmId());
+                Log.i(TAG, "item model repeat id: " + itemModel.getmId());
+                daysOfWeek = model1.getmDayOfWeek();
+                if (daysOfWeek == null) {
+                    daysOfWeek = new boolean[7];
+                }
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Repeats on:");
+                stringBuilder.append(" ");
+                String[] shortWeekDays = DateHelper.getShortWeekDays();
+                for (int i = 0; i < daysOfWeek.length; i++) {
+                    if (daysOfWeek[i]) {
+                        stringBuilder.append(shortWeekDays[i]);
+                        stringBuilder.append(" ");
+                    }
+                }
+                mRepeat.setText(stringBuilder);
+            }
+
         }
 
         colorSelector.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +226,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 SimpleListDialog.build()
-                        .title("Select a day")
+                        .title("Remind me..")
                         .choiceMode(SimpleListDialog.MULTI_CHOICE)
                         .choiceMax(1)
                         .filterable(false)
@@ -319,11 +359,11 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         }
         if (dialogTag.equals(REMINDER_CHOICE_DIALOG)) {
             if (which == BUTTON_POSITIVE) {
-                weekLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
+                remindLabels = extras.getStringArrayList(SimpleListDialog.SELECTED_LABELS);
 
                 String weekLabelString = "";
-                if (weekLabels != null) {
-                    weekLabelString = TextUtils.join("\t", weekLabels);
+                if (remindLabels != null) {
+                    weekLabelString = TextUtils.join("\t", remindLabels);
                 }
                 reminderChoices(weekLabelString);
             }
@@ -388,6 +428,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                         }
                     }
                     mRepeat.setText(stringBuilder);
+                    daysOfWeek = values;
                 } else {
                     mRepeat.setText(getResources().getStringArray(R.array.repeat_days)[0]);
                     mRepeatInt = 0;
@@ -404,28 +445,64 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     public long reminderChoices(String arrayString) {
         switch (arrayString) {
             case "None":
-
-                break;
-            case "On time":
-
+                reminderLong = 0;
+                mAddReminder.setText(arrayString);
                 break;
             case "10 mins before":
-
+                reminderLong = 10 * 60000;
+                mAddReminder.setText(arrayString);
                 break;
             case "30 mins before":
-
+                reminderLong = 30 * 60000;
+                mAddReminder.setText(arrayString);
                 break;
             case "1 hour before":
-
+                reminderLong = 60 * 60000;
+                mAddReminder.setText(arrayString);
                 break;
             case "1 day before":
-
+                reminderLong = 60 * 24 * 60000;
+                mAddReminder.setText(arrayString);
                 break;
             case "1 week before":
-
+                reminderLong = 60 * 24 * 7 * 60000;
+                mAddReminder.setText(arrayString);
                 break;
             default:
                 throw new RuntimeException("error with repeat: " + arrayString);
+
+        }
+        return 0;
+    }
+
+    public long reminderChoicesDb(int dbLongs) {
+        switch (dbLongs) {
+            case 0:
+                //reminderLong = 0;
+                mAddReminder.setText(R.string.none_string);
+                break;
+            case 10 * 60000:
+                //reminderLong = 10 * 60000;
+                mAddReminder.setText(R.string.ten_min_before_string);
+                break;
+            case 30 * 60000:
+                //reminderLong = 30 * 60000;
+                mAddReminder.setText(R.string.thirty_min_before_string);
+                break;
+            case 60 * 60000:
+                //reminderLong = 60 * 60000;
+                mAddReminder.setText(R.string.one_hour_before_string);
+                break;
+            case 60 * 24 * 60000:
+                //reminderLong = 60 * 24 * 60000;
+                mAddReminder.setText(R.string.one_day_before_string);
+                break;
+            case 60 * 24 * 7 * 60000:
+                //reminderLong = 60 * 24 * 7 * 60000;
+                mAddReminder.setText(R.string.one_week_before_string);
+                break;
+            default:
+                throw new RuntimeException("error with repeat");
 
         }
         return 0;
@@ -458,14 +535,18 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             }
             model.setTimeToNotify(timeNote.getTimeInMillis());
             model.setmDayToNotify(NOTIFY_DATE);
-            model.setmAddReminder(0);
+            model.setmAddReminder(reminderLong);
             model.setmRepeatType(mRepeatInt);
             dbHelper.addAgenda(model);
 
             if (mRepeatInt == 5) {
                 model.setmDayOfWeekInt(daysOfWeek);
+                Log.i(TAG, "model day of week: " + model.getmDayOfWeek().length);
                 if (dbHelper.isPresentDaysOfWeek(model)) {
                     Log.i(TAG, "is present: " + dbHelper.isPresentDaysOfWeek(model));
+                    dbHelper.addDaysOfWeek(model);
+                    Log.i(TAG, "model id: " + model.getmId());
+                } else {
                     dbHelper.addDaysOfWeek(model);
                 }
             }

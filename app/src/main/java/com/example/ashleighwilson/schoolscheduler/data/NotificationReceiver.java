@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.example.ashleighwilson.schoolscheduler.AgendaFrag;
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
+import com.example.ashleighwilson.schoolscheduler.OverviewActivity;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.SnoozeActivity;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
@@ -37,25 +38,27 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
-                AgendaModel.CREATOR);
+        //agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
+          //      AgendaModel.CREATOR);
+        Log.i(TAG, "array id: " + id);
         dbHelper = DbHelper.getInstance();
+        agendaModel = dbHelper.getAllAgendas(id);
         calendar = Calendar.getInstance();
 
-        createNotification(agendaModel, id, context);
+        /*createNotification(agendaModel, id, context);
 
         switch (agendaModel.getmRepeatType()) {
             case 1: calendar.add(Calendar.DATE, 1); break;
             case 2: calendar.add(Calendar.WEEK_OF_YEAR, 1); break;
             case 3: calendar.add(Calendar.MONTH, 1); break;
             case 4: calendar.add(Calendar.YEAR, 1); break;
-            case 5: setDayOfWeek(); break;
+            //case 5: setDayOfWeek(); break;
         }
 
         calendar.setTimeInMillis(agendaModel.getTimeToNotify());
 
         Intent alarmIntent = new Intent(context, NotificationReceiver.class);
-        AlarmUtil.setAlarm(context, alarmIntent, id, calendar);
+        AlarmUtil.setAlarm(context, alarmIntent, id, calendar); */
     }
 
     public void setDayOfWeek() {
@@ -92,7 +95,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Intent resultIntent = new Intent(context, AgendaFrag.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(AgendaFrag.class);
+        stackBuilder.addParentStack(OverviewActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 

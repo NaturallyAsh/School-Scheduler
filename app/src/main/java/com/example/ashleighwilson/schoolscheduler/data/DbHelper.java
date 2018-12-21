@@ -692,6 +692,47 @@ public class DbHelper extends SQLiteOpenHelper
         return list;
     }
 
+    public AgendaModel getAllAgendas(int id)
+    {
+        Log.i(TAG, "get all agendas id: " + id);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + AgendaEntry.TABLE_NAME +
+                " WHERE " + AgendaEntry._ID + " = ?", new String[]{String.valueOf(id)});
+        AgendaModel model = new AgendaModel();
+
+        if (cursor.moveToFirst()) {
+            do {
+                model.setmId(id);
+                model.setClassName(cursor.getString(1));
+                model.setAgendaTitle(cursor.getString(2));
+                model.setDueDate(cursor.getString(3));
+                model.setmColor(cursor.getInt(4));
+                model.setTimeToNotify(cursor.getLong(5));
+                model.setmDayToNotify(cursor.getLong(6));
+                model.setmAddReminder(cursor.getLong(7));
+                model.setmRepeatType(cursor.getInt(8));
+
+                if (model.getmRepeatType() == 5) {
+                    Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
+                            " WHERE " + DaysOfWeekEntry._ID + " = ?", new String[]{String.valueOf(id)});
+
+                    dayCursor.moveToFirst();
+                    boolean[] daysOfWeek = new boolean[7];
+                    for (int i = 0; i < 7; i++) {
+                        daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    }
+                    model.setmDayOfWeekInt(daysOfWeek);
+                    dayCursor.close();
+                }
+            } while (cursor.moveToNext());
+        }
+
+
+        cursor.close();
+        //db.close();
+        return model;
+    }
+
     public AgendaModel getAgendaAt(int position) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(AgendaEntry.TABLE_NAME, agendaColumns, null, null,
@@ -726,9 +767,7 @@ public class DbHelper extends SQLiteOpenHelper
     public void addDaysOfWeek(AgendaModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        if (model.getmId() != 0) {
-            values.put(DaysOfWeekEntry._ID, model.getmId());
-        }
+        values.put(DaysOfWeekEntry._ID, model.getmId());
         values.put(DaysOfWeekEntry.COL_SUNDAY, Boolean.toString(model.getmDayOfWeek()[0]));
         values.put(DaysOfWeekEntry.COL_MONDAY, Boolean.toString(model.getmDayOfWeek()[1]));
         values.put(DaysOfWeekEntry.COL_TUESDAY, Boolean.toString(model.getmDayOfWeek()[2]));
@@ -737,6 +776,30 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(DaysOfWeekEntry.COL_FRIDAY, Boolean.toString(model.getmDayOfWeek()[5]));
         values.put(DaysOfWeekEntry.COL_SATURDAY, Boolean.toString(model.getmDayOfWeek()[6]));
         db.insertWithOnConflict(DaysOfWeekEntry.TABLE_NAME, DaysOfWeekEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public AgendaModel getDaysOfWeek(int id) {
+        Log.i(TAG, "get DOW id: " + id);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
+                " WHERE " + DaysOfWeekEntry._ID + " = ?", new String[]{String.valueOf(id)});
+
+        AgendaModel model = new AgendaModel();
+        if (dayCursor.moveToFirst()) {
+            do {
+                boolean[] daysOfWeek = new boolean[7];
+                for (int i = 0; i < 7; i++) {
+                    daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    Log.i(TAG, "days: " + daysOfWeek[i]);
+                }
+                model.setmDayOfWeekInt(daysOfWeek);
+            } while (dayCursor.moveToNext());
+        }
+
+        dayCursor.close();
+        return model;
     }
 
     public boolean isPresent(int id) {
