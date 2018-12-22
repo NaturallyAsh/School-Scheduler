@@ -157,17 +157,18 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             if (itemModel.getmAddReminder() != 0) {
                 reminderChoicesDb((int) itemModel.getmAddReminder());
             }
-            if (itemModel.getmRepeatType() != 0) {
+            if (itemModel.getmRepeatType() != 0 && itemModel.getmRepeatType() != 5) {
                 String[] repeatTypes = getResources().getStringArray(R.array.repeat_days);
                 mRepeat.setText(repeatTypes[itemModel.getmRepeatType()]);
             }
             if (itemModel.getmRepeatType() == 5) {
-                AgendaModel model1;
-                model1 = dbHelper.getDaysOfWeek(itemModel.getmId());
-                Log.i(TAG, "item model repeat id: " + itemModel.getmId());
-                daysOfWeek = model1.getmDayOfWeek();
+                daysOfWeek = itemModel.getmDayOfWeek();
+                for (int i = 0; i < daysOfWeek.length; i++) {
+                    Log.i(TAG, "array: " + daysOfWeek[i]);
+                }
                 if (daysOfWeek == null) {
                     daysOfWeek = new boolean[7];
+                    Log.i(TAG, "db days were null");
                 }
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("Repeats on:");
@@ -554,7 +555,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             //model.setmDayOfWeekInt(dayWeekInt);
             if (mNotification.isChecked()) {
 
-                NotificationController.notificationTest3(this, model);
+                //NotificationController.notificationTest3(this, model);
                 Log.i(TAG, "check notification: " + controller.checkNotification(this));
             }
 

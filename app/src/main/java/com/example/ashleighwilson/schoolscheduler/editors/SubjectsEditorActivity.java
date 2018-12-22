@@ -377,6 +377,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
     private void saveSubject()
     {
+        // TODO: create if statements to validate time fields have been set to prevent crash
         model = new SubjectsModel();
         String titleString = mTitleEditText.getText().toString().trim();
         String teacherString = mTeacherEditText.getText().toString().trim();

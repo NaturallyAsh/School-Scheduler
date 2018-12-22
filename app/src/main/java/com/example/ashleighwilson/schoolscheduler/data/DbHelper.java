@@ -120,7 +120,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 85;
+    private static final int DATABASE_VERSION = 88;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -677,7 +677,9 @@ public class DbHelper extends SQLiteOpenHelper
                     dayCursor.moveToFirst();
                     boolean[] daysOfWeek = new boolean[7];
                     for (int i = 0; i < 7; i++) {
-                        daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                        //daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                        daysOfWeek[i] = (dayCursor.getInt(i + 1) == 1);
+
                     }
                     model.setmDayOfWeekInt(daysOfWeek);
                     dayCursor.close();
@@ -716,13 +718,19 @@ public class DbHelper extends SQLiteOpenHelper
                     Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
                             " WHERE " + DaysOfWeekEntry._ID + " = ?", new String[]{String.valueOf(id)});
 
-                    dayCursor.moveToFirst();
-                    boolean[] daysOfWeek = new boolean[7];
-                    for (int i = 0; i < 7; i++) {
-                        daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    if (dayCursor.moveToFirst()) {
+                        do {
+                            boolean[] daysOfWeek = new boolean[7];
+                            for (int i = 0; i < 7; i++) {
+                                //daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                                daysOfWeek[i] = (dayCursor.getInt(i + 1) == 1);
+
+                                Log.i(TAG, "DOW cursor: " + daysOfWeek[i]);
+                            }
+                            model.setmDayOfWeekInt(daysOfWeek);
+                            dayCursor.close();
+                        } while (dayCursor.moveToNext());
                     }
-                    model.setmDayOfWeekInt(daysOfWeek);
-                    dayCursor.close();
                 }
             } while (cursor.moveToNext());
         }
@@ -750,6 +758,27 @@ public class DbHelper extends SQLiteOpenHelper
             model.setmAddReminder(cursor.getLong(7));
             model.setmRepeatType(cursor.getInt(8));
 
+            if (model.getmRepeatType() == 5) {
+                Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
+                        " WHERE " + DaysOfWeekEntry._ID + " = ?", new String[]{String.valueOf(cursor.getInt(0))});
+
+                if (dayCursor.moveToFirst()) {
+                    do {
+                        boolean[] daysOfWeek = new boolean[7];
+                        for (int i = 0; i < 7; i++) {
+                            //daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                            daysOfWeek[i] = (dayCursor.getInt(i + 1) == 1);
+
+                            Log.i(TAG, "DOW cursor: " + daysOfWeek[i]);
+                        }
+                        model.setmDayOfWeekInt(daysOfWeek);
+                        dayCursor.close();
+                    } while (dayCursor.moveToNext());
+                }
+            }
+
+
+
             cursor.close();
             return model;
         }
@@ -767,18 +796,20 @@ public class DbHelper extends SQLiteOpenHelper
     public void addDaysOfWeek(AgendaModel model) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DaysOfWeekEntry._ID, model.getmId());
-        values.put(DaysOfWeekEntry.COL_SUNDAY, Boolean.toString(model.getmDayOfWeek()[0]));
-        values.put(DaysOfWeekEntry.COL_MONDAY, Boolean.toString(model.getmDayOfWeek()[1]));
-        values.put(DaysOfWeekEntry.COL_TUESDAY, Boolean.toString(model.getmDayOfWeek()[2]));
-        values.put(DaysOfWeekEntry.COL_WEDNESDAY, Boolean.toString(model.getmDayOfWeek()[3]));
-        values.put(DaysOfWeekEntry.COL_THURSDAY, Boolean.toString(model.getmDayOfWeek()[4]));
-        values.put(DaysOfWeekEntry.COL_FRIDAY, Boolean.toString(model.getmDayOfWeek()[5]));
-        values.put(DaysOfWeekEntry.COL_SATURDAY, Boolean.toString(model.getmDayOfWeek()[6]));
+        if(model.getmId() != 0) {
+            values.put(DaysOfWeekEntry._ID, model.getmId());
+        }
+        values.put(DaysOfWeekEntry.COL_SUNDAY, model.getmDayOfWeek()[0]);
+        values.put(DaysOfWeekEntry.COL_MONDAY, model.getmDayOfWeek()[1]);
+        values.put(DaysOfWeekEntry.COL_TUESDAY, model.getmDayOfWeek()[2]);
+        values.put(DaysOfWeekEntry.COL_WEDNESDAY, model.getmDayOfWeek()[3]);
+        values.put(DaysOfWeekEntry.COL_THURSDAY, model.getmDayOfWeek()[4]);
+        values.put(DaysOfWeekEntry.COL_FRIDAY, model.getmDayOfWeek()[5]);
+        values.put(DaysOfWeekEntry.COL_SATURDAY, model.getmDayOfWeek()[6]);
         db.insertWithOnConflict(DaysOfWeekEntry.TABLE_NAME, DaysOfWeekEntry._ID, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public AgendaModel getDaysOfWeek(int id) {
+    public AgendaModel getDbDaysOfWeek(int id) {
         Log.i(TAG, "get DOW id: " + id);
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -791,7 +822,8 @@ public class DbHelper extends SQLiteOpenHelper
             do {
                 boolean[] daysOfWeek = new boolean[7];
                 for (int i = 0; i < 7; i++) {
-                    daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    //daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                    daysOfWeek[i] = (dayCursor.getInt(i + 1) == 1);
                     Log.i(TAG, "days: " + daysOfWeek[i]);
                 }
                 model.setmDayOfWeekInt(daysOfWeek);

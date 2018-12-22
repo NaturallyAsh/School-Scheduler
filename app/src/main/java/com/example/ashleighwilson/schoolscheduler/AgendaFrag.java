@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -45,6 +46,8 @@ public class AgendaFrag extends Fragment
     private ArrayList<AgendaModel> agendaList = new ArrayList<>();
     private Context mContext = MySchedulerApp.getInstance();
     private OverviewActivity mOverviewActivity;
+    private boolean[] dayOfWeek;
+    private DbHelper DOWhelper;
 
     public AgendaFrag() {
         // Required empty public constructor
@@ -73,6 +76,8 @@ public class AgendaFrag extends Fragment
         emptyView = view.findViewById(R.id.empty_agenda_view);
 
         dbHelper = DbHelper.getInstance();
+        DOWhelper = DbHelper.getInstance();
+        dayOfWeek = new boolean[7];
 
         recyclerView = view.findViewById(R.id.agenda_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -139,7 +144,7 @@ public class AgendaFrag extends Fragment
     public void agendaDbList()
     {
         agendaList.clear();
-        Cursor cursor = dbHelper.getAgenda();
+        /*Cursor cursor = dbHelper.getAgenda();
         while (cursor.moveToNext())
         {
             int id = cursor.getInt(0);
@@ -155,9 +160,91 @@ public class AgendaFrag extends Fragment
             AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
                     dayToNotify, addReminder, repeatType);
 
+            agendaList.add(model);*/
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String[] projection = {
+                DbHelper.AgendaEntry._ID,
+                DbHelper.AgendaEntry.COLUMN_TITLE,
+                DbHelper.AgendaEntry.COLUMN_NAME,
+                DbHelper.AgendaEntry.COLUMN_DUEDATE,
+                DbHelper.AgendaEntry.COLUMN_COLOR,
+                DbHelper.AgendaEntry.COLUMN_TIME_TO_NOTIFY,
+                DbHelper.AgendaEntry.COLUMN_DAY_TO_NOTIFY,
+                DbHelper.AgendaEntry.COLUMN_ADD_REMINDER,
+                DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE
+        };
+
+        Cursor cursor = db.query(
+                DbHelper.AgendaEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String title = cursor.getString(2);
+            String dueDate = cursor.getString(3);
+            int color = cursor.getInt(4);
+            long timeToNotify = cursor.getLong(5);
+            long dayToNotify = cursor.getLong(6);
+            long addReminder = cursor.getLong(7);
+            int repeatType = cursor.getInt(8);
+            Log.i(TAG,"repeat type: " + repeatType);
+
+            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
+                    dayToNotify, addReminder, repeatType);
+
+            if (repeatType == 5) {
+                Cursor dayCursor = db.rawQuery("SELECT * FROM " + DbHelper.DaysOfWeekEntry.TABLE_NAME +
+                        " WHERE " + DbHelper.DaysOfWeekEntry._ID + " = " + id, null);
+
+                /*String[] projection2 = {
+                        DbHelper.DaysOfWeekEntry._ID,
+                        DbHelper.DaysOfWeekEntry.COL_SUNDAY,
+                        DbHelper.DaysOfWeekEntry.COL_MONDAY,
+                        DbHelper.DaysOfWeekEntry.COL_TUESDAY,
+                        DbHelper.DaysOfWeekEntry.COL_WEDNESDAY,
+                        DbHelper.DaysOfWeekEntry.COL_THURSDAY,
+                        DbHelper.DaysOfWeekEntry.COL_FRIDAY,
+                        DbHelper.DaysOfWeekEntry.COL_SATURDAY
+                };
+
+                String selection2 = DbHelper.DaysOfWeekEntry._ID + " =? LIMIT 1";
+                String[] selectionArgs = {DbHelper.AgendaEntry._ID};
+
+
+                Cursor dayCursor2 = db.query(
+                        DbHelper.DaysOfWeekEntry.TABLE_NAME,
+                        projection2,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                );*/
+
+
+                if (dayCursor.moveToFirst()) {
+                    do {
+                        boolean[] daysOfWeek = new boolean[7];
+                        for (int i = 0; i < 7; i++) {
+                            //daysOfWeek[i] = Boolean.parseBoolean(dayCursor.getString(i + 1));
+                            daysOfWeek[i] = (dayCursor.getInt(i + 1) == 1);
+
+                            Log.i(TAG, "DOW: " + daysOfWeek[i]);
+                        }
+                        model.setmDayOfWeekInt(daysOfWeek);
+
+                    } while (dayCursor.moveToNext());
+
+                }
+            }
             agendaList.add(model);
         }
-
         updateUI();
     }
 

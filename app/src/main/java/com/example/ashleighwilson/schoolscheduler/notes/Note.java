@@ -130,7 +130,6 @@ public class Note extends BaseNote2 implements Parcelable
 
     public List<Attachment> getAttachmentsList() {
 //
-        // FIXME This fixes https://github.com/federicoiosue/Omni-Notes/issues/199 but could introduce other issues
         return (List<Attachment>) super.getAttachmentsList();
     }
 
