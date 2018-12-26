@@ -209,6 +209,7 @@ public class NotesActivity extends AppCompatActivity
 
     public void onBackPressed()
     {
+        //TODO: fix onBackPressed for sketch fragment.
         Fragment f = checkFragmentInstance(R.id.fragment_note_container, NotesDetailFragment.class);
         if (f != null)
         {

@@ -80,6 +80,7 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener
     {
         super.onActivityCreated(savedInstanceState);
         getNotesActivity().getToolbar().setNavigationOnClickListener(v -> getNotesActivity().onBackPressed());
+        //getNotesActivity().getSupportActionBar();
 
         mSketchView.setOnDrawChangedListener(this);
 

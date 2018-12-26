@@ -377,7 +377,6 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
 
     private void saveSubject()
     {
-        // TODO: create if statements to validate time fields have been set to prevent crash
         model = new SubjectsModel();
         String titleString = mTitleEditText.getText().toString().trim();
         String teacherString = mTeacherEditText.getText().toString().trim();
@@ -385,48 +384,46 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         String startString = mStartTime.getText().toString().trim();
         String endString = mEndTime.getText().toString().trim();
 
-        if (itemModel != null) {
-            model.setId(itemModel.getId());
-        }
-        model.setmTitle(titleString);
-        model.setmTeacher(teacherString);
-        model.setmRoom(roomString);
-        if (itemModel != null) {
-            model.setmColor(itemModel.getmColor());
-        } else {
-            model.setmColor(subColor);
-        }
-        model.setmStartTime(startString);
-        model.setmEndTime(endString);
-        model.setmRecurrence_rule(mRecurrenceRule);
-        model.setmRecurrence_option(mRecurrenceOption);
-
-        if (mSwitch.isChecked()) {
-            addToTimetable(model);
-        }
-
-        dbHelper.addClass(model);
         if (dbHelper.hasLabel(titleString)) {
             Log.i(TAG, "db already has label: " + titleString);
         } else {
             dbHelper.addToSpinner(titleString);
             Log.i(TAG, "label added: " + titleString);
         }
-        if (dbHelper == null)
-        {
-            Toast.makeText(this, "Error with saving Subject", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+
+        if (startString.matches("") || endString.matches("")) {
+            Toast.makeText(getApplicationContext(), "Please enter a time", Toast.LENGTH_SHORT).show();
+        } else {
+            if (itemModel != null) {
+                model.setId(itemModel.getId());
+            }
+            model.setmTitle(titleString);
+            model.setmTeacher(teacherString);
+            model.setmRoom(roomString);
+            if (itemModel != null) {
+                model.setmColor(itemModel.getmColor());
+            } else {
+                model.setmColor(subColor);
+            }
+            model.setmStartTime(startString);
+            model.setmEndTime(endString);
+            model.setmRecurrence_rule(mRecurrenceRule);
+            model.setmRecurrence_option(mRecurrenceOption);
+
+            if (mSwitch.isChecked()) {
+                addToTimetable(model);
+            }
+
+            int resultCode = 1;
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
+            //Log.i(TAG, "result intent color: " + subColor);
+            setResult(resultCode, resultIntent);
+
+            dbHelper.addClass(model);
             Toast.makeText(this, "Subject saved", Toast.LENGTH_SHORT).show();
+            finish();
         }
-
-        int resultCode = 1;
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(RecyclerSubAdapter.EXTRA_ID, model);
-        //Log.i(TAG, "result intent color: " + subColor);
-        setResult(resultCode, resultIntent);
-
     }
 
     private void addToTimetable(SubjectsModel subjectsModel) {
@@ -556,7 +553,7 @@ public class SubjectsEditorActivity extends AppCompatActivity implements
         {
             case R.id.action_save:
                 saveSubject();
-                finish();
+                //finish();
                 return true;
             case R.id.action_delete:
                 showDeleteConfirmationDialog();

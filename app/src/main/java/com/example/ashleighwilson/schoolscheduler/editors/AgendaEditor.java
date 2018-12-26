@@ -59,7 +59,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String TAG = AgendaEditor.class.getSimpleName();
 
     private EditText mAssignmentTitle;
-    private TextView mDueDate, viewColor, mNotificationTv, mTimeToNotify, mDayToNotify, mAddReminder,
+    private TextView mDueDate, viewColor, mNotificationTv, mTimeToNotify, mAddReminder,
         mRepeat;
     private Switch mNotification;
     private String label;
@@ -121,7 +121,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         viewColor = findViewById(R.id.agenda_view_color);
         mNotification = findViewById(R.id.notification_switch);
         mTimeToNotify = findViewById(R.id.assign_time_to_notify);
-        mDayToNotify = findViewById(R.id.assign_day_to_notify);
         mAddReminder = findViewById(R.id.assign_add_reminder);
         mRepeat = findViewById(R.id.assign_repeat);
         repeatContainer = findViewById(R.id.assign_repeat_container);
@@ -144,15 +143,12 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
             mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
-            if (itemModel.getTimeToNotify() != 0 || itemModel.getmDayToNotify() != 0 || itemModel.getmAddReminder()
+            if (itemModel.getTimeToNotify() != 0 || itemModel.getmAddReminder()
                     != 0 || itemModel.getmDayOfWeek() != null) {
                 mNotification.setChecked(true);
             }
             if (itemModel.getTimeToNotify() != 0) {
                 mTimeToNotify.setText(DateHelper.timeFormatter(itemModel.getTimeToNotify()));
-            }
-            if (itemModel.getmDayToNotify() != 0) {
-                mDayToNotify.setText(DateHelper.justDateFormatter(itemModel.getmDayToNotify()));
             }
             if (itemModel.getmAddReminder() != 0) {
                 reminderChoicesDb((int) itemModel.getmAddReminder());
@@ -212,14 +208,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                         .hour(Calendar.HOUR_OF_DAY).minute(Calendar.MINUTE)
                         .set24HourView(false)
                         .show(AgendaEditor.this, TIME_DIALOG);
-            }
-        });
-
-        mDayToNotify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SimpleDateDialog.build()
-                        .show(AgendaEditor.this, DAY_TO_NOTIFY_DIALOG);
             }
         });
 
@@ -314,21 +302,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             {
                 date = new Date(extras.getLong(SimpleDateDialog.DATE));
 
+                mCalendar.setTime(date);
+
                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
                 mDueDate.setText(dateFormat.format(date));
-                return true;
-            }
-        }
-        if (dialogTag.equals(DAY_TO_NOTIFY_DIALOG))
-        {
-            if (which == BUTTON_POSITIVE)
-            {
-                Date date = new Date(extras.getLong(SimpleDateDialog.DATE));
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());
-
-                NOTIFY_DATE = extras.getLong(SimpleDateDialog.DATE);
-                mDayToNotify.setText(dateFormat.format(date));
                 return true;
             }
         }
@@ -342,6 +319,9 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
                 mHour = extras.getInt(SimpleTimeDialog.HOUR);
                 mMinute = extras.getInt(SimpleTimeDialog.MINUTE);
+
+                mCalendar.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
+                mCalendar.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
 
                 mTimeToNotify.setText(formatter.format(calender.getTime()));
                 return true;
@@ -535,7 +515,6 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                 model.setmColor(agendaColor);
             }
             model.setTimeToNotify(timeNote.getTimeInMillis());
-            model.setmDayToNotify(NOTIFY_DATE);
             model.setmAddReminder(reminderLong);
             model.setmRepeatType(mRepeatInt);
             dbHelper.addAgenda(model);
@@ -551,12 +530,10 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
                     dbHelper.addDaysOfWeek(model);
                 }
             }
-
-            //model.setmDayOfWeekInt(dayWeekInt);
             if (mNotification.isChecked()) {
 
-                //NotificationController.notificationTest3(this, model);
-                Log.i(TAG, "check notification: " + controller.checkNotification(this));
+                NotificationController.notificationTest3(this, model, mCalendar);
+                //Log.i(TAG, "check notification: " + controller.checkNotification(this));
             }
 
             finish();

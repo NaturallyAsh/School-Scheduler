@@ -30,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
 public class NotificationController
 {
     private static final String TAG = NotificationController.class.getSimpleName();
@@ -91,48 +93,82 @@ public class NotificationController
         return longCode.intValue();
     }
 
-    public static void notificationTest3(Context mContext, AgendaModel model)
+    public static void notificationTest3(Context mContext, AgendaModel model, Calendar calendar)
     {
+        //Log.i(TAG, "calendar: " + calendar.get(Calendar.YEAR) + "," + calendar.get(Calendar.MONTH) + "," +
+          //      calendar.get(Calendar.DAY_OF_MONTH) + "," + calendar.get(Calendar.HOUR_OF_DAY) + "," + calendar.get(Calendar.MINUTE));
+
+
+        Calendar futureDay = Calendar.getInstance();
+        futureDay.setTime(calendar.getTime());
+        Calendar curr = Calendar.getInstance();
+
+        long timeToNotify = 0;
+        timeToNotify = calendar.getTimeInMillis();
+        Log.i(TAG, "future TTN: " + timeToNotify);
+        if (model.getmAddReminder() != 0) {
+            switch ((int) model.getmAddReminder()) {
+                case 0:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 0);
+                    break;
+                case 10 * 60000:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 10 * 60000);
+                    break;
+                case 30 * 60000:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 30 * 60000);
+                    break;
+                case 60 * 60000:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 60000);
+                    break;
+                case 60 * 24 * 60000:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 60000);
+                    break;
+                case 60 * 24 * 7 * 60000:
+                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 7 * 60000);
+                    break;
+                default:
+                    throw new RuntimeException("error with repeat alarm");
+            }
+        }
+        /*if (futureDay.after(curr))
+        {
+
+        }*/
+        Log.i(TAG, "After remind TTN: " + timeToNotify);
+        sendToReceiver(mContext, model, timeToNotify);
+    }
+
+    private static long remindBeforeDate(long dateTime, long time) {
+
+        return dateTime - time;
+    }
+
+    public static void sendToReceiver(Context mContext, AgendaModel model, long timeToNotify) {
+        Log.i(TAG, "send to receiver called");
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        Log.i(TAG, "boolean array: " + model.getmDayOfWeek().length);
 
-        String dueDate = model.getDueDate();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
-        Date d = null;
-        try {
-            d = formatter.parse(dueDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar futureDay = Calendar.getInstance();
-        futureDay.setTime(d);
-        Calendar curr = Calendar.getInstance();
-        if (futureDay.after(curr))
-        {
-            //id = (int) System.currentTimeMillis();
-            long timeToNotify = System.currentTimeMillis();
-            Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
-            id = model.getmId();
-            notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-            //notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
+        Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
+        id = model.getmId();
+        notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
+        //notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
 
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
-            alrmManager.set(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
+        alrmManager.setExact(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
+
+        Toast.makeText(mContext, "Alarm set", Toast.LENGTH_SHORT).show();
 
 
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
-                    .setContentTitle(model.getAgendaTitle())
-                    .setContentText("Due on: " + dueDate).setSound(alarmSound)
-                    .setSmallIcon(R.drawable.notification_important_black_18dp)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
+        /*NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
+                .setContentTitle(model.getAgendaTitle())
+                .setContentText("Due on: " + model.getDueDate()).setSound(alarmSound)
+                .setSmallIcon(R.drawable.notification_important_black_18dp)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
 
-            NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(id, notification.build());
-
-        }
+        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(id, notification.build());*/
     }
 
     public boolean checkNotification(Context context) {

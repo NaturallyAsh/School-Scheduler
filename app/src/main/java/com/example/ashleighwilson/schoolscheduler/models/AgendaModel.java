@@ -28,14 +28,13 @@ public class AgendaModel implements Parcelable
     private boolean mBefore;
     private long mInterval;
     private long mTimeToNotify;
-    private long mDayToNotify;
     private long mAddReminder;
     private int mRepeatType;
     private boolean[] mDayOfWeek;
 
 
     public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
-                       long dayToNotify, long reminder, int repeatType)
+                       long reminder, int repeatType)
     {
         this.mId = id;
         this.mClassName = name;
@@ -43,7 +42,6 @@ public class AgendaModel implements Parcelable
         this.mColor = color;
         this.mDueDate = dueDate;
         this.mTimeToNotify = timeToNotify;
-        this.mDayToNotify = dayToNotify;
         this.mAddReminder = reminder;
         this.mRepeatType = repeatType;
     }
@@ -59,7 +57,6 @@ public class AgendaModel implements Parcelable
         mColor = in.readInt();
         mDueDate = in.readString();
         mTimeToNotify = in.readLong();
-        mDayToNotify = in.readLong();
         mAddReminder = in.readLong();
         mRepeatType = in.readInt();
         if (mDayOfWeek == null) {
@@ -126,14 +123,6 @@ public class AgendaModel implements Parcelable
 
     public void setTimeToNotify(long timeToNotify) {
         this.mTimeToNotify = timeToNotify;
-    }
-
-    public long getmDayToNotify() {
-        return mDayToNotify;
-    }
-
-    public void setmDayToNotify(long dayToNotify) {
-        this.mDayToNotify = dayToNotify;
     }
 
     public long getmAddReminder() {
@@ -219,7 +208,6 @@ public class AgendaModel implements Parcelable
         dest.writeInt(mColor);
         dest.writeString(mDueDate);
         dest.writeLong(mTimeToNotify);
-        dest.writeLong(mDayToNotify);
         dest.writeLong(mAddReminder);
         dest.writeInt(mRepeatType);
         if (mDayOfWeek == null) {

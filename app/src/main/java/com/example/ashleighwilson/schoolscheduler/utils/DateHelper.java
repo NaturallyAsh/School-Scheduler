@@ -28,6 +28,33 @@ public class DateHelper{
 
     private static final SimpleDateFormat SHORT_WEEK_DAYS_FORMAT = new SimpleDateFormat("E", Locale.getDefault());
     private static final SimpleDateFormat WEEK_DAYS_FORMAT = new SimpleDateFormat("EEEE", Locale.getDefault());
+    private static final SimpleDateFormat DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault());
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HHmm", Locale.getDefault());
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+
+    public static String toStringTime(Long time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+
+        return TIME_FORMAT.format(cal.getTimeInMillis());
+    }
+
+    public static String toStringDate(Long date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(date);
+
+        return DATE_FORMAT.format(cal.getTimeInMillis());
+    }
+
+    public static long parseDateAndTime(String dateAndTime) {
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(DATE_AND_TIME_FORMAT.parse(dateAndTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return calendar.getTimeInMillis();
+    }
 
     public static String dateFormatter(Long time)
     {
@@ -41,6 +68,8 @@ public class DateHelper{
 
         return msg;
     }
+
+
 
     public static String justDateFormatter (Long time) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy", java.util.Locale.getDefault());

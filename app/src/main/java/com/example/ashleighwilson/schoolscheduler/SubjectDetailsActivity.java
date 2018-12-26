@@ -144,7 +144,6 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                     DbHelper.AgendaEntry.COLUMN_DUEDATE,
                     DbHelper.AgendaEntry.COLUMN_COLOR,
                     DbHelper.AgendaEntry.COLUMN_TIME_TO_NOTIFY,
-                    DbHelper.AgendaEntry.COLUMN_DAY_TO_NOTIFY,
                     DbHelper.AgendaEntry.COLUMN_ADD_REMINDER,
                     DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE
             };
@@ -168,12 +167,11 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 String dueDate = cursor.getString(3);
                 int color = cursor.getInt(4);
                 long timeToNotify = cursor.getLong(5);
-                long dayToNotify = cursor.getLong(6);
-                long addReminder = cursor.getLong(7);
-                int repeatType = cursor.getInt(8);
+                long addReminder = cursor.getLong(6);
+                int repeatType = cursor.getInt(7);
 
                 AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
-                        dayToNotify, addReminder, repeatType);
+                        addReminder, repeatType);
 
                 agendaList.add(model);
             }

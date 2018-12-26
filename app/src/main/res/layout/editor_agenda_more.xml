@@ -53,36 +53,6 @@
             android:background="@color/LightGrey"
             android:layout_marginTop="10dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/ic_today_blackvector_24dp"/>
-
-            <LinearLayout
-                android:background="?attr/selectableItemBackground"
-                style="@style/LinearStyle">
-
-                <TextView
-                    android:id="@+id/assign_day_to_notify"
-                    style="@style/EditorFieldStyle"
-                    android:text="@string/day_to_notify_string"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="12dp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

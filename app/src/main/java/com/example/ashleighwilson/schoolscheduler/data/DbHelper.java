@@ -88,7 +88,6 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_DUEDATE,
             AgendaEntry.COLUMN_COLOR,
             AgendaEntry.COLUMN_TIME_TO_NOTIFY,
-            AgendaEntry.COLUMN_DAY_TO_NOTIFY,
             AgendaEntry.COLUMN_ADD_REMINDER,
             AgendaEntry.COLUMN_REPEAT_TYPE
     };
@@ -120,7 +119,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 88;
+    private static final int DATABASE_VERSION = 89;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -264,7 +263,6 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_DUEDATE = "date";
         public final static String COLUMN_COLOR = "color";
         public final static String COLUMN_TIME_TO_NOTIFY = "time_to_notify";
-        public final static String COLUMN_DAY_TO_NOTIFY = "day_to_notify";
         public final static String COLUMN_ADD_REMINDER = "add_reminder";
         public final static String COLUMN_REPEAT_TYPE = "repeat_type";
     }
@@ -277,7 +275,6 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
             + AgendaEntry.COLUMN_COLOR + " INTEGER, "
             + AgendaEntry.COLUMN_TIME_TO_NOTIFY + " INTEGER, "
-            + AgendaEntry.COLUMN_DAY_TO_NOTIFY + " INTEGER, "
             + AgendaEntry.COLUMN_ADD_REMINDER + " INTEGER, "
             + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER);";
 
@@ -632,7 +629,6 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
         values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
         values.put(AgendaEntry.COLUMN_TIME_TO_NOTIFY, model.getTimeToNotify());
-        values.put(AgendaEntry.COLUMN_DAY_TO_NOTIFY, model.getmDayToNotify());
         values.put(AgendaEntry.COLUMN_ADD_REMINDER, model.getmAddReminder());
         values.put(AgendaEntry.COLUMN_REPEAT_TYPE, model.getmRepeatType());
 
@@ -667,9 +663,8 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setDueDate(cursor.getString(3));
                 model.setmColor(cursor.getInt(4));
                 model.setTimeToNotify(cursor.getLong(5));
-                model.setmDayToNotify(cursor.getLong(6));
-                model.setmAddReminder(cursor.getLong(7));
-                model.setmRepeatType(cursor.getInt(8));
+                model.setmAddReminder(cursor.getLong(6));
+                model.setmRepeatType(cursor.getInt(7));
 
                 if (model.getmRepeatType() == 5) {
                     Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
@@ -710,9 +705,8 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setDueDate(cursor.getString(3));
                 model.setmColor(cursor.getInt(4));
                 model.setTimeToNotify(cursor.getLong(5));
-                model.setmDayToNotify(cursor.getLong(6));
-                model.setmAddReminder(cursor.getLong(7));
-                model.setmRepeatType(cursor.getInt(8));
+                model.setmAddReminder(cursor.getLong(6));
+                model.setmRepeatType(cursor.getInt(7));
 
                 if (model.getmRepeatType() == 5) {
                     Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
@@ -754,9 +748,8 @@ public class DbHelper extends SQLiteOpenHelper
             model.setDueDate(cursor.getString(3));
             model.setmColor(cursor.getInt(4));
             model.setTimeToNotify(cursor.getLong(5));
-            model.setmDayToNotify(cursor.getLong(6));
-            model.setmAddReminder(cursor.getLong(7));
-            model.setmRepeatType(cursor.getInt(8));
+            model.setmAddReminder(cursor.getLong(6));
+            model.setmRepeatType(cursor.getInt(7));
 
             if (model.getmRepeatType() == 5) {
                 Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +

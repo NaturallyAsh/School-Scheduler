@@ -169,7 +169,6 @@ public class AgendaFrag extends Fragment
                 DbHelper.AgendaEntry.COLUMN_DUEDATE,
                 DbHelper.AgendaEntry.COLUMN_COLOR,
                 DbHelper.AgendaEntry.COLUMN_TIME_TO_NOTIFY,
-                DbHelper.AgendaEntry.COLUMN_DAY_TO_NOTIFY,
                 DbHelper.AgendaEntry.COLUMN_ADD_REMINDER,
                 DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE
         };
@@ -190,13 +189,11 @@ public class AgendaFrag extends Fragment
             String dueDate = cursor.getString(3);
             int color = cursor.getInt(4);
             long timeToNotify = cursor.getLong(5);
-            long dayToNotify = cursor.getLong(6);
-            long addReminder = cursor.getLong(7);
-            int repeatType = cursor.getInt(8);
+            long addReminder = cursor.getLong(6);
+            int repeatType = cursor.getInt(7);
             Log.i(TAG,"repeat type: " + repeatType);
 
-            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
-                    dayToNotify, addReminder, repeatType);
+            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify, addReminder, repeatType);
 
             if (repeatType == 5) {
                 Cursor dayCursor = db.rawQuery("SELECT * FROM " + DbHelper.DaysOfWeekEntry.TABLE_NAME +
