@@ -70,12 +70,15 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
             holder.alarmIcon.setVisibility(View.VISIBLE);
         }
         holder.color.setBackgroundColor(currentAgenda.getmColor());
+        //holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
-        if (currentAgenda.getmInterval() == 0) {
-            holder.countdownDate.setText(R.string.overdue_string);
-            holder.countdownDate.setTextColor(Color.RED);
+        if (String.valueOf(currentAgenda.getmInterval()).matches("0")) {
+            holder.countdownDate.setText(R.string.due_today_string);
+            if (currentAgenda.getDateTimeInterval() <= 0) {
+                holder.countdownDate.setText(R.string.overdue_string);
+                holder.countdownDate.setTextColor(Color.RED);
+            }
         }
-
         holder.popMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -162,4 +162,5 @@
     <string name="one_hour_before_string">1 hour before</string>
     <string name="one_day_before_string">1 day before</string>
     <string name="one_week_before_string">1 week before</string>
+    <string name="due_today_string">Due today!</string>
 </resources>

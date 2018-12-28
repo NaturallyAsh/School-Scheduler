@@ -27,14 +27,16 @@ public class AgendaModel implements Parcelable
     private String mDueDate;
     private boolean mBefore;
     private long mInterval;
+    private long dateTimeInterval;
     private long mTimeToNotify;
     private long mAddReminder;
     private int mRepeatType;
     private boolean[] mDayOfWeek;
+    private long dateTime;
 
 
     public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
-                       long reminder, int repeatType)
+                       long reminder, int repeatType, long dateTime)
     {
         this.mId = id;
         this.mClassName = name;
@@ -44,6 +46,7 @@ public class AgendaModel implements Parcelable
         this.mTimeToNotify = timeToNotify;
         this.mAddReminder = reminder;
         this.mRepeatType = repeatType;
+        this.dateTime = dateTime;
     }
 
     public AgendaModel() {
@@ -59,6 +62,7 @@ public class AgendaModel implements Parcelable
         mTimeToNotify = in.readLong();
         mAddReminder = in.readLong();
         mRepeatType = in.readInt();
+        dateTime = in.readLong();
         if (mDayOfWeek == null) {
             mDayOfWeek = new boolean[7];
         }
@@ -151,8 +155,21 @@ public class AgendaModel implements Parcelable
         this.mDayOfWeek = dayOfWeekInt;
     }
 
+    public long getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(long dateTime) {
+        this.dateTime = dateTime;
+        setDateTimeInterval(dateTime);
+    }
+
     public long getmInterval() {
         return mInterval;
+    }
+
+    public long getDateTimeInterval() {
+        return dateTimeInterval;
     }
 
     public void setmInterval()
@@ -183,6 +200,21 @@ public class AgendaModel implements Parcelable
         mInterval = days;
     }
 
+    public void setDateTimeInterval(long calendar) {
+        Calendar futureDay = Calendar.getInstance();
+        futureDay.setTimeInMillis(calendar);
+        Calendar today = Calendar.getInstance();
+        long diff;
+        if (futureDay.before(today)) {
+            mBefore = true;
+            diff = today.getTimeInMillis() - futureDay.getTimeInMillis();
+        } else {
+            mBefore = false;
+            diff = futureDay.getTimeInMillis() - today.getTimeInMillis();
+        }
+        dateTimeInterval = diff / (24 * 60 * 60 * 1000);
+    }
+
     public static final Parcelable.Creator<AgendaModel> CREATOR = new
             Parcelable.Creator<AgendaModel>() {
                 @Override
@@ -210,6 +242,7 @@ public class AgendaModel implements Parcelable
         dest.writeLong(mTimeToNotify);
         dest.writeLong(mAddReminder);
         dest.writeInt(mRepeatType);
+        dest.writeLong(dateTime);
         if (mDayOfWeek == null) {
             mDayOfWeek = new boolean[7];
         }

@@ -170,7 +170,8 @@ public class AgendaFrag extends Fragment
                 DbHelper.AgendaEntry.COLUMN_COLOR,
                 DbHelper.AgendaEntry.COLUMN_TIME_TO_NOTIFY,
                 DbHelper.AgendaEntry.COLUMN_ADD_REMINDER,
-                DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE
+                DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE,
+                DbHelper.AgendaEntry.COLUMN_DATETIME
         };
 
         Cursor cursor = db.query(
@@ -191,39 +192,14 @@ public class AgendaFrag extends Fragment
             long timeToNotify = cursor.getLong(5);
             long addReminder = cursor.getLong(6);
             int repeatType = cursor.getInt(7);
-            Log.i(TAG,"repeat type: " + repeatType);
+            long dateTime = cursor.getLong(8);
 
-            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify, addReminder, repeatType);
+            AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
+                    addReminder, repeatType, dateTime);
 
             if (repeatType == 5) {
                 Cursor dayCursor = db.rawQuery("SELECT * FROM " + DbHelper.DaysOfWeekEntry.TABLE_NAME +
                         " WHERE " + DbHelper.DaysOfWeekEntry._ID + " = " + id, null);
-
-                /*String[] projection2 = {
-                        DbHelper.DaysOfWeekEntry._ID,
-                        DbHelper.DaysOfWeekEntry.COL_SUNDAY,
-                        DbHelper.DaysOfWeekEntry.COL_MONDAY,
-                        DbHelper.DaysOfWeekEntry.COL_TUESDAY,
-                        DbHelper.DaysOfWeekEntry.COL_WEDNESDAY,
-                        DbHelper.DaysOfWeekEntry.COL_THURSDAY,
-                        DbHelper.DaysOfWeekEntry.COL_FRIDAY,
-                        DbHelper.DaysOfWeekEntry.COL_SATURDAY
-                };
-
-                String selection2 = DbHelper.DaysOfWeekEntry._ID + " =? LIMIT 1";
-                String[] selectionArgs = {DbHelper.AgendaEntry._ID};
-
-
-                Cursor dayCursor2 = db.query(
-                        DbHelper.DaysOfWeekEntry.TABLE_NAME,
-                        projection2,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                );*/
-
 
                 if (dayCursor.moveToFirst()) {
                     do {

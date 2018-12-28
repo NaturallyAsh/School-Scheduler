@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -38,26 +39,35 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        //agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
-          //      AgendaModel.CREATOR);
+        agendaModel = ParcelableUtil.unmarshall(intent.getExtras().getByteArray(NotificationController.ARG_ITEM),
+                AgendaModel.CREATOR);
         dbHelper = DbHelper.getInstance();
-        agendaModel = dbHelper.getAllAgendas(id);
+        //agendaModel = dbHelper.getAllAgendas(id);
         calendar = Calendar.getInstance();
+        Log.i(TAG, "agenda reminder: " + agendaModel.getmAddReminder());
 
         createNotification(agendaModel, id, context);
 
-        switch (agendaModel.getmRepeatType()) {
-            case 1: calendar.add(Calendar.DATE, 1); break;
-            case 2: calendar.add(Calendar.WEEK_OF_YEAR, 1); break;
-            case 3: calendar.add(Calendar.MONTH, 1); break;
-            case 4: calendar.add(Calendar.YEAR, 1); break;
-            case 5: setDayOfWeek(); break;
+        if (agendaModel.getmAddReminder() == 0) {
+            switch (agendaModel.getmRepeatType()) {
+                case 1: calendar.add(Calendar.DATE, 1); break;
+                case 2: calendar.add(Calendar.WEEK_OF_YEAR, 1); break;
+                case 3: calendar.add(Calendar.MONTH, 1); break;
+                case 4: calendar.add(Calendar.YEAR, 1); break;
+                case 5: setDayOfWeek(); break;
+            }
         }
 
-        calendar.setTimeInMillis(agendaModel.getTimeToNotify());
+        if (agendaModel.getDateTime() > calendar.getTimeInMillis()) {
+            calendar.setTimeInMillis(agendaModel.getDateTime());
 
-        //Intent alarmIntent = new Intent(context, NotificationReceiver.class);
-        //AlarmUtil.setAlarm(context, alarmIntent, id, calendar);
+            long newReminder = 0;
+            agendaModel.setmAddReminder(newReminder);
+            dbHelper.updateAgenda(agendaModel);
+
+            //Intent alarmIntent = new Intent(context, NotificationReceiver.class);
+            NotificationController.notificationTest3(context, agendaModel, calendar);
+        }
     }
 
     public void setDayOfWeek() {
@@ -89,7 +99,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification_important_black_18dp)
                 .setContentTitle(model.getAgendaTitle())
-                .setContentText("Due Today!").setSound(alarmSound)
+                .setContentText("Due Today!" + ":" + model.getAgendaTitle()).setSound(alarmSound)
                 .setVibrate(new long[]{1000, 1000, 1000, 1000});
 
         Intent resultIntent = new Intent(context, AgendaFrag.class);

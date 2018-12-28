@@ -89,7 +89,8 @@ public class DbHelper extends SQLiteOpenHelper
             AgendaEntry.COLUMN_COLOR,
             AgendaEntry.COLUMN_TIME_TO_NOTIFY,
             AgendaEntry.COLUMN_ADD_REMINDER,
-            AgendaEntry.COLUMN_REPEAT_TYPE
+            AgendaEntry.COLUMN_REPEAT_TYPE,
+            AgendaEntry.COLUMN_DATETIME
     };
 
     String[] daysOfWeekColumns = new String[] {
@@ -119,7 +120,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 89;
+    private static final int DATABASE_VERSION = 90;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -265,6 +266,7 @@ public class DbHelper extends SQLiteOpenHelper
         public final static String COLUMN_TIME_TO_NOTIFY = "time_to_notify";
         public final static String COLUMN_ADD_REMINDER = "add_reminder";
         public final static String COLUMN_REPEAT_TYPE = "repeat_type";
+        public final static String COLUMN_DATETIME = "date_time";
     }
 
     String SQL_CREATE_AGENDA_TABLE = "CREATE TABLE " + AgendaEntry.TABLE_NAME +
@@ -276,7 +278,8 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_COLOR + " INTEGER, "
             + AgendaEntry.COLUMN_TIME_TO_NOTIFY + " INTEGER, "
             + AgendaEntry.COLUMN_ADD_REMINDER + " INTEGER, "
-            + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER);";
+            + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER, "
+            + AgendaEntry.COLUMN_DATETIME + " INTEGER);";
 
     public static final class DaysOfWeekEntry implements BaseColumns
     {
@@ -631,6 +634,7 @@ public class DbHelper extends SQLiteOpenHelper
         values.put(AgendaEntry.COLUMN_TIME_TO_NOTIFY, model.getTimeToNotify());
         values.put(AgendaEntry.COLUMN_ADD_REMINDER, model.getmAddReminder());
         values.put(AgendaEntry.COLUMN_REPEAT_TYPE, model.getmRepeatType());
+        values.put(AgendaEntry.COLUMN_DATETIME, model.getDateTime());
 
         //long id = db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.insertWithOnConflict(AgendaEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -665,6 +669,7 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setTimeToNotify(cursor.getLong(5));
                 model.setmAddReminder(cursor.getLong(6));
                 model.setmRepeatType(cursor.getInt(7));
+                model.setDateTime(cursor.getLong(8));
 
                 if (model.getmRepeatType() == 5) {
                     Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
@@ -707,6 +712,7 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setTimeToNotify(cursor.getLong(5));
                 model.setmAddReminder(cursor.getLong(6));
                 model.setmRepeatType(cursor.getInt(7));
+                model.setDateTime(cursor.getLong(8));
 
                 if (model.getmRepeatType() == 5) {
                     Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
@@ -750,6 +756,7 @@ public class DbHelper extends SQLiteOpenHelper
             model.setTimeToNotify(cursor.getLong(5));
             model.setmAddReminder(cursor.getLong(6));
             model.setmRepeatType(cursor.getInt(7));
+            model.setDateTime(cursor.getLong(8));
 
             if (model.getmRepeatType() == 5) {
                 Cursor dayCursor = db.rawQuery("SELECT * FROM " + DaysOfWeekEntry.TABLE_NAME +
@@ -776,6 +783,23 @@ public class DbHelper extends SQLiteOpenHelper
             return model;
         }
         return null;
+    }
+
+    public void updateAgenda(AgendaModel model)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(AgendaEntry.COLUMN_NAME, model.getClassName());
+        values.put(AgendaEntry.COLUMN_TITLE, model.getAgendaTitle());
+        values.put(AgendaEntry.COLUMN_DUEDATE, model.getDueDate());
+        values.put(AgendaEntry.COLUMN_COLOR, model.getmColor());
+        values.put(AgendaEntry.COLUMN_TIME_TO_NOTIFY, model.getTimeToNotify());
+        values.put(AgendaEntry.COLUMN_ADD_REMINDER, model.getmAddReminder());
+        values.put(AgendaEntry.COLUMN_REPEAT_TYPE, model.getmRepeatType());
+        values.put(AgendaEntry.COLUMN_DATETIME, model.getDateTime());
+
+        db.update(AgendaEntry.TABLE_NAME, values, AgendaEntry._ID + " = ?",
+                new String[]{String.valueOf(model.getmId())});
     }
 
     public long deleteAgenda(int id)

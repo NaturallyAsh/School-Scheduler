@@ -71,7 +71,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
         adapter = new DetailAssignmentAdapter(this, agendaList);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
+        //recyclerView.addItemDecoration(new SimpleDividerItemDecoration(this));
 
         loadAssignments();
 
@@ -145,7 +145,8 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                     DbHelper.AgendaEntry.COLUMN_COLOR,
                     DbHelper.AgendaEntry.COLUMN_TIME_TO_NOTIFY,
                     DbHelper.AgendaEntry.COLUMN_ADD_REMINDER,
-                    DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE
+                    DbHelper.AgendaEntry.COLUMN_REPEAT_TYPE,
+                    DbHelper.AgendaEntry.COLUMN_DATETIME
             };
 
             String selection = DbHelper.AgendaEntry.COLUMN_NAME + " =?";
@@ -169,9 +170,10 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 long timeToNotify = cursor.getLong(5);
                 long addReminder = cursor.getLong(6);
                 int repeatType = cursor.getInt(7);
+                long dateTime = cursor.getLong(8);
 
                 AgendaModel model = new AgendaModel(id, name, title, dueDate, color, timeToNotify,
-                        addReminder, repeatType);
+                        addReminder, repeatType, dateTime);
 
                 agendaList.add(model);
             }

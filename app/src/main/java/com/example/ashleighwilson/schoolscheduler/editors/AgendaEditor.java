@@ -517,6 +517,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             model.setTimeToNotify(timeNote.getTimeInMillis());
             model.setmAddReminder(reminderLong);
             model.setmRepeatType(mRepeatInt);
+            model.setDateTime(mCalendar.getTimeInMillis());
             dbHelper.addAgenda(model);
 
             if (mRepeatInt == 5) {

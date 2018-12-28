@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -95,46 +96,40 @@ public class NotificationController
 
     public static void notificationTest3(Context mContext, AgendaModel model, Calendar calendar)
     {
-        //Log.i(TAG, "calendar: " + calendar.get(Calendar.YEAR) + "," + calendar.get(Calendar.MONTH) + "," +
-          //      calendar.get(Calendar.DAY_OF_MONTH) + "," + calendar.get(Calendar.HOUR_OF_DAY) + "," + calendar.get(Calendar.MINUTE));
-
-
         Calendar futureDay = Calendar.getInstance();
         futureDay.setTime(calendar.getTime());
         Calendar curr = Calendar.getInstance();
 
-        long timeToNotify = 0;
-        timeToNotify = calendar.getTimeInMillis();
-        Log.i(TAG, "future TTN: " + timeToNotify);
-        if (model.getmAddReminder() != 0) {
-            switch ((int) model.getmAddReminder()) {
-                case 0:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 0);
-                    break;
-                case 10 * 60000:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 10 * 60000);
-                    break;
-                case 30 * 60000:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 30 * 60000);
-                    break;
-                case 60 * 60000:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 60000);
-                    break;
-                case 60 * 24 * 60000:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 60000);
-                    break;
-                case 60 * 24 * 7 * 60000:
-                    timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 7 * 60000);
-                    break;
-                default:
-                    throw new RuntimeException("error with repeat alarm");
+        long timeToNotify = calendar.getTimeInMillis();
+        //Log.i(TAG, "future TTN: " + timeToNotify);
+        if (futureDay.after(curr))
+        {
+            if (model.getmAddReminder() != 0) {
+                switch ((int) model.getmAddReminder()) {
+                    case 0:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 0);
+                        break;
+                    case 10 * 60000:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 10 * 60000);
+                        break;
+                    case 30 * 60000:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 30 * 60000);
+                        break;
+                    case 60 * 60000:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 60000);
+                        break;
+                    case 60 * 24 * 60000:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 60000);
+                        break;
+                    case 60 * 24 * 7 * 60000:
+                        timeToNotify = remindBeforeDate(calendar.getTimeInMillis(), 60 * 24 * 7 * 60000);
+                        break;
+                    default:
+                        throw new RuntimeException("error with repeat alarm");
+                }
             }
         }
-        /*if (futureDay.after(curr))
-        {
-
-        }*/
-        Log.i(TAG, "After remind TTN: " + timeToNotify);
+        //Log.i(TAG, "After remind TTN: " + timeToNotify);
         sendToReceiver(mContext, model, timeToNotify);
     }
 
@@ -144,31 +139,23 @@ public class NotificationController
     }
 
     public static void sendToReceiver(Context mContext, AgendaModel model, long timeToNotify) {
-        Log.i(TAG, "send to receiver called");
         AlarmManager alrmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(ARG_ITEM, model);
 
         Intent notifyEvent = new Intent(mContext, NotificationReceiver.class);
         id = model.getmId();
+        Log.i(TAG, "model reminder: " + model.getmAddReminder());
         notifyEvent.putExtra(NotificationReceiver.NOTIFICATION_ID, id);
-        //notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
+        //notifyEvent.putExtras(bundle);
+        notifyEvent.putExtra(ARG_ITEM, ParcelableUtil.marshall(model));
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, id, notifyEvent, flags);
         alrmManager.setExact(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
 
         Toast.makeText(mContext, "Alarm set", Toast.LENGTH_SHORT).show();
-
-
-        /*NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, MySchedulerApp.CHANNEL_ID)
-                .setContentTitle(model.getAgendaTitle())
-                .setContentText("Due on: " + model.getDueDate()).setSound(alarmSound)
-                .setSmallIcon(R.drawable.notification_important_black_18dp)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification.build());*/
     }
 
     public boolean checkNotification(Context context) {
@@ -195,30 +182,5 @@ public class NotificationController
                                 reminder), Toast.LENGTH_LONG).show());
             }
         }
-    }
-
-    public static long setNextRecurrence(String recurrenceOption, String recurrenceRule, long reminder) {
-        long timeToNotify = 0;
-
-        switch (recurrenceOption) {
-            case "DAILY":
-                timeToNotify = 86500000;
-                Log.i(TAG, "daily set");
-                break;
-            case "WEEKLY":
-                timeToNotify = 86500000 * 7;
-                Log.i(TAG, "weekly set");
-                break;
-            case "CUSTOM":
-                if (recurrenceRule != null || !(recurrenceRule.equals("n/a"))) {
-                    timeToNotify = DateHelper.nextReminderFromRecurrenceRule(reminder,
-                            recurrenceRule);
-                }
-                Log.i(TAG, "custom set");
-                break;
-        }
-        Date date = new Date(timeToNotify);
-        Log.i(TAG, "time to notify: " + date);
-        return timeToNotify;
     }
 }
