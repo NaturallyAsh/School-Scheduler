@@ -35,6 +35,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
     private static final int TYPE_MONTH_VIEW = 4;
     private int mWeekViewType = TYPE_MONTH_VIEW;
     private NewWeekView mNewWeekView;
+    private WeekViewBase mWeekViewBase;
     View rootView;
     private ExtendedCalendarView calendar;
     private FloatingActionButton add_event;
@@ -129,6 +131,8 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         eventList.setLayoutManager(new LinearLayoutManager(getContext()));
         calendar.refreshCalendar();
         updateEventAdapter();
+
+        mWeekViewBase = new WeekViewBase();
 
         // Get a reference for the week view in the layout.
         mNewWeekView = rootView.findViewById(R.id.weekView);
@@ -410,6 +414,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                     setupDateTimeInterpreter(false);
                     mNewWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
                     mWeekViewType = TYPE_DAY_VIEW;
                     mNewWeekView.setNumberOfVisibleDays(1);
@@ -427,7 +432,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                     mNewWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
-
+                    emptyView.setVisibility(View.GONE);
                     mWeekViewType = TYPE_WEEK_VIEW;
                     mNewWeekView.setNumberOfVisibleDays(7);
                     add_event.setVisibility(View.INVISIBLE);
@@ -499,7 +504,23 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Delete event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mWeekViewBase.removeEvent(event);
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
 
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public String getEventName(String name, Calendar startTime, Calendar endTime) {

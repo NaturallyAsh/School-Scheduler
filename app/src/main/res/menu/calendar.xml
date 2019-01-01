@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="week_view_fragment">
 
-    <item android:id="@+id/calendar_action"
-        android:title="@string/action_today"
+    <item android:id="@+id/calendar_action_delete"
+        android:title="@string/delete_string"
         android:orderInCategory="100"
         app:actionLayout="@layout/header_layout"
         app:showAsAction="collapseActionView"/>

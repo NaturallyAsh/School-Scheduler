@@ -3,23 +3,16 @@ package com.example.ashleighwilson.schoolscheduler.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
 import com.example.ashleighwilson.schoolscheduler.MySchedulerApp;
-import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 public class AgendaModel implements Parcelable
 {
     private static final String TAG = AgendaModel.class.getSimpleName();
 
-    private Context mContext = MySchedulerApp.getInstance();
     private int mId;
     private String mClassName;
     private String mAgendaTitle;
@@ -28,14 +21,14 @@ public class AgendaModel implements Parcelable
     private boolean mBefore;
     private long mInterval;
     private long dateTimeInterval;
-    private long mTimeToNotify;
+    private String mTimeToNotify;
     private long mAddReminder;
     private int mRepeatType;
     private boolean[] mDayOfWeek;
     private long dateTime;
 
 
-    public AgendaModel(int id, String name, String title, String dueDate, int color, long timeToNotify,
+    public AgendaModel(int id, String name, String title, String dueDate, int color, String timeToNotify,
                        long reminder, int repeatType, long dateTime)
     {
         this.mId = id;
@@ -59,7 +52,7 @@ public class AgendaModel implements Parcelable
         mAgendaTitle = in.readString();
         mColor = in.readInt();
         mDueDate = in.readString();
-        mTimeToNotify = in.readLong();
+        mTimeToNotify = in.readString();
         mAddReminder = in.readLong();
         mRepeatType = in.readInt();
         dateTime = in.readLong();
@@ -121,11 +114,11 @@ public class AgendaModel implements Parcelable
             setmInterval();
     }
 
-    public long getTimeToNotify() {
+    public String getTimeToNotify() {
         return mTimeToNotify;
     }
 
-    public void setTimeToNotify(long timeToNotify) {
+    public void setTimeToNotify(String timeToNotify) {
         this.mTimeToNotify = timeToNotify;
     }
 
@@ -239,7 +232,7 @@ public class AgendaModel implements Parcelable
         dest.writeString(mAgendaTitle);
         dest.writeInt(mColor);
         dest.writeString(mDueDate);
-        dest.writeLong(mTimeToNotify);
+        dest.writeString(mTimeToNotify);
         dest.writeLong(mAddReminder);
         dest.writeInt(mRepeatType);
         dest.writeLong(dateTime);

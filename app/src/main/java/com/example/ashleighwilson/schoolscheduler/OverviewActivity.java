@@ -16,6 +16,9 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -39,6 +42,7 @@ import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
 import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +118,9 @@ public class OverviewActivity extends AppCompatActivity
         backdropIV = findViewById(R.id.main_backdrop);
         viewPager = findViewById(R.id.viewpager);
 
-        adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
+        if (adapter == null) {
+            adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
+        }
         viewPager.setAdapter(adapter);
 
         tabLayout = findViewById(R.id.tabs);
@@ -290,8 +296,16 @@ public class OverviewActivity extends AppCompatActivity
 
     public void selectDrawerItem(MenuItem menuItem)
     {
+        Fragment fragment = null;
+        Class fragmentClass = null;
         switch (menuItem.getItemId())
         {
+            case R.id.nav_timetable:
+                /*WeekViewBase weekViewBase = new WeekViewBase();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.fcontent, weekViewBase, "WeekViewBase");
+                ft.commit();*/
+                break;
             case R.id.nav_grades:
                 Intent gradesIntent = new Intent(this, GradesActivity.class);
                 startActivity(gradesIntent);
@@ -300,12 +314,23 @@ public class OverviewActivity extends AppCompatActivity
                 Intent notesIntent = new Intent(this, NotesActivity.class);
                 startActivity(notesIntent);
                 break;
+            case R.id.nav_recordings:
+                Intent recordIntent = new Intent(this, RecordActivity.class);
+                startActivity(recordIntent);
+                break;
             case R.id.nav_settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 break;
             case R.id.logout:
                 session.logoutUser();
+            default:
+                fragmentClass = CalenderFrag.class;
+        }
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         menuItem.setChecked(true);

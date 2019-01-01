@@ -28,6 +28,7 @@ public class WeekViewBase extends WeekViewFragment
     Context mContext = MySchedulerApp.getInstance();
     DbHelper dbHelper = DbHelper.getInstance();
     WeekViewEvent dbEvent;
+    List<WeekViewEvent> deleteEvents = new ArrayList<>();
 
     public static WeekViewBase newInstance(long event_id)
     {
@@ -58,6 +59,7 @@ public class WeekViewBase extends WeekViewFragment
         setRetainInstance(true);
         Log.i(TAG, "onCreate!");
         mContext = MySchedulerApp.getInstance();
+        deleteEvents = new ArrayList<>();
     }
 
     @Override
@@ -145,21 +147,41 @@ public class WeekViewBase extends WeekViewFragment
             dbEvent.setmRecurrenceRule(rule);
 
             events.add(dbEvent);
-            Log.i(TAG, "cursor event called. Id: " + dbEvent.getId());
-
             WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
-
         }
 
         //WeekViewEvent fileEvent = CalenderFrag.readObj(mContext);
         //events.add(fileEvent);
-
         eventListByMonth.addAll(events);
         WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
 
+        deleteEvents.addAll(events);
         addLoadedEvents(events);
-        //listener.refreshData(events);
         return events;
+    }
+
+    public void removeEvent(WeekViewEvent event) {
+        {
+            int month = event.getStartTime().get(Calendar.MONTH - 1);
+            int year = event.getStartTime().get(Calendar.YEAR);
+            deleteEvents = onMonthLoad(year, month);
+            Log.i(TAG, "deleted event: " + deleteEvents.size());
+            if (deleteEvents == null) {
+                deleteEvents = new ArrayList<>();
+                Log.i(TAG, "events null");
+            }
+            if (deleteEvents.size() > 1) {
+                Log.i(TAG, "events greater than 1");
+                for (WeekViewEvent e : deleteEvents) {
+                    if (e.getStartTime().getTime() == event.getStartTime().getTime()) {
+                        Log.i(TAG, "e start: " + e.getStartTime() + " event start: " + event.getStartTime());
+                        deleteEvents.remove(e);
+                        notifyWeekView();
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override

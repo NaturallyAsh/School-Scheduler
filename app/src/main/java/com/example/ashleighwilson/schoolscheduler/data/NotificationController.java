@@ -158,6 +158,14 @@ public class NotificationController
         Toast.makeText(mContext, "Alarm set", Toast.LENGTH_SHORT).show();
     }
 
+    public static void removeAgendaReminder(Context context, int id) {
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, NotificationReceiver.class);
+        PendingIntent p = PendingIntent.getBroadcast(context, id, intent, 0);
+        am.cancel(p);
+        p.cancel();
+    }
+
     public boolean checkNotification(Context context) {
         return PendingIntent.getBroadcast(context, id, new Intent(context,
                 NotificationReceiver.class), PendingIntent.FLAG_NO_CREATE) != null;

@@ -72,6 +72,15 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         mContext = MySchedulerApp.getInstance();
     }
 
+    public static WeekViewBase newInstance()
+    {
+        WeekViewBase fragment = new WeekViewBase();
+        Bundle bundle = new Bundle();
+        //bundle.putLong(ARG_EVENT_ID, event_id);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -81,7 +90,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         if (view == null)
         {
             view = inflater.inflate(R.layout.fragment_calender, container, false);
-
+            Log.i(TAG, "view is null");
         }
 
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -100,12 +109,13 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         if (savedInstanceState != null)
         {
             mWeekViewBase = (WeekViewBase)getChildFragmentManager().findFragmentByTag("WeekViewBase");
+            Log.i(TAG, "saved instance not null: " + mWeekViewBase);
         }
         else
         {
             mWeekViewBase = new WeekViewBase();
             FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            ft.add(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
+            ft.replace(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
             ft.addToBackStack(null);
             ft.commit();
         }

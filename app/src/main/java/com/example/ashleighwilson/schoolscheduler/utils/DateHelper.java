@@ -78,7 +78,7 @@ public class DateHelper{
         return msg;
     }
 
-    public static String timeFormatter(Long time) {
+    public static String timeFormatter(String time) {
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
 
         String msg = sdf.format(time);

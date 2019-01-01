@@ -6,10 +6,12 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -286,8 +288,10 @@ public class TimeTableEditor extends AppCompatActivity implements
         String roomString = mRoomEditText.getText().toString().trim();
 
         Calendar startTime = originalStartTime;
-        startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
-        startTime.set(Calendar.MINUTE, START_MINUTE);
+        if (START_HOUR != 0 && START_MINUTE != 0) {
+            startTime.set(Calendar.HOUR_OF_DAY, START_HOUR);
+            startTime.set(Calendar.MINUTE, START_MINUTE);
+        }
 
         if (startTime == null)
         {
@@ -296,9 +300,13 @@ public class TimeTableEditor extends AppCompatActivity implements
 
 
         Calendar endTime = (Calendar) startTime.clone();
-        //endTime.setTimeInMillis(startTime.getTimeInMillis() + (1000 * 60 * 60 * 2));
-        endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
-        endTime.set(Calendar.MINUTE, END_MINUTE);
+        if (END_HOUR != 0 && END_MINUTE != 0) {
+            endTime.set(Calendar.HOUR_OF_DAY, END_HOUR);
+            endTime.set(Calendar.MINUTE, END_MINUTE);
+        } else {
+            endTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY) + 2);
+            endTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE));
+        }
         
         WeekViewEvent createdEvent;
         createdEvent = new WeekViewEvent(WeekViewUtil.eventId++, nameString, startTime, endTime);
@@ -418,14 +426,14 @@ public class TimeTableEditor extends AppCompatActivity implements
             case android.R.id.home:
                 if (!mSubjectHasChanged)
                 {
-                    NavUtils.navigateUpFromSameTask(TimeTableEditor.this);
+                    onBackPressed();
                     return true;
                 }
 
                 DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        NavUtils.navigateUpFromSameTask(TimeTableEditor.this);
+                        onBackPressed();
                     }
                 };
 
@@ -435,7 +443,7 @@ public class TimeTableEditor extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    /*@Override
+    @Override
     public void onBackPressed()
     {
         FragmentManager manager = getSupportFragmentManager();
@@ -445,7 +453,7 @@ public class TimeTableEditor extends AppCompatActivity implements
         }
         else
             super.onBackPressed();
-    } */
+    }
 
     private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener)
     {

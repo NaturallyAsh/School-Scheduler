@@ -120,7 +120,7 @@ public class DbHelper extends SQLiteOpenHelper
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String DATABASE_NAME = "school.db";
-    private static final int DATABASE_VERSION = 90;
+    private static final int DATABASE_VERSION = 91;
     public static final String CONTENT_AUTHORITY = "com.example.ashleighwilson.schoolscheduler";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_SCHOOL = "schoolscheduler";
@@ -276,7 +276,7 @@ public class DbHelper extends SQLiteOpenHelper
             + AgendaEntry.COLUMN_TITLE + " TEXT, "
             + AgendaEntry.COLUMN_DUEDATE + " TEXT, "
             + AgendaEntry.COLUMN_COLOR + " INTEGER, "
-            + AgendaEntry.COLUMN_TIME_TO_NOTIFY + " INTEGER, "
+            + AgendaEntry.COLUMN_TIME_TO_NOTIFY + " TEXT, "
             + AgendaEntry.COLUMN_ADD_REMINDER + " INTEGER, "
             + AgendaEntry.COLUMN_REPEAT_TYPE + " INTEGER, "
             + AgendaEntry.COLUMN_DATETIME + " INTEGER);";
@@ -666,7 +666,7 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setAgendaTitle(cursor.getString(2));
                 model.setDueDate(cursor.getString(3));
                 model.setmColor(cursor.getInt(4));
-                model.setTimeToNotify(cursor.getLong(5));
+                model.setTimeToNotify(cursor.getString(5));
                 model.setmAddReminder(cursor.getLong(6));
                 model.setmRepeatType(cursor.getInt(7));
                 model.setDateTime(cursor.getLong(8));
@@ -709,7 +709,7 @@ public class DbHelper extends SQLiteOpenHelper
                 model.setAgendaTitle(cursor.getString(2));
                 model.setDueDate(cursor.getString(3));
                 model.setmColor(cursor.getInt(4));
-                model.setTimeToNotify(cursor.getLong(5));
+                model.setTimeToNotify(cursor.getString(5));
                 model.setmAddReminder(cursor.getLong(6));
                 model.setmRepeatType(cursor.getInt(7));
                 model.setDateTime(cursor.getLong(8));
@@ -753,7 +753,7 @@ public class DbHelper extends SQLiteOpenHelper
             model.setAgendaTitle(cursor.getString(2));
             model.setDueDate(cursor.getString(3));
             model.setmColor(cursor.getInt(4));
-            model.setTimeToNotify(cursor.getLong(5));
+            model.setTimeToNotify(cursor.getString(5));
             model.setmAddReminder(cursor.getLong(6));
             model.setmRepeatType(cursor.getInt(7));
             model.setDateTime(cursor.getLong(8));

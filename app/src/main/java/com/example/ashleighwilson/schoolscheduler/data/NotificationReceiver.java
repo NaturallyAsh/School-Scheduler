@@ -67,6 +67,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             //Intent alarmIntent = new Intent(context, NotificationReceiver.class);
             NotificationController.notificationTest3(context, agendaModel, calendar);
+        } else if (agendaModel.getmRepeatType() != 0) {
+            NotificationController.notificationTest3(context, agendaModel, calendar);
         }
     }
 
@@ -114,79 +116,5 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         mNotificationManager.notify(id, mBuilder.build());
         Log.i(TAG, "notification received");
-    }
-
-    private void testRefire(Context context, String title, String dueDate, String option,
-                String rule, int id) {
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        AlarmManager alrmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        //this.agendaModel = model;
-
-        String date = dueDate;
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM dd, yyyy");
-        Date d = null;
-        try {
-            d = formatter.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar futureDay = Calendar.getInstance();
-        futureDay.setTime(d);
-        Calendar curr = Calendar.getInstance();
-        if (futureDay.after(curr))
-        {
-            long reminder = futureDay.getTimeInMillis();
-            long timeToNotify = setNextRecurrence(option,
-                    rule, reminder);
-            Intent notifyEvent = new Intent(context, NotificationReceiver.class);
-            notifyEvent.putExtra("title", title);
-            notifyEvent.putExtra("dueDate", date);
-            notifyEvent.putExtra(NOTIFICATION_ID, id);
-            //PendingIntent pendingIntent = PendingIntent.getActivity(mContext, id, notifyEvent,
-            //      PendingIntent.FLAG_CANCEL_CURRENT);
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, notifyEvent, flags);
-            alrmManager.set(AlarmManager.RTC_WAKEUP, timeToNotify, pendingIntent);
-
-
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, MySchedulerApp.CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText("Alarm Re-Set: " + date).setSound(alarmSound)
-                    .setSmallIcon(R.drawable.notification_important_black_18dp)
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true);
-
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(id, notification.build());
-
-        }
-        else {
-            Log.i(TAG, "unable to set notification receiver");
-        }
-    }
-
-    public long setNextRecurrence(String recurrenceOption, String recurrenceRule, long reminder) {
-        long timeToNotify = 0;
-
-        switch (recurrenceOption) {
-            case "DAILY":
-                timeToNotify = 86500000;
-                Log.i(TAG, "daily set");
-                break;
-            case "WEEKLY":
-                timeToNotify = 86500000 * 7;
-                Log.i(TAG, "weekly set");
-                break;
-            case "CUSTOM":
-                if (recurrenceRule != null || !(recurrenceRule.equals("n/a"))) {
-                    timeToNotify = DateHelper.nextReminderFromRecurrenceRule(reminder,
-                            recurrenceRule);
-                }
-                Log.i(TAG, "custom set");
-                break;
-        }
-        Log.i(TAG, "time to notify: " + timeToNotify);
-        return timeToNotify;
     }
 }

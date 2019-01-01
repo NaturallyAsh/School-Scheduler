@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.data.NotificationController;
 import com.example.ashleighwilson.schoolscheduler.editors.AgendaEditor;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 import com.example.ashleighwilson.schoolscheduler.models.AgendaModel;
@@ -66,15 +67,16 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
         holder.className.setText(currentAgenda.getClassName());
         holder.dueDate.setText(currentAgenda.getDueDate());
         holder.dueDate.setTag(holder);
-        if (currentAgenda.getTimeToNotify() != 0) {
+        if (!currentAgenda.getTimeToNotify().matches("")) {
             holder.alarmIcon.setVisibility(View.VISIBLE);
         }
         holder.color.setBackgroundColor(currentAgenda.getmColor());
         //holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
         holder.countdownDate.setText(String.valueOf(currentAgenda.getmInterval()) + " days remaining");
-        if (String.valueOf(currentAgenda.getmInterval()).matches("0")) {
+        if (currentAgenda.getmInterval() == 0) {
             holder.countdownDate.setText(R.string.due_today_string);
-            if (currentAgenda.getDateTimeInterval() <= 0) {
+        } else {
+            if (currentAgenda.getmInterval() < 0) {
                 holder.countdownDate.setText(R.string.overdue_string);
                 holder.countdownDate.setTextColor(Color.RED);
             }
@@ -201,6 +203,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     public void dismissAgenda(int position)
     {
         dbHelper.deleteAgenda(agendaData.get(position).getmId());
+        NotificationController.removeAgendaReminder(mContext, agendaData.get(position).getmId());
         agendaData.remove(position);
         notifyItemRemoved(position);
     }

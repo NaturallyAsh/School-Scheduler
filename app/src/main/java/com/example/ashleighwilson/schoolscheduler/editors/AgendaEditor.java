@@ -75,16 +75,13 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
     private static final String REMINDER_CHOICE_DIALOG = "reminder_choice_dialog";
     static private int agendaColor;
     NotificationController controller;
-    private AgendaAdapter agendaAdapter;
     private AgendaModel model;
     private AgendaModel itemModel;
     private ArrayAdapter<String> dataAdapter;
     private List<String> labels;
-    private String titleString, dueDate;
-    private SelectedDate mSelectedDate;
+    private String titleString, dueDate, notify;
     private int mHour, mMinute, mRepeatInt, dayWeekInt;
     private long NOTIFY_DATE, reminderLong;
-    private String mRecurrenceOption, mRecurrenceRule;
     private Calendar mCalendar;
     private LinearLayout moreLayout, repeatContainer;
     private ArrayList<String> repeatLabels, remindLabels;
@@ -143,12 +140,12 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             mDueDate.setText(itemModel.getDueDate());
             viewColor.setBackgroundColor(itemModel.getmColor());
             mClassName.setSelection(labels.indexOf(itemModel.getClassName()));
-            if (itemModel.getTimeToNotify() != 0 || itemModel.getmAddReminder()
+            if (itemModel.getTimeToNotify() != null || itemModel.getmAddReminder()
                     != 0 || itemModel.getmDayOfWeek() != null) {
                 mNotification.setChecked(true);
             }
-            if (itemModel.getTimeToNotify() != 0) {
-                mTimeToNotify.setText(DateHelper.timeFormatter(itemModel.getTimeToNotify()));
+            if (itemModel.getTimeToNotify() != null) {
+                mTimeToNotify.setText(itemModel.getTimeToNotify());
             }
             if (itemModel.getmAddReminder() != 0) {
                 reminderChoicesDb((int) itemModel.getmAddReminder());
@@ -317,8 +314,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
 
                 SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault());
 
-                mHour = extras.getInt(SimpleTimeDialog.HOUR);
-                mMinute = extras.getInt(SimpleTimeDialog.MINUTE);
+                //mHour = extras.getInt(SimpleTimeDialog.HOUR);
+                //mMinute = extras.getInt(SimpleTimeDialog.MINUTE);
 
                 mCalendar.set(Calendar.HOUR_OF_DAY, extras.getInt(SimpleTimeDialog.HOUR));
                 mCalendar.set(Calendar.MINUTE, extras.getInt(SimpleTimeDialog.MINUTE));
@@ -494,6 +491,7 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
         model = new AgendaModel();
         titleString = mAssignmentTitle.getText().toString().trim();
         dueDate = mDueDate.getText().toString().trim();
+        notify = mTimeToNotify.getText().toString().trim();
 
         Calendar timeNote = Calendar.getInstance();
         timeNote.set(Calendar.HOUR, mHour);
@@ -514,7 +512,8 @@ public class AgendaEditor extends AppCompatActivity implements AdapterView.OnIte
             } else {
                 model.setmColor(agendaColor);
             }
-            model.setTimeToNotify(timeNote.getTimeInMillis());
+            model.setTimeToNotify(notify);
+            Log.i(TAG, "notify: " + notify);
             model.setmAddReminder(reminderLong);
             model.setmRepeatType(mRepeatInt);
             model.setDateTime(mCalendar.getTimeInMillis());

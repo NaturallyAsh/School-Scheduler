@@ -167,7 +167,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 String title = cursor.getString(2);
                 String dueDate = cursor.getString(3);
                 int color = cursor.getInt(4);
-                long timeToNotify = cursor.getLong(5);
+                String timeToNotify = cursor.getString(5);
                 long addReminder = cursor.getLong(6);
                 int repeatType = cursor.getInt(7);
                 long dateTime = cursor.getLong(8);

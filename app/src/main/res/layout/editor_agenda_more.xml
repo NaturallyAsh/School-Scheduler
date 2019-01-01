@@ -36,7 +36,7 @@
                 <TextView
                     android:id="@+id/assign_time_to_notify"
                     style="@style/EditorFieldStyle"
-                    android:text="@string/time_to_notify_string"
+                    android:hint="@string/time_to_notify_string"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
@@ -79,7 +79,7 @@
                 <TextView
                     android:id="@+id/assign_add_reminder"
                     style="@style/EditorFieldStyle"
-                    android:text="@string/add_reminder_string"
+                    android:hint="@string/add_reminder_string"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
@@ -114,7 +114,7 @@
 
                 <TextView
                     style="@style/EditorFieldStyle"
-                    android:text="@string/repeat_string"
+                    android:hint="@string/repeat_string"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
@@ -124,7 +124,7 @@
                     android:id="@+id/assign_repeat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/never_string"
+                    android:hint="@string/never_string"
                     android:layout_marginStart="12dp"
                     android:layout_marginBottom="6dp"/>
 
