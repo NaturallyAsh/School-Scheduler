@@ -73,6 +73,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
     private Event dayEventObj;
     OnFragmentInteractionListener listener;
     public List<WeekViewEvent> events = new ArrayList<>();
+    private OverviewActivity mOverviewActivity;
 
     public void onAttachToParent(Fragment fragment)
     {
@@ -91,6 +92,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         Log.i(TAG, "onCreate!");
         setHasOptionsMenu(true);
         setRetainInstance(true);
+        mOverviewActivity = (OverviewActivity) getActivity();
 
         onAttachToParent(getParentFragment());
     }
@@ -367,7 +369,12 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
     public void notifyWeekView()
     {
-        mNewWeekView.notifyDatasetChanged();
+        if (mWeekViewType == TYPE_WEEK_VIEW || mWeekViewType == TYPE_MONTH_VIEW) {
+            Log.i(TAG, "called");
+            //updateView();
+            mNewWeekView.setRefreshEvents(true);
+            mNewWeekView.notifyDatasetChanged();
+        }
     }
 
     public void addLoadedEvents(List<WeekViewEvent> loadedEvent) {
@@ -465,6 +472,9 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                buildEventList(calendar.mAdapter.currentDay);
            }
        }
+       String name = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
+               " " + cal.get(Calendar.YEAR);
+       mOverviewActivity.getSupportActionBar().setTitle(name);
     }
 
     @Override

@@ -18,11 +18,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class ExtendedCalendarView extends RelativeLayout implements AdapterView.OnItemClickListener,
         View.OnClickListener
@@ -96,7 +98,9 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         calendar.setNumColumns(7);
         calendar.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
         calendar.setDrawSelectorOnTop(true);
-		//getEvents();
+        //setNextMonthButtonImageResource(R.drawable.ic_navigate_next_blackvect_24dp);
+
+        //getEvents();
         mAdapter = new CalendarAdapter(context, cal, mEventRects);
         calendar.setAdapter(mAdapter);
         calendar.setOnTouchListener(new OnTouchListener() {

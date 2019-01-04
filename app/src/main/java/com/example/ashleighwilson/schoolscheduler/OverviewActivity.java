@@ -43,6 +43,7 @@ import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
 import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
+import com.example.ashleighwilson.schoolscheduler.views.CustomViewPager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,10 +73,11 @@ public class OverviewActivity extends AppCompatActivity
     private ImageView backdropIV;
     public static String POSITION = "position";
     TabLayout tabLayout;
-    ViewPager viewPager;
+    CustomViewPager viewPager;
     View navHeaderView;
     private CircleImageView headerIMV;
     private TextView headerTV;
+    private OverviewActivity mOverviewActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +124,7 @@ public class OverviewActivity extends AppCompatActivity
             adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), tabTitles, numOfTabs);
         }
         viewPager.setAdapter(adapter);
+        viewPager.setPagingEnabled(false);
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -145,7 +148,7 @@ public class OverviewActivity extends AppCompatActivity
         setImage();
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(3);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab)

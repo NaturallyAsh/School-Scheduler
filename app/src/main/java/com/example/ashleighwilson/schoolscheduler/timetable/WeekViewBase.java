@@ -164,22 +164,26 @@ public class WeekViewBase extends WeekViewFragment
         {
             int month = event.getStartTime().get(Calendar.MONTH - 1);
             int year = event.getStartTime().get(Calendar.YEAR);
-            deleteEvents = onMonthLoad(year, month);
-            Log.i(TAG, "deleted event: " + deleteEvents.size());
-            if (deleteEvents == null) {
-                deleteEvents = new ArrayList<>();
+            String monthkey = "" + (month) + "-" + year;
+            eventListByMonth = onMonthLoad(year, month);
+            Log.i(TAG, "deleted event: " + eventListByMonth.size());
+            if (eventListByMonth == null) {
+                eventListByMonth = new ArrayList<>();
                 Log.i(TAG, "events null");
             }
-            if (deleteEvents.size() > 1) {
+            if (eventListByMonth.size() > 1) {
                 Log.i(TAG, "events greater than 1");
-                for (WeekViewEvent e : deleteEvents) {
-                    if (e.getStartTime().getTime() == event.getStartTime().getTime()) {
-                        Log.i(TAG, "e start: " + e.getStartTime() + " event start: " + event.getStartTime());
-                        deleteEvents.remove(e);
-                        notifyWeekView();
+                for (WeekViewEvent e : eventListByMonth) {
+                    if (e.getId() == event.getId()) {
+                        Log.i(TAG, "e id: " + e.getId() + " event id: " + event.getId());
+                        eventListByMonth.remove(e);
+                        Log.i(TAG, "deleted event after remove: " + eventListByMonth.size());
+                        WeekViewUtil.monthMasterEvents.put(monthkey, eventListByMonth);
+                        //notifyWeekView();
                         break;
                     }
                 }
+                notifyWeekView();
             }
         }
     }
