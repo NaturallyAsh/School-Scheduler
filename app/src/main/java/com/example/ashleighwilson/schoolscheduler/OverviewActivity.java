@@ -4,11 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,19 +13,15 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.support.design.widget.AppBarLayout;
 import android.view.View;
@@ -39,20 +31,19 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.ashleighwilson.schoolscheduler.adapter.ViewPagerAdapter;
-import com.example.ashleighwilson.schoolscheduler.data.AttachmentTask;
-import com.example.ashleighwilson.schoolscheduler.data.Storage;
 import com.example.ashleighwilson.schoolscheduler.login.SessionManager;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
+import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView;
 import com.example.ashleighwilson.schoolscheduler.views.CustomViewPager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import static com.example.ashleighwilson.schoolscheduler.WeekViewFragment.testCal;
 
-import butterknife.BindView;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class OverviewActivity extends AppCompatActivity
 {
@@ -67,12 +58,15 @@ public class OverviewActivity extends AppCompatActivity
     int numOfTabs = 3;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private NestedScrollView nestedScrollView;
+    private ExtendedCalendarView extendedCalendarView;
+    private WeekViewFragment weekViewFragment;
     ViewPagerAdapter adapter;
     AppBarLayout appBarLayout;
     SessionManager session;
     private ImageView backdropIV;
     public static String POSITION = "position";
     TabLayout tabLayout;
+    //Calendar cal;
     CustomViewPager viewPager;
     View navHeaderView;
     private CircleImageView headerIMV;
@@ -90,6 +84,7 @@ public class OverviewActivity extends AppCompatActivity
 
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("School Scheduler");
 
         session = new SessionManager(getApplicationContext());
         //call this whenever you want to check user login
@@ -112,6 +107,12 @@ public class OverviewActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT > 22)
         {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMS);
+        }
+
+        if (savedInstanceState == null) {
+            Log.i(TAG, "SIS is null");
+        } else {
+            Log.i(TAG, "SIS not null");
         }
 
         appBarLayout = findViewById(R.id.main_appBar);
@@ -161,19 +162,27 @@ public class OverviewActivity extends AppCompatActivity
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.curriculum)
                                 .into(backdropIV);
-                        appBarLayout.setExpanded(true);
+                        //appBarLayout.setExpanded(true);
+                        getSupportActionBar().setTitle("School Scheduler");
                         break;
                     case 1:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.agenda_drawable)
                                 .into(backdropIV);
-                        appBarLayout.setExpanded(true);
+                        //appBarLayout.setExpanded(true);
+                        getSupportActionBar().setTitle("School Scheduler");
                         break;
                     case 2:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.calendar_events_drawable)
                                 .into(backdropIV);
-                        appBarLayout.setExpanded(false);
+                        //appBarLayout.setExpanded(false);
+                        String name = testCal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
+                                " " + testCal.get(Calendar.YEAR);
+                        getSupportActionBar().setTitle(name);
+
+                        Log.i(TAG, "WV cal: " + testCal.get(Calendar.YEAR) + ", " + testCal.get(Calendar.MONTH));
+
                         break;
                 }
                 invalidateFragmentMenus(tab.getPosition());

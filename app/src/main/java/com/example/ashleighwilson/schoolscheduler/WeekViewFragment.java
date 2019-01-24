@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
@@ -57,7 +62,9 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
     private static final int TYPE_THREE_DAY_VIEW = 2;
     private static final int TYPE_WEEK_VIEW = 3;
     private static final int TYPE_MONTH_VIEW = 4;
+    public static Calendar testCal;
     private int mWeekViewType = TYPE_MONTH_VIEW;
+    private Button nextView, prevView;
     private NewWeekView mNewWeekView;
     private WeekViewBase mWeekViewBase;
     View rootView;
@@ -67,13 +74,15 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
     private EventAdapter eventAdapter;
     private AppBarLayout mAppBarLayout;
     TextView monthView, weekView, dayView, todayTV;
-    private TextView emptyView;
+    private TextView emptyView, monthTvView;
     Toolbar toolbar;
+    CollapsingToolbarLayout collapsingToolbar;
     Calendar dayCalendar;
     private Event dayEventObj;
     OnFragmentInteractionListener listener;
     public List<WeekViewEvent> events = new ArrayList<>();
     private OverviewActivity mOverviewActivity;
+    private View view;
 
     public void onAttachToParent(Fragment fragment)
     {
@@ -93,12 +102,13 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         setHasOptionsMenu(true);
         setRetainInstance(true);
         mOverviewActivity = (OverviewActivity) getActivity();
+        //view = getLayoutInflater().inflate(R.layout.month_title_view, null);
 
         onAttachToParent(getParentFragment());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
 
     {
@@ -106,14 +116,22 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        rootView = inflater.inflate(R.layout.week_view_fragment, container, false);
-
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.week_view_fragment, container, false);
+        }
         toolbar = getActivity().findViewById(R.id.week_toolbar);
 
         mAppBarLayout = rootView.findViewById(R.id.app_bar_cal);
 
+        collapsingToolbar = rootView.findViewById(R.id.collapseTool);
 
         emptyView = rootView.findViewById(R.id.empty_calendar_view);
+
+        nextView = rootView.findViewById(R.id.next_button);
+        nextView.setOnClickListener(clickListener);
+
+        prevView = rootView.findViewById(R.id.previous_button);
+        prevView.setOnClickListener(clickListener);
 
         calendar = rootView.findViewById(R.id.calendar);
 
@@ -154,7 +172,10 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
         mNewWeekView.setEmptyViewClickListener(this);
 
+        testCal = Calendar.getInstance();
+
         todayTV.setText(R.string.today_string);
+        Log.i(TAG, "today tv: " + todayTV.getText().toString());
 
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
@@ -164,6 +185,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
             //calendarViewLayout.setVisibility(View.VISIBLE);
 //            calendar.setVisibility(View.VISIBLE);
             updateView();
+            //testCal = Calendar.getInstance();
             mNewWeekView.setVisibility(View.GONE);
 //            eventListLayout.setVisibility(View.VISIBLE);
         } else {
@@ -257,6 +279,30 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         });
     }
 
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.next_button:
+                    calendar.nextMonth();
+                    TabLayout.Tab tabNext = mOverviewActivity.tabLayout.getTabAt(2);
+                    if (tabNext.isSelected()) {
+                        mOverviewActivity.getSupportActionBar().setTitle(testCal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
+                                " " + testCal.get(Calendar.YEAR));
+                    }
+                    break;
+                case R.id.previous_button:
+                    calendar.previousMonth();
+                    TabLayout.Tab tabPrev = mOverviewActivity.tabLayout.getTabAt(2);
+                    if (tabPrev.isSelected()) {
+                        mOverviewActivity.getSupportActionBar().setTitle(testCal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
+                                " " + testCal.get(Calendar.YEAR));
+                    }
+                    break;
+            }
+        }
+    };
+
     @Override
     public void onDayClicked(AdapterView<?> adapter, View view, int position, long id, Event event)
     {
@@ -331,6 +377,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         super.onResume();
         Log.i(TAG, "onResume!");
         if (mWeekViewType == TYPE_MONTH_VIEW) {
+            testCal = Calendar.getInstance();
             updateView();
             mNewWeekView.setRefreshEvents(true);
         } else if (mWeekViewType == TYPE_WEEK_VIEW) {
@@ -346,6 +393,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         calendar.setGesture(ExtendedCalendarView.LEFT_RIGHT_GESTURE);
         calendar.getEvents();
         calendar.refreshCalendar();
+
         Log.i(TAG, "updateView()!");
         updateEventAdapter();
     }
@@ -464,6 +512,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
     @Override
     public void onMonthChange(Calendar cal, List<EventRect> mEventRects) {
+        testCal = cal;
        if (calendar.mAdapter != null)
        {
            if (calendar.mAdapter.currentDay != null)
@@ -474,7 +523,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
        }
        String name = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
                " " + cal.get(Calendar.YEAR);
-       mOverviewActivity.getSupportActionBar().setTitle(name);
+      //mOverviewActivity.getSupportActionBar().setTitle(name);
     }
 
     @Override

@@ -115,7 +115,7 @@ public class CalenderFrag extends Fragment implements OnFragmentInteractionListe
         {
             mWeekViewBase = new WeekViewBase();
             FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
+            ft.add(R.id.fragment_container, mWeekViewBase, "WeekViewBase");
             ft.addToBackStack(null);
             ft.commit();
         }

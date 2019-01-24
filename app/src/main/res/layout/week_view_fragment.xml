@@ -10,6 +10,7 @@
     android:orientation="vertical"
     android:id="@+id/calendar_container">
 
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_cal"
         android:layout_width="match_parent"
@@ -35,6 +36,25 @@
             android:layout_height="300dp"
             android:visibility="visible">
 
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="30dp"
+                android:layout_marginEnd="90dp"
+                android:background="@drawable/ic_navigate_next_blackvect_24dp" />
+
+            <Button
+                android:id="@+id/previous_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="30dp"
+                android:layout_marginStart="90dp"
+                android:background="@drawable/ic_navigate_before_blackvector_24dp"/>
+
         </com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView>
 
         <LinearLayout
@@ -59,7 +79,8 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="18dp"
                 android:textSize="25sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
 
 
         </LinearLayout>

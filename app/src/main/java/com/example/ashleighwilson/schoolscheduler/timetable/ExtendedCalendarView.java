@@ -34,7 +34,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     private Context context;
     private OnDayClickListener dayListener;
     private GridView calendar;
-    private Calendar cal;
+    public static Calendar cal;
     public CalendarAdapter mAdapter;
     private TextView month;
     private RelativeLayout base;
@@ -83,6 +83,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     @SuppressLint("ClickableViewAccessibility")
     private void init(){
         cal = Calendar.getInstance();
+        //next = findViewById(R.id.next_button);
 
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         params.topMargin = 20;
@@ -113,6 +114,10 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
 
         addView(calendar);
         refreshCalendar();
+    }
+
+    public Calendar getCal() {
+        return cal;
     }
 
     private class GestureListener extends SimpleOnGestureListener {
@@ -181,7 +186,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         }
     }
 
-    private void previousMonth(){
+    public void previousMonth(){
         if(cal.get(Calendar.MONTH) == cal.getActualMinimum(Calendar.MONTH)) {
             cal.set((cal.get(Calendar.YEAR)-1),cal.getActualMaximum(Calendar.MONTH),1);
         } else {
@@ -190,7 +195,7 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
         rebuildCalendar();
     }
 
-    private void nextMonth(){
+    public void nextMonth(){
         if(cal.get(Calendar.MONTH) == cal.getActualMaximum(Calendar.MONTH)) {
             cal.set((cal.get(Calendar.YEAR)+1),cal.getActualMinimum(Calendar.MONTH),1);
         } else {
