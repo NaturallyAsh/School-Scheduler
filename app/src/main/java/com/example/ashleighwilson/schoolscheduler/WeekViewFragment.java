@@ -2,9 +2,11 @@ package com.example.ashleighwilson.schoolscheduler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.Cursor;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,20 +29,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.example.ashleighwilson.schoolscheduler.adapter.EventAdapter;
+import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 import com.example.ashleighwilson.schoolscheduler.timetable.EventRect;
 import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
-import com.example.ashleighwilson.schoolscheduler.timetable.OnFragmentInteractionListener;
 import com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
-import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewBase;
+import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
+
+import static com.example.ashleighwilson.schoolscheduler.OverviewActivity.appBarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +55,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class WeekViewFragment extends Fragment implements NewWeekView.EventClickListener,
+public class WeekViewFragment extends Fragment implements NewWeekView.EventClickListener,
         MonthLoader.MonthLoaderListener, NewWeekView.EventLongPressListener,
         NewWeekView.EmptyViewLongPressListener, ExtendedCalendarView.OnDayClickListener,
         ExtendedCalendarView.OnMonthChaneListener, View.OnClickListener,
@@ -60,15 +65,16 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
     private static final int TYPE_DAY_VIEW = 1;
     private static final int TYPE_THREE_DAY_VIEW = 2;
-    private static final int TYPE_WEEK_VIEW = 3;
+    public static final int TYPE_WEEK_VIEW = 3;
     private static final int TYPE_MONTH_VIEW = 4;
+    private static String INSTANCE_ARG = "weekType";
+
     public static Calendar testCal;
     private int mWeekViewType = TYPE_MONTH_VIEW;
     private Button nextView, prevView;
     private NewWeekView mNewWeekView;
-    private WeekViewBase mWeekViewBase;
     View rootView;
-    private ExtendedCalendarView calendar;
+    public ExtendedCalendarView calendar;
     private FloatingActionButton add_event;
     private RecyclerView eventList;
     private EventAdapter eventAdapter;
@@ -80,18 +86,30 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
     Calendar dayCalendar;
     private Event dayEventObj;
     OnFragmentInteractionListener listener;
+    private DbHelper dbHelper;
     public List<WeekViewEvent> events = new ArrayList<>();
     private OverviewActivity mOverviewActivity;
-    private View view;
+    private FrameLayout view;
+    private List<WeekViewEvent> eventListByMonth;
+    private String monthKey;
+    private WeekViewEvent dbEvent;
+    private List<WeekViewEvent> deleteEvents = new ArrayList<>();
 
-    public void onAttachToParent(Fragment fragment)
+    public WeekViewFragment() {}
+
+    public static WeekViewFragment getInstance(int weekType) {
+        WeekViewFragment frag = new WeekViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(INSTANCE_ARG, weekType);
+        frag.setArguments(bundle);
+
+        return frag;
+    }
+
+    public interface OnFragmentInteractionListener
     {
-        try {
-            listener = (OnFragmentInteractionListener) fragment;
-        }
-        catch (ClassCastException e) {
-            throw new ClassCastException("Must implement OnFragmentInteractionListener");
-        }
+        //void getList(String key, List<WeekViewEvent> data);
+        void setWeekView(NewWeekView weekView);
     }
 
     @Override
@@ -102,9 +120,14 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         setHasOptionsMenu(true);
         setRetainInstance(true);
         mOverviewActivity = (OverviewActivity) getActivity();
-        //view = getLayoutInflater().inflate(R.layout.month_title_view, null);
+        view = mOverviewActivity.findViewById(R.id.main_activity_container);
+        dbHelper = DbHelper.getInstance();
+        setListener(listener);
 
-        onAttachToParent(getParentFragment());
+    }
+
+    public void setListener(OnFragmentInteractionListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -152,10 +175,8 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         calendar.refreshCalendar();
         updateEventAdapter();
 
-        mWeekViewBase = new WeekViewBase();
-
         // Get a reference for the week view in the layout.
-        mNewWeekView = rootView.findViewById(R.id.weekView);
+        mNewWeekView = rootView.findViewById(R.id.weekView1);
 
         // Show a toast message about the touched event.
         mNewWeekView.setOnEventClickListener(this);
@@ -180,6 +201,10 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         // Set up a date time interpreter to interpret how the date and time will be formatted in
         // the week view. This is optional.
         setupDateTimeInterpreter(false);
+
+        if (getArguments() != null) {
+            mWeekViewType = getArguments().getInt(INSTANCE_ARG);
+        }
 
         if (mWeekViewType == TYPE_MONTH_VIEW) {
             //calendarViewLayout.setVisibility(View.VISIBLE);
@@ -213,6 +238,9 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
                 return true;
             }
+                //TODO: WORK ON SMOOTHER AND IMMEDIATE DELETE FROM EVENTADAPTER AND WEEKVIEW CLASS OBJECT
+                //TODO: CONSIDER NON-SWIPING METHODS. JUST A THOUGHT.
+
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
@@ -225,8 +253,8 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             eventAdapter.dismissEvent(viewHolder.getAdapterPosition());
-                            calendar.getEvents();
                             mNewWeekView.notifyDatasetChanged();
+                            calendar.getEvents();
                             updateEventAdapter();
                             if (eventAdapter.getItemCount() == 0)
                                 updateView();
@@ -454,6 +482,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Fragment newFragment = null;
         int id = item.getItemId();
         switch (id) {
             case R.id.action_month_view:
@@ -471,6 +500,9 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                     eventList.setVisibility(View.GONE);
                     emptyView.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
+                    mAppBarLayout.setExpanded(false);
+                    //Activity appBar
+                    appBarLayout.setExpanded(false);
                     mWeekViewType = TYPE_DAY_VIEW;
                     mNewWeekView.setNumberOfVisibleDays(1);
                     add_event.setVisibility(View.INVISIBLE);
@@ -483,12 +515,15 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
             case R.id.action_week_view:
                 if (mWeekViewType != TYPE_WEEK_VIEW) {
                     setupDateTimeInterpreter(true);
+                    mWeekViewType = TYPE_WEEK_VIEW;
+                    //newFragment = WeekViewLayout.getInstance(mWeekViewType);
                     mNewWeekView.setRefreshEvents(true);
                     mNewWeekView.setVisibility(View.VISIBLE);
                     eventList.setVisibility(View.GONE);
                     mAppBarLayout.setVisibility(View.GONE);
+                    mAppBarLayout.setExpanded(false);
+                    appBarLayout.setExpanded(false);
                     emptyView.setVisibility(View.GONE);
-                    mWeekViewType = TYPE_WEEK_VIEW;
                     mNewWeekView.setNumberOfVisibleDays(7);
                     add_event.setVisibility(View.INVISIBLE);
                     //getSupportActionBar().setTitle(getTitle());
@@ -496,9 +531,17 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                     mNewWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
                     mNewWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                     mNewWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));}
+                //break;
                 return true;
 
         }
+        /*if (newFragment != null) {
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction
+                    .replace((R.id.main_activity_container), newFragment)
+                    .commit();
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -568,7 +611,7 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mWeekViewBase.removeEvent(event);
+                removeEvent(event);
             }
         });
         builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -648,5 +691,120 @@ public abstract class WeekViewFragment extends Fragment implements NewWeekView.E
                     mNewWeekView.notifyDatasetChanged();
                 }
             }
+    }
+
+    @Override
+    public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
+        Log.i(TAG, "onMonthLoad");
+
+        monthKey = "" + (newMonth - 1) + "-" + newYear;
+        eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+        //Log.i(TAG, "event by month size: " + eventListByMonth.size());
+        if (eventListByMonth == null)
+        {
+            eventListByMonth = new ArrayList<>();
+        }
+        else
+        {
+            eventListByMonth.clear();
+        }
+
+        List<WeekViewEvent> events = new ArrayList<>();
+
+        Cursor cursor = dbHelper.fetchEvents();
+
+        while (cursor.moveToNext())
+        {
+            long id = cursor.getLong(0);
+            String name = cursor.getString(1);
+            String location = cursor.getString(2);
+            Calendar start = Calendar.getInstance();
+            start.setTimeInMillis(cursor.getLong(3));
+            start.set(Calendar.HOUR_OF_DAY, start.get(Calendar.HOUR_OF_DAY));
+            start.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
+            start.set(Calendar.MONTH, newMonth -1);
+            start.set(Calendar.YEAR, newYear);
+            Calendar end = Calendar.getInstance();
+            //end = (Calendar) start.clone();
+            end.setTimeInMillis(cursor.getLong(4));
+            end.set(Calendar.HOUR_OF_DAY, end.get(Calendar.HOUR_OF_DAY));
+            end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
+            end.set(Calendar.MONTH, newMonth -1);
+            int color = cursor.getInt(5);
+            String rule = cursor.getString(6);
+            //String dayOfWeek = cursor.getString(7);
+
+            Log.i(TAG, "rule: " + rule);
+
+            int day_recur = 0;
+            if (rule != null) {
+                EventRecurrence recurrence = new EventRecurrence();
+                recurrence.parse(rule);
+                for (int i = 0; i < recurrence.bydayCount; i++) {
+                    day_recur = EventRecurrence.day2CalendarDay(recurrence.byday[i]);
+                    Log.i(TAG, "day recur: " + day_recur);
+                }
+                Calendar c = Calendar.getInstance();
+                recurrence.wkst = c.get(Calendar.DAY_OF_WEEK);
+                while (recurrence.wkst != day_recur) {
+                    c.add(Calendar.DAY_OF_WEEK, day_recur);
+                    recurrence.wkst = c.get(Calendar.DAY_OF_WEEK);
+                    Log.i(TAG, "recurrence wkst: " + recurrence.wkst);
+                }
+            }
+
+            dbEvent = new WeekViewEvent(id, name, start, end);
+            dbEvent.setColor(color);
+            dbEvent.setLocation(location);
+            dbEvent.setmRecurrenceRule(rule);
+
+            events.add(dbEvent);
+            WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
+        }
+
+
+        eventListByMonth.addAll(events);
+        WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
+
+        deleteEvents.addAll(events);
+        addLoadedEvents(events);
+        return events;
+    }
+
+    public void removeEvent(WeekViewEvent event) {
+        {
+            //TODO: WORK ON THIS IMPLEMENTATION FOR BETTER IMMEDIATE DELETION
+            int month = event.getStartTime().get(Calendar.MONTH - 1);
+            int year = event.getStartTime().get(Calendar.YEAR);
+            String monthkey = "" + (month) + "-" + year;
+            eventListByMonth = onMonthLoad(year, month);
+            Log.i(TAG, "deleted event: " + eventListByMonth.size());
+            if (eventListByMonth == null) {
+                eventListByMonth = new ArrayList<>();
+                Log.i(TAG, "events null");
+            }
+            if (eventListByMonth.size() > 1) {
+                Log.i(TAG, "events greater than 1");
+                for (WeekViewEvent e : eventListByMonth) {
+                    if (e.getId() == event.getId()) {
+                        Log.i(TAG, "e id: " + e.getId() + " event id: " + event.getId());
+                        eventListByMonth.remove(e);
+                        Log.i(TAG, "deleted event after remove: " + eventListByMonth.size());
+                        WeekViewUtil.monthMasterEvents.put(monthkey, eventListByMonth);
+                        break;
+                    }
+                }
+                notifyWeekView();
+            }
+        }
+    }
+
+    public NewWeekView getmNewWeekView() {
+        return mNewWeekView;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

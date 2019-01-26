@@ -13,6 +13,8 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -36,6 +38,7 @@ import com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView
 import com.example.ashleighwilson.schoolscheduler.views.CustomViewPager;
 
 import static com.example.ashleighwilson.schoolscheduler.WeekViewFragment.testCal;
+import static com.example.ashleighwilson.schoolscheduler.WeekViewFragment.TYPE_WEEK_VIEW;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,17 +64,17 @@ public class OverviewActivity extends AppCompatActivity
     private ExtendedCalendarView extendedCalendarView;
     private WeekViewFragment weekViewFragment;
     ViewPagerAdapter adapter;
-    AppBarLayout appBarLayout;
+    public static AppBarLayout appBarLayout;
     SessionManager session;
     private ImageView backdropIV;
     public static String POSITION = "position";
     TabLayout tabLayout;
-    //Calendar cal;
     CustomViewPager viewPager;
     View navHeaderView;
     private CircleImageView headerIMV;
     private TextView headerTV;
-    private OverviewActivity mOverviewActivity;
+    private int position;
+    public static Toolbar fragToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,8 @@ public class OverviewActivity extends AppCompatActivity
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("School Scheduler");
+
+        fragToolbar = findViewById(R.id.frag_toolbar);
 
         session = new SessionManager(getApplicationContext());
         //call this whenever you want to check user login
@@ -109,11 +114,9 @@ public class OverviewActivity extends AppCompatActivity
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMS);
         }
 
-        if (savedInstanceState == null) {
-            Log.i(TAG, "SIS is null");
-        } else {
-            Log.i(TAG, "SIS not null");
-        }
+        //TODO: LOOK INTO CREATING SEPARATE TAB METHODS FOR ACCESS TO OTHER ACTIVITIES AND FRAGS
+        //TODO: ALSO SIS. ALSO SAVE THE PAGE YOU WERE ON BEFORE EXITING THE APP.
+        //TODO: MAYBE SHARED PREFS
 
         appBarLayout = findViewById(R.id.main_appBar);
         collapsingToolbarLayout = findViewById(R.id.overview_collapsingTB);
@@ -129,6 +132,14 @@ public class OverviewActivity extends AppCompatActivity
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        if (savedInstanceState != null) {
+            Log.i(TAG, "SIS is not null");
+            position = savedInstanceState.getInt(POSITION);
+            viewPager.setCurrentItem(position);
+        } else {
+            Log.i(TAG, "SIS is null");
+        }
 
         drawer = findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -162,25 +173,24 @@ public class OverviewActivity extends AppCompatActivity
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.curriculum)
                                 .into(backdropIV);
-                        //appBarLayout.setExpanded(true);
+                        appBarLayout.setExpanded(true);
                         getSupportActionBar().setTitle("School Scheduler");
                         break;
                     case 1:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.agenda_drawable)
                                 .into(backdropIV);
-                        //appBarLayout.setExpanded(true);
+                        appBarLayout.setExpanded(true);
                         getSupportActionBar().setTitle("School Scheduler");
                         break;
                     case 2:
                         Glide.with(getApplicationContext())
                                 .load(R.drawable.calendar_events_drawable)
                                 .into(backdropIV);
-                        //appBarLayout.setExpanded(false);
+                        appBarLayout.setExpanded(false);
                         String name = testCal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) +
                                 " " + testCal.get(Calendar.YEAR);
                         getSupportActionBar().setTitle(name);
-
                         Log.i(TAG, "WV cal: " + testCal.get(Calendar.YEAR) + ", " + testCal.get(Calendar.MONTH));
 
                         break;
@@ -272,7 +282,7 @@ public class OverviewActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        //outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
+        outState.putInt(POSITION, tabLayout.getSelectedTabPosition());
     }
 
     @Override
@@ -285,12 +295,17 @@ public class OverviewActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
+        int count = getFragmentManager().getBackStackEntryCount();
+
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
         }
-        else
+        if (count == 0) {
             super.onBackPressed();
+        } else {
+            getFragmentManager().popBackStack();
+        }
     }
 
 
@@ -309,14 +324,11 @@ public class OverviewActivity extends AppCompatActivity
     public void selectDrawerItem(MenuItem menuItem)
     {
         Fragment fragment = null;
-        Class fragmentClass = null;
         switch (menuItem.getItemId())
         {
             case R.id.nav_timetable:
-                /*WeekViewBase weekViewBase = new WeekViewBase();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.fcontent, weekViewBase, "WeekViewBase");
-                ft.commit();*/
+                //calendar.getEvents();
+                fragment = WeekViewLayout.getInstance(TYPE_WEEK_VIEW);
                 break;
             case R.id.nav_grades:
                 Intent gradesIntent = new Intent(this, GradesActivity.class);
@@ -336,13 +348,15 @@ public class OverviewActivity extends AppCompatActivity
                 break;
             case R.id.logout:
                 session.logoutUser();
-            default:
-                fragmentClass = CalenderFrag.class;
+                break;
         }
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (fragment != null) {
+            Log.i(TAG, "frag not null");
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.replace(R.id.main_activity_container, fragment);
+            ft.addToBackStack("back");
+            ft.commit();
         }
 
         menuItem.setChecked(true);

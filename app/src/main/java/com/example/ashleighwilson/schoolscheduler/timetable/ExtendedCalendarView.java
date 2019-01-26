@@ -83,7 +83,6 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
     @SuppressLint("ClickableViewAccessibility")
     private void init(){
         cal = Calendar.getInstance();
-        //next = findViewById(R.id.next_button);
 
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         params.topMargin = 20;
@@ -114,10 +113,6 @@ public class ExtendedCalendarView extends RelativeLayout implements AdapterView.
 
         addView(calendar);
         refreshCalendar();
-    }
-
-    public Calendar getCal() {
-        return cal;
     }
 
     private class GestureListener extends SimpleOnGestureListener {

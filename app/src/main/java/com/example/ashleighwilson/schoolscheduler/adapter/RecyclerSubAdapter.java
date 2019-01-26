@@ -29,7 +29,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
     private static final String TAG = RecyclerSubAdapter.class.getSimpleName();
 
     public List<SubjectsModel> subMod;
-    static ClickListener clickListener;
+    ClickListener clickListener;
     Context context;
     public DbHelper dbHelper;
     public SubjectsModel model;
@@ -181,7 +181,7 @@ public class RecyclerSubAdapter extends RecyclerView.Adapter<RecyclerSubAdapter.
 
     public void setClickListener(ClickListener clicked)
     {
-        RecyclerSubAdapter.clickListener = clicked;
+        this.clickListener = clicked;
     }
 
     public interface ClickListener

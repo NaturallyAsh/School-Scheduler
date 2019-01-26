@@ -32,4 +32,9 @@ public class CustomViewPager extends ViewPager {
     public void setPagingEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    //TODO GET VIEWPAGER UP N RUNNIN CORRECTLY
+   //TODO PAGER ON SUB AND AGENDA BUT NEEDS TO ALLOW
+    //TODO SMOOTH COLLAPSE/EXPANDING FOR WEEKVIEW
+
 }

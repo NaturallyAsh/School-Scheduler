@@ -11,10 +11,8 @@ import android.widget.TextView;
 import com.example.ashleighwilson.schoolscheduler.R;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
-import com.example.ashleighwilson.schoolscheduler.timetable.Event;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -26,8 +24,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
     private List<WeekViewEvent> eventList;
     private final View.OnClickListener onClickListener;
     LayoutInflater inflater;
-    WeekViewEvent event;
-    DbHelper dbHelper;
+    private WeekViewEvent event;
+    private DbHelper dbHelper;
 
     public EventAdapter(Context context, List<WeekViewEvent> events, View.OnClickListener listener)
     {
@@ -37,7 +35,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder>
         if (events != null) {
             //events.addAll(events);
         }
-        Log.i(TAG, "events: " + events.size());
         //inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         onClickListener = listener;
         dbHelper = DbHelper.getInstance();

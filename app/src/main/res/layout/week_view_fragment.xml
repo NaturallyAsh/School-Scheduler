@@ -33,8 +33,7 @@
         <com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView
             android:id="@+id/calendar"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:visibility="visible">
+            android:layout_height="300dp">
 
             <Button
                 android:id="@+id/next_button"
@@ -46,6 +45,16 @@
                 android:layout_marginEnd="90dp"
                 android:background="@drawable/ic_navigate_next_blackvect_24dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="95dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:text="NEXT"/>
+
             <Button
                 android:id="@+id/previous_button"
                 android:layout_width="40dp"
@@ -54,6 +63,15 @@
                 android:layout_marginBottom="30dp"
                 android:layout_marginStart="90dp"
                 android:background="@drawable/ic_navigate_before_blackvector_24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="95dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/white"
+                android:text="PREV"/>
 
         </com.example.ashleighwilson.schoolscheduler.timetable.ExtendedCalendarView>
 
@@ -119,8 +137,31 @@
 
 
 
-    <include
-        layout="@layout/new_week_view"/>
+    <com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/weekView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/week_toolbar"
+        android:background="@color/white"
+        app:eventTextColor="@android:color/white"
+        app:textSize="12sp"
+        app:hourHeight="60dp"
+        app:headerColumnPadding="8dp"
+        app:headerColumnTextColor="@color/colorAccent"
+        app:headerRowPadding="12dp"
+        app:columnGap="8dp"
+        app:noOfVisibleDays="3"
+        app:minTime="7"
+        app:maxTime="24"
+        app:autoLimitTime="false"
+        app:headerRowBackgroundColor="@color/white"
+        app:dayBackgroundColor="#05000000"
+        app:todayBackgroundColor="#1848adff"
+        app:headerColumnBackground="#ffffffff"
+        app:todayHeaderTextColor="@color/red"
+        android:visibility="gone"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/week_view_fab"
