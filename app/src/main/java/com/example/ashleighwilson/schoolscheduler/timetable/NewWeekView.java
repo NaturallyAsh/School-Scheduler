@@ -1624,7 +1624,7 @@ public class NewWeekView extends View {
         this.mEmptyViewClickListener = emptyViewClickListener;
     }
 
-    public EmptyViewClickListener getEmptyViewClickListener(){
+    public EmptyViewClickListener getEmptyViewClickListener(EmptyViewClickListener emptyViewClickListener){
         return mEmptyViewClickListener;
     }
 

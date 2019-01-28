@@ -1,12 +1,17 @@
 package com.example.ashleighwilson.schoolscheduler;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -15,17 +20,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.alamkanak.weekview.WeekView;
 import com.appeaser.sublimepickerlibrary.recurrencepicker.EventRecurrence;
 import com.example.ashleighwilson.schoolscheduler.data.DbHelper;
+import com.example.ashleighwilson.schoolscheduler.editors.TimeTableEditor;
 import com.example.ashleighwilson.schoolscheduler.models.WeekViewEvent;
 import com.example.ashleighwilson.schoolscheduler.timetable.DateTimeInterpreter;
 import com.example.ashleighwilson.schoolscheduler.timetable.MonthLoader;
 import com.example.ashleighwilson.schoolscheduler.timetable.NewWeekView;
 import com.example.ashleighwilson.schoolscheduler.timetable.WeekViewUtil;
 
-import static com.example.ashleighwilson.schoolscheduler.OverviewActivity.fragToolbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,7 +39,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class WeekViewLayout extends Fragment {
+public class WeekViewLayout extends AppCompatActivity implements
+        MonthLoader.MonthLoaderListener, NewWeekView.EmptyViewClickListener,
+        NewWeekView.EventClickListener, NewWeekView.EventLongPressListener {
 
     private static final String TAG = WeekViewLayout.class.getSimpleName();
 
@@ -48,119 +56,67 @@ public class WeekViewLayout extends Fragment {
     private String monthKey;
     private WeekViewEvent dbEvent;
     private DbHelper dbHelper;
+    private Toolbar toolbar;
 
-    public WeekViewLayout() {}
-
-    public static WeekViewLayout getInstance(int weekType) {
-        WeekViewLayout frag = new WeekViewLayout();
-        Bundle bundle = new Bundle();
-        bundle.putInt(INSTANCE_ARG, weekType);
-        frag.setArguments(bundle);
-
-        return frag;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setContentView(R.layout.new_week_view);
 
-        mOverviewActivity = (OverviewActivity) getActivity();
-    }
+        newWeekView = findViewById(R.id.weekView2);
+        toolbar = findViewById(R.id.timetableToolbar);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Timetable");
 
-        Log.i(TAG, "onCreateView");
-        View rootView = inflater.inflate(R.layout.new_week_view, container, false);
+        newWeekView.setMonthLoaderListener(this);
+        newWeekView.setEmptyViewClickListener(this);
+        newWeekView.setOnEventClickListener(this);
+        newWeekView.setEventLongPressListener(this);
 
-        newWeekView = rootView.findViewById(R.id.weekView2);
-        if (newWeekView != null) {
-            newWeekView.setVisibility(View.VISIBLE);
+        //weekViewFragment = new WeekViewFragment();
 
-        }
-        if (fragToolbar != null) {
-            fragToolbar.setVisibility(View.VISIBLE);
-            fragToolbar.getContext().setTheme(R.style.ThemeOverlay_AppCompat_Dark_ActionBar);
-            fragToolbar.setTitle("Timetable");
-            AppCompatActivity activity = (AppCompatActivity) getActivity();
-            activity.setSupportActionBar(fragToolbar);
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        }
         dbHelper = DbHelper.getInstance();
-
-        if (getArguments() != null) {
-            WeekType = getArguments().getInt(INSTANCE_ARG);
-        }
 
         setUpWeekView();
         setupDateTimeInterpreter(true);
 
-        return rootView;
     }
 
     private void setUpWeekView() {
         if (newWeekView != null) {
 
-            newWeekView.setMonthLoaderListener(new MonthLoader.MonthLoaderListener() {
-                @Override
-                public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
-
-                    monthKey = "" + (newMonth - 1) + "-" + newYear;
-                    eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
-                    //Log.i(TAG, "event by month size: " + eventListByMonth.size());
-                    if (eventListByMonth == null)
-                    {
-                        eventListByMonth = new ArrayList<>();
-                    }
-                    else
-                    {
-                        eventListByMonth.clear();
-                    }
-
-                    List<WeekViewEvent> events = new ArrayList<>();
-
-                    Cursor cursor = dbHelper.fetchEvents();
-
-                    while (cursor.moveToNext())
-                    {
-                        long id = cursor.getLong(0);
-                        String name = cursor.getString(1);
-                        String location = cursor.getString(2);
-                        Calendar start = Calendar.getInstance();
-                        start.setTimeInMillis(cursor.getLong(3));
-                        start.set(Calendar.HOUR_OF_DAY, start.get(Calendar.HOUR_OF_DAY));
-                        start.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
-                        start.set(Calendar.MONTH, newMonth -1);
-                        start.set(Calendar.YEAR, newYear);
-                        Calendar end = Calendar.getInstance();
-                        //end = (Calendar) start.clone();
-                        end.setTimeInMillis(cursor.getLong(4));
-                        end.set(Calendar.HOUR_OF_DAY, end.get(Calendar.HOUR_OF_DAY));
-                        end.set(Calendar.MINUTE, end.get(Calendar.MINUTE));
-                        end.set(Calendar.MONTH, newMonth -1);
-                        int color = cursor.getInt(5);
-                        String rule = cursor.getString(6);
-                        //String dayOfWeek = cursor.getString(7);
-
-                        dbEvent = new WeekViewEvent(id, name, start, end);
-                        dbEvent.setColor(color);
-                        dbEvent.setLocation(location);
-                        dbEvent.setmRecurrenceRule(rule);
-
-                        events.add(dbEvent);
-                        WeekViewUtil.masterEvents.put("" + dbEvent.getId(), dbEvent);
-                    }
-
-
-                    eventListByMonth.addAll(events);
-                    WeekViewUtil.monthMasterEvents.put(monthKey, eventListByMonth);
-
-                    return events;
-                }
-            });
+            if (WeekType != TYPE_WEEK_VIEW) {
+                WeekType = TYPE_WEEK_VIEW;
+                setupDateTimeInterpreter(true);
+                newWeekView.setRefreshEvents(true);
+                newWeekView.setNumberOfVisibleDays(7);
+                newWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                newWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                newWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+            }
         }
+    }
+
+    @Override
+    public List<WeekViewEvent> onMonthLoad(int newYear, int newMonth) {
+        monthKey = "" + (newMonth - 1) + "-" + newYear;
+        eventListByMonth = WeekViewUtil.monthMasterEvents.get(monthKey);
+        //Log.i(TAG, "event by month size: " + eventListByMonth.size());
+        if (eventListByMonth == null)
+        {
+            eventListByMonth = new ArrayList<>();
+        }
+        else
+        {
+            eventListByMonth.clear();
+        }
+
+        List<WeekViewEvent> events = new ArrayList<>();
+
+        return events;
     }
 
     private void setupDateTimeInterpreter(final boolean shortDate) {
@@ -195,44 +151,76 @@ public class WeekViewLayout extends Fragment {
         });
     }
 
+
     @Override
+    public void onEmptyViewClicked(Calendar time) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Add new event?");
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                time.get(Calendar.HOUR_OF_DAY);
+                time.get(Calendar.MINUTE);
+                time.get(Calendar.SECOND);
+                showNewEventScreen(null, time);
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    @Override
+    public void onEventClick(WeekViewEvent event, RectF eventRect) {
+
+    }
+    @Override
+    public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
+
+    }
+
+    /*@Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         getActivity().getMenuInflater().inflate(R.menu.action_week, menu);
         menu.removeItem(R.id.action_month_view);
         //TODO: Figure out how to give fragToolbar options
+    }*/
+
+    private void showNewEventScreen(WeekViewEvent event, Calendar time) {
+        //TODO: fix double entry that shows in fragment timetable
+        Intent intent = new Intent(this, TimeTableEditor.class);
+        Bundle bundle = new Bundle();
+        if (event != null) {
+            bundle.putSerializable("event", event);
+        }
+        if (time != null) {
+            bundle.putSerializable("start", time);
+        }
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //menu.clear();
-        //inflater.inflate(R.menu.action_week, menu);
-        //menu.removeItem(R.id.action_month_view);
-        //super.onCreateOptionsMenu(menu, inflater);
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        getMenuInflater().inflate(R.menu.action_timetable, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.action_day_view:
 
-                return true;
-            case R.id.action_week_view:
-                if (WeekType != TYPE_WEEK_VIEW) {
-                    WeekType = TYPE_WEEK_VIEW;
-                    setupDateTimeInterpreter(true);
-                    newWeekView.setRefreshEvents(true);
-                    newWeekView.setNumberOfVisibleDays(7);
-                    newWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
-                    newWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                    newWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                }
-                return true;
             case android.R.id.home:
-                mOverviewActivity.getSupportFragmentManager().popBackStack();
-                fragToolbar.setVisibility(View.GONE);
+                NavUtils.navigateUpFromSameTask(this);
                 break;
         }
 

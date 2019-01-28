@@ -658,7 +658,7 @@ public class WeekViewFragment extends Fragment implements NewWeekView.EventClick
         getActivity().startActivity(intent);
     }
 
-    private void showNewEventScreen(WeekViewEvent event, Calendar startTime)
+    public void showNewEventScreen(WeekViewEvent event, Calendar startTime)
     {
         Intent intent = new Intent(getActivity(), TimeTableEditor.class);
         Bundle bundle = new Bundle();

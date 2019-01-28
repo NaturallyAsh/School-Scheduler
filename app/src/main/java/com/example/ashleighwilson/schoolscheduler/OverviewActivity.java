@@ -323,12 +323,11 @@ public class OverviewActivity extends AppCompatActivity
 
     public void selectDrawerItem(MenuItem menuItem)
     {
-        Fragment fragment = null;
         switch (menuItem.getItemId())
         {
             case R.id.nav_timetable:
-                //calendar.getEvents();
-                fragment = WeekViewLayout.getInstance(TYPE_WEEK_VIEW);
+                Intent intent = new Intent(OverviewActivity.this, WeekViewLayout.class);
+                startActivity(intent);
                 break;
             case R.id.nav_grades:
                 Intent gradesIntent = new Intent(this, GradesActivity.class);
@@ -349,14 +348,6 @@ public class OverviewActivity extends AppCompatActivity
             case R.id.logout:
                 session.logoutUser();
                 break;
-        }
-        if (fragment != null) {
-            Log.i(TAG, "frag not null");
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction ft = manager.beginTransaction();
-            ft.replace(R.id.main_activity_container, fragment);
-            ft.addToBackStack("back");
-            ft.commit();
         }
 
         menuItem.setChecked(true);

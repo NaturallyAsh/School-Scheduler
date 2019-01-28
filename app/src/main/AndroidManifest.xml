@@ -126,6 +126,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".OverviewActivity"/>
         </activity>
+        <activity
+            android:name=".WeekViewLayout"
+            android:parentActivityName=".OverviewActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OverviewActivity"/>
+        </activity>
 
         <receiver android:name=".data.NotificationReceiver" />
         <receiver android:name=".data.AlarmReceiver" />
